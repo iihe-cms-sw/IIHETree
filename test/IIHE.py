@@ -18,7 +18,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.source = cms.Source("PoolSource",fileNames = readFiles, secondaryFileNames = secFiles)
 
 readFiles.extend( [
-    'file:/tmp/aidan/Spring14miniaod__ZPrimePSIToEEMuMu_M-3000_13TeV_pythia8__MINIAODSIM__PU20bx25_POSTLS170_V5-v1__403D9883-C407-E411-80FA-003048CF6050.root'
+    'file:/tmp/Spring14miniaod__ZPrimePSIToEEMuMu_M-3000_13TeV_pythia8__MINIAODSIM__PU20bx25_POSTLS170_V5-v1__403D9883-C407-E411-80FA-003048CF6050.root'
 ])
 
 # PFMET Type 1 (JEC) correction
@@ -39,14 +39,11 @@ process.GlobalTag.globaltag = 'GR_R_70_V1::All'
 print "Global Tag is ", process.GlobalTag.globaltag
 
 process.out = cms.OutputModule("PoolOutputModule",
-    ##process.FEVTSIMEventContent,
     fileName = cms.untracked.string('outfile.root')
 )
 
 process.options = cms.untracked.PSet(
-    #fileMode = cms.untracked.string('NOMERGE')
     SkipEvent = cms.untracked.vstring('ProductNotFound'),
-    #wantSummary = cms.untracked.bool(True)
 )
 
 process.maxEvents = cms.untracked.PSet(
