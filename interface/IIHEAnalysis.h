@@ -1,5 +1,5 @@
-#ifndef UserCode_IIHETree_HEEPAnalysis_h
-#define UserCode_IIHETree_HEEPAnalysis_h
+#ifndef UserCode_IIHETree_IIHEAnalysis_h
+#define UserCode_IIHETree_IIHEAnalysis_h
 
 // system include files
 #include <memory>
@@ -9,27 +9,21 @@
 #include <iostream>
 
 // user include files
-#include "CommonTools/UtilAlgos/interface/TFileService.h"
-#include "DataFormats/BeamSpot/interface/BeamSpot.h"
-#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
-#include "DataFormats/EgammaReco/interface/BasicCluster.h"
-#include "DataFormats/MuonReco/interface/Muon.h"
-#include "DataFormats/MuonReco/interface/MuonFwd.h"
-#include "DataFormats/MuonReco/interface/MuonCocktails.h"
+#include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/LuminosityBlock.h"
+#include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
 
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-
-#include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
-#include "RecoEgamma/EgammaElectronAlgos/interface/ElectronHcalHelper.h"
 #include "UserCode/IIHETree/interface/BranchWrapper.h"
+#include "UserCode/IIHETree/interface/IIHEModule.h"
 
 #include "TFile.h"
 #include "TTree.h"
-#include "TLorentzVector.h"
-#include "TH1F.h"
 
 namespace edm {
   class ParameterSet;
@@ -37,33 +31,49 @@ namespace edm {
   class EventSetup;
 }
 
-//
+enum variableTypes{
+  kBool,
+  kDouble,
+  kFloat,
+  kInt,
+  kVectorBool,
+  kVectorDouble,
+  kVectorFloat,
+  kVectorInt,
+  kVectorVectorBool,
+  kVectorVectorDouble,
+  kVectorVectorFloat,
+  kVectorVectorInt
+};
+
+
+class IIHEModule ; // Forward declaration
+
 // class decleration
-//
-class HEEPAnalysis : public edm::EDAnalyzer {
+class IIHEAnalysis : public edm::EDAnalyzer {
 
 private:
 
 public:
-  explicit HEEPAnalysis(const edm::ParameterSet& iConfig);
-  ~HEEPAnalysis();
+  explicit IIHEAnalysis(const edm::ParameterSet& iConfig);
+  ~IIHEAnalysis();
   
-  bool store(std::string, bool  );
-  bool store(std::string, double);
-  bool store(std::string, float );
-  bool store(std::string, int   );
+  bool store(std::string, bool    );
+  bool store(std::string, double  );
+  bool store(std::string, float   );
+  bool store(std::string, int     );
   bool store(std::string, unsigned);
   bool store(std::string, std::vector<bool>  );
   bool store(std::string, std::vector<double>);
   bool store(std::string, std::vector<float >);
   bool store(std::string, std::vector<int   >);
   
-  bool add_branch(std::string);
-  bool add_branch(std::string,int);
-  bool branch_exists(std::string);
+  bool addBranch(std::string);
+  bool addBranch(std::string,int);
+  bool branchExists(std::string);
   
-  void set_branch_type(int);
-  int  get_branch_type();
+  void setBranchType(int);
+  int  getBranchType();
   
 private:
   virtual void beginJob() ;
@@ -74,16 +84,10 @@ private:
   void beginEvent() ;
   void endEvent() ;
   
-  void configure_branches();
+  void configureBranches();
   
   // ----------member data ---------------------------
-  edm::EDGetTokenT<reco::BeamSpot> beamSpotLabel_ ;
-  double ScPtMin_;
-  double GsfPtMin_;
-  double GsfTrackPtMin_;
-  double muPtMin_;
-  
-  std::vector<BranchWrapperBase*> all_vars_;
+  std::vector<BranchWrapperBase*> allVars_ ;
   std::vector<BranchWrapperBVV* > vars_BVV_;
   std::vector<BranchWrapperDVV* > vars_DVV_;
   std::vector<BranchWrapperFVV* > vars_FVV_;
@@ -97,21 +101,17 @@ private:
   std::vector<BranchWrapperF*   > vars_F_  ;
   std::vector<BranchWrapperI*   > vars_I_  ;
   
-  int current_var_type;
-  std::vector< std::pair<std::string, int> > list_of_branches ;
-  std::vector< std::pair<std::string, int> > missing_branches ;
-    
-  // Parameters for PU subtraction 
-  double EcalHcal1EffAreaBarrel_  ;
-  double EcalHcal1EffAreaEndcaps_ ;
+  int currentVarType_ ;
+  std::vector< std::pair<std::string, int> > listOfBranches_ ;
+  std::vector< std::pair<std::string, int> > missingBranches_ ;
   
-  bool debug;
-  
-  float rho ;
+  bool debug_;
 
   // config parameters -------------------------------
   TFile* myFile ;
   TTree* mytree ;
+  
+  std::vector<IIHEModule*> childModules_;
 };
 #endif
 //define this as a plug-in
