@@ -88,10 +88,6 @@ process.load("RecoJets.JetProducers.kt4PFJets_cfi")
 process.kt6PFJets = process.kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True )
 process.kt6PFJets.Rho_EtaMax = cms.double(2.5)
 
-from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso
-process.eleIsoSequence = setupPFElectronIso(process, 'gedGsfElectrons')
-#process.muIsoSequence = setupPFMuonIso(process, 'muons')
-
 process.load("UserCode.IIHETree.IIHETree_cfi")
 process.otherStuff = cms.Sequence( process.kt6PFJets )
 
@@ -99,5 +95,5 @@ process.load("RecoMET.METFilters.ecalLaserCorrFilter_cfi")
 process.load('RecoMET.METFilters.eeBadScFilter_cfi')
 process.MessageLogger.suppressError = cms.untracked.vstring ('ecalLaserCorrFilter')
 
-process.p1 = cms.Path(process.otherStuff * process.hltPhysicsDeclared * process.eeBadScFilter * process.ecalLaserCorrFilter * process.noscraping * process.primaryVertexFilter * process.pfParticleSelectionSequence * process.eleIsoSequence * process.producePFMETCorrections * process.IIHEAnalysis)
+process.p1 = cms.Path(process.otherStuff * process.hltPhysicsDeclared * process.eeBadScFilter * process.ecalLaserCorrFilter * process.noscraping * process.primaryVertexFilter * process.pfParticleSelectionSequence * process.producePFMETCorrections * process.IIHEAnalysis)
 
