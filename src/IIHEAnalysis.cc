@@ -32,8 +32,8 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig){
   beamSpotLabel_ = consumes<BeamSpot>(iConfig.getParameter<InputTag>("beamSpot")) ;
   
   childModules_.push_back(new IIHEModuleEvent(iConfig)         ) ;
-  //childModules_.push_back(new IIHEModuleVertex(iConfig)        ) ;
-  //childModules_.push_back(new IIHEModuleSuperCluster(iConfig)  ) ;
+  childModules_.push_back(new IIHEModuleVertex(iConfig)        ) ;
+  childModules_.push_back(new IIHEModuleSuperCluster(iConfig)  ) ;
   childModules_.push_back(new IIHEModuleGedGsfElectron(iConfig)) ;
   childModules_.push_back(new IIHEModuleMuon(iConfig)          ) ;
   childModules_.push_back(new IIHEModuleHEEP(iConfig)          ) ;
