@@ -1,14 +1,17 @@
 #ifndef UserCode_IIHETree_IIHEAnalysis_h
 #define UserCode_IIHETree_IIHEAnalysis_h
 
-// system include files
+// Local includes
+#include "UserCode/IIHETree/interface/IIHEAnalysis.h"
+
+// System includes
 #include <memory>
 #include <string>
 #include <vector>
 #include <fstream>
 #include <iostream>
 
-// user include files
+// user includes
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/LuminosityBlock.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -52,8 +55,11 @@ class IIHEModule ; // Forward declaration
 // class decleration
 class IIHEAnalysis : public edm::EDAnalyzer {
 
-private:
+friend class IIHEModuleVertex ;
+friend class IIHEModuleMuon ;
 
+private:
+  edm::EDGetTokenT<reco::BeamSpot> beamSpotLabel_ ;
 public:
   explicit IIHEAnalysis(const edm::ParameterSet& iConfig);
   ~IIHEAnalysis();

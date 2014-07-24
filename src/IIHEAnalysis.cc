@@ -1,14 +1,23 @@
+// CMSSW includes
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+
+// Local includes
+#include "UserCode/IIHETree/interface/IIHEAnalysis.h"
 
 #include "UserCode/IIHETree/interface/BranchWrapper.h"
-#include "UserCode/IIHETree/interface/IIHEAnalysis.h"
 #include "UserCode/IIHETree/interface/IIHEModule.h"
+#include "UserCode/IIHETree/interface/IIHEModuleEvent.h"
+#include "UserCode/IIHETree/interface/IIHEModuleVertex.h"
+#include "UserCode/IIHETree/interface/IIHEModuleSuperCluster.h"
 #include "UserCode/IIHETree/interface/IIHEModuleGedGsfElectron.h"
-#include "UserCode/IIHETree/interface/IIHEModuleExample.h"
+#include "UserCode/IIHETree/interface/IIHEModuleMuon.h"
+#include "UserCode/IIHETree/interface/IIHEModuleHEEP.h"
 
-
+// System includes
 #include <iostream>
 #include <TMath.h>
 #include <vector>
@@ -19,8 +28,15 @@ using namespace edm ;
 
 IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig){
   currentVarType_ = -1 ;
-  debug_ = true ;
+  debug_ = iConfig.getParameter<bool>("debug") ;
+  beamSpotLabel_ = consumes<BeamSpot>(iConfig.getParameter<InputTag>("beamSpot")) ;
+  
+  childModules_.push_back(new IIHEModuleEvent(iConfig)         ) ;
+  //childModules_.push_back(new IIHEModuleVertex(iConfig)        ) ;
+  //childModules_.push_back(new IIHEModuleSuperCluster(iConfig)  ) ;
   childModules_.push_back(new IIHEModuleGedGsfElectron(iConfig)) ;
+  childModules_.push_back(new IIHEModuleMuon(iConfig)          ) ;
+  childModules_.push_back(new IIHEModuleHEEP(iConfig)          ) ;
 }
 
 IIHEAnalysis::~IIHEAnalysis(){}

@@ -20,6 +20,13 @@
 #include "RecoEgamma/EgammaTools/interface/ConversionTools.h"
 
 
+#include "DataFormats/Common/interface/TriggerResults.h"
+#include "DataFormats/HLTReco/interface/TriggerEvent.h"
+#include "DataFormats/HLTReco/interface/TriggerObject.h"
+#include "DataFormats/HLTReco/interface/TriggerTypeDefs.h"
+#include "FWCore/Common/interface/TriggerNames.h"
+
+
 #include <iostream>
 #include <TMath.h>
 #include <vector>
@@ -35,7 +42,7 @@ IIHEModuleGedGsfElectron::~IIHEModuleGedGsfElectron(){}
 void IIHEModuleGedGsfElectron::beginJob(){
   addBranch("gsf_n", kInt) ;
   addBranch("gsf_classification", kVectorInt) ;
-  parent_->setBranchType(kVectorFloat) ;
+  setBranchType(kVectorFloat) ;
   addBranch("gsf_energy") ;
   addBranch("gsf_p") ;
   addBranch("gsf_pt") ;
@@ -95,16 +102,34 @@ void IIHEModuleGedGsfElectron::beginJob(){
   addBranch("gsf_e5x5") ;
   addBranch("gsf_e1x3") ;
   
-  parent_->setBranchType(kVectorVectorFloat) ;
+  setBranchType(kVectorVectorFloat) ;
   addBranch("gsf_crystal_energy"  ) ;
   addBranch("gsf_crystal_eta"     ) ;
   addBranch("gsf_eshitsixix") ;
   addBranch("gsf_eshitsiyiy") ;
-  parent_->setBranchType(kVectorVectorInt) ;
+  setBranchType(kVectorVectorInt) ;
   addBranch("gsf_crystal_ietaorix") ;
   addBranch("gsf_crystal_iphioriy") ;
   addBranch("gsf_hitsinfo", kVectorVectorInt) ;
   
+  
+  std::string branchPrefix = "gsfMatch_" ;
+  std::vector<std::string> filterNames ;
+  filterNames.push_back("hltL1sL1SingleEG12") ;
+  filterNames.push_back("hltL1sL1Mu3p5EG12" ) ;
+  filterNames.push_back("hltL1sL1SingleEG22") ;
+  filterNames.push_back("hltEle33CaloIdLPixelMatchFilter") ;
+  filterNames.push_back("hltDiEle33CaloIdLGsfTrkIdVLDPhiDoubleFilter") ;
+  filterNames.push_back("hltEle17TightIdLooseIsoEle8TightIdLooseIsoTrackIsoFilter") ;
+  filterNames.push_back("hltEle17TightIdLooseIsoEle8TightIdLooseIsoTrackIsoDoubleFilter") ;
+  filterNames.push_back("hltEle32CaloIdTCaloIsoTTrkIdTTrkIsoTSC17TrackIsoFilter") ;
+  filterNames.push_back("hltEle27WP80TrackIsoFilter") ;
+  filterNames.push_back("hltMu22Photon22CaloIdLHEFilter") ;
+  setBranchType(kVectorBool) ;
+  for(unsigned int i=0 ; i<filterNames.size() ; i++){
+    std::string branchName = branchPrefix + filterNames.at(i) ;
+    addBranch(branchName) ;
+  }
 }
 
 // ------------ method called to for each event  ------------
@@ -130,7 +155,6 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
     firstpvertexwithBS.SetXYZ(firstpv->x(),firstpv->y(),firstpv->z());
   }
   
-  
   edm::ESHandle<CaloTopology> pTopology;
   iSetup.get<CaloTopologyRecord>().get(pTopology);
   
@@ -144,6 +168,11 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
   math::XYZPoint beamspot(theBeamSpot->position().x(),theBeamSpot->position().y(),theBeamSpot->position().z());
   math::XYZPoint firstpvertex(0.,0.,0.);
   
+  // Trigger information
+  edm::InputTag trigEventTag("hltTriggerSummaryAOD","","HLT");
+  edm::Handle<trigger::TriggerEvent> trigEvent; 
+  iEvent.getByLabel(trigEventTag,trigEvent);
+  
   EcalClusterLazyTools lazytool(iEvent,iSetup,InputTag("reducedEcalRecHitsEB"),InputTag("reducedEcalRecHitsEE"),InputTag("reducedEcalRecHitsES"));
   
   store("gsf_n", (int)gsfelectrons.size()) ;
@@ -155,65 +184,65 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
     const reco::CaloClusterPtr seed = gsfiter->superCluster()->seed();
     int gsf_nLostInnerHits = gsfiter->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits() ;
     int gsf_nLostOuterHits = gsfiter->gsfTrack()->trackerExpectedHitsOuter().numberOfLostHits() ;
-    store("gsf_energy"              , gsfiter->energy()) ;
-    store("gsf_p"                   , gsfiter->p()) ;
-    store("gsf_pt"                  , gsfiter->pt()) ;
-    store("gsf_classification"      , gsfiter->classification()) ;
-    store("gsf_scE1x5"              , gsfiter->scE1x5()) ;
-    store("gsf_scE5x5"              , gsfiter->scE5x5()) ;
-    store("gsf_scE2x5Max"           , gsfiter->scE2x5Max()) ;
-    store("gsf_eta"                 , gsfiter->eta()) ;
-    store("gsf_phi"                 , gsfiter->phi()) ;
-    store("gsf_theta"               , gsfiter->theta());
-    store("gsf_px"                  , gsfiter->px()) ;
-    store("gsf_py"                  , gsfiter->py()) ;
-    store("gsf_pz"                  , gsfiter->pz()) ;
+    store("gsf_energy"                        , gsfiter->energy()) ;
+    store("gsf_p"                             , gsfiter->p()) ;
+    store("gsf_pt"                            , gsfiter->pt()) ;
+    store("gsf_classification"                , gsfiter->classification()) ;
+    store("gsf_scE1x5"                        , gsfiter->scE1x5()) ;
+    store("gsf_scE5x5"                        , gsfiter->scE5x5()) ;
+    store("gsf_scE2x5Max"                     , gsfiter->scE2x5Max()) ;
+    store("gsf_eta"                           , gsfiter->eta()) ;
+    store("gsf_phi"                           , gsfiter->phi()) ;
+    store("gsf_theta"                         , gsfiter->theta());
+    store("gsf_px"                            , gsfiter->px()) ;
+    store("gsf_py"                            , gsfiter->py()) ;
+    store("gsf_pz"                            , gsfiter->pz()) ;
     store("gsf_deltaEtaSuperClusterTrackAtVtx", gsfiter->deltaEtaSuperClusterTrackAtVtx()) ;
     store("gsf_deltaPhiSuperClusterTrackAtVtx", gsfiter->deltaPhiSuperClusterTrackAtVtx()) ;
-    store("gsf_hadronicOverEm"      , gsfiter->hadronicOverEm()) ;
-    store("gsf_hcalDepth1OverEcal"  , gsfiter->hcalDepth1OverEcal()) ;
-    store("gsf_hcalDepth2OverEcal"  , gsfiter->hcalDepth2OverEcal()) ;
-    store("gsf_dr03TkSumPt"         , gsfiter->dr03TkSumPt()) ;
-    store("gsf_dr03EcalRecHitSumEt" , gsfiter->dr03EcalRecHitSumEt()) ;
-    store("gsf_dr03HcalDepth1TowerSumEt", gsfiter->dr03HcalDepth1TowerSumEt()) ;
-    store("gsf_dr03HcalDepth2TowerSumEt", gsfiter->dr03HcalDepth2TowerSumEt()) ;
-    store("gsf_charge"              , gsfiter->charge()) ;
-    store("gsf_sigmaIetaIeta"       , gsfiter->sigmaIetaIeta()) ;
-    store("gsf_ecaldrivenSeed"      , gsfiter->ecalDrivenSeed()   ) ;
-    store("gsf_trackerdrivenSeed"   , gsfiter->trackerDrivenSeed()) ;
-    store("gsf_eseffsixix"          , lazytool.eseffsixix(*cl_ref)) ;
-    store("gsf_eseffsiyiy"          , lazytool.eseffsiyiy(*cl_ref)) ;
-    store("gsf_eseffsirir"          , lazytool.eseffsirir(*cl_ref)) ;
-    store("gsf_preshowerEnergy"     , gsfiter->superCluster()->preshowerEnergy()) ;
-    store("gsf_isEB"                , gsfiter->isEB());
-    store("gsf_isEE"                , gsfiter->isEE());
+    store("gsf_hadronicOverEm"                , gsfiter->hadronicOverEm()) ;
+    store("gsf_hcalDepth1OverEcal"            , gsfiter->hcalDepth1OverEcal()) ;
+    store("gsf_hcalDepth2OverEcal"            , gsfiter->hcalDepth2OverEcal()) ;
+    store("gsf_dr03TkSumPt"                   , gsfiter->dr03TkSumPt()) ;
+    store("gsf_dr03EcalRecHitSumEt"           , gsfiter->dr03EcalRecHitSumEt()) ;
+    store("gsf_dr03HcalDepth1TowerSumEt"      , gsfiter->dr03HcalDepth1TowerSumEt()) ;
+    store("gsf_dr03HcalDepth2TowerSumEt"      , gsfiter->dr03HcalDepth2TowerSumEt()) ;
+    store("gsf_charge"                        , gsfiter->charge()) ;
+    store("gsf_sigmaIetaIeta"                 , gsfiter->sigmaIetaIeta()) ;
+    store("gsf_ecaldrivenSeed"                , gsfiter->ecalDrivenSeed()   ) ;
+    store("gsf_trackerdrivenSeed"             , gsfiter->trackerDrivenSeed()) ;
+    store("gsf_eseffsixix"                    , lazytool.eseffsixix(*cl_ref)) ;
+    store("gsf_eseffsiyiy"                    , lazytool.eseffsiyiy(*cl_ref)) ;
+    store("gsf_eseffsirir"                    , lazytool.eseffsirir(*cl_ref)) ;
+    store("gsf_preshowerEnergy"               , gsfiter->superCluster()->preshowerEnergy()) ;
+    store("gsf_isEB"                          , gsfiter->isEB());
+    store("gsf_isEE"                          , gsfiter->isEE());
     store("gsf_deltaEtaSeedClusterTrackAtCalo", gsfiter->deltaEtaSeedClusterTrackAtCalo());
     store("gsf_deltaPhiSeedClusterTrackAtCalo", gsfiter->deltaPhiSeedClusterTrackAtCalo());
-    store("gsf_ecalEnergy"          , gsfiter->ecalEnergy());
-    store("gsf_eSuperClusterOverP"  , gsfiter->eSuperClusterOverP());
-    store("gsf_dxy"                 , gsfiter->gsfTrack()->dxy());
-    store("gsf_dxy_beamSpot"        , gsfiter->gsfTrack()->dxy(beamspot));
-    store("gsf_dxy_firstPVtx"       , gsfiter->gsfTrack()->dxy(firstpvertex));
-    store("gsf_dxy_firstPVtxwithBS" , gsfiter->gsfTrack()->dxy(firstpvertexwithBS));
-    store("gsf_dxyError"            , gsfiter->gsfTrack()->dxyError());
-    store("gsf_dz"                  , gsfiter->gsfTrack()->dz());
-    store("gsf_dz_beamSpot"         , gsfiter->gsfTrack()->dz(beamspot));
-    store("gsf_dz_firstPVtx"        , gsfiter->gsfTrack()->dz(firstpvertex));
-    store("gsf_dz_firstPVtxwithBS"  , gsfiter->gsfTrack()->dz(firstpvertexwithBS));
-    store("gsf_dzError"             , gsfiter->gsfTrack()->dzError()); 
-    store("gsf_vz"                  , gsfiter->gsfTrack()->vz());
-    store("gsf_numberOfValidHits"   , gsfiter->gsfTrack()->numberOfValidHits());
-    store("gsf_nLostInnerHits"      , gsf_nLostInnerHits);
-    store("gsf_nLostOuterHits"      , gsf_nLostOuterHits);
-    store("gsf_convFlags"           , gsfiter->convFlags());
-    store("gsf_convDist"            , gsfiter->convDist());
-    store("gsf_convDcot"            , gsfiter->convDcot());
-    store("gsf_convRadius"          , gsfiter->convRadius());
-    store("gsf_fBrem"               , gsfiter->fbrem());
-    store("gsf_e1x5"                , gsfiter->e1x5()) ;
-    store("gsf_e2x5"                , gsfiter->e2x5Max()) ;
-    store("gsf_e5x5"                , gsfiter->e5x5()) ;
-    store("gsf_e1x3"                , lazytool.e1x3(*seed)) ;
+    store("gsf_ecalEnergy"                    , gsfiter->ecalEnergy());
+    store("gsf_eSuperClusterOverP"            , gsfiter->eSuperClusterOverP());
+    store("gsf_dxy"                           , gsfiter->gsfTrack()->dxy());
+    store("gsf_dxy_beamSpot"                  , gsfiter->gsfTrack()->dxy(beamspot));
+    store("gsf_dxy_firstPVtx"                 , gsfiter->gsfTrack()->dxy(firstpvertex));
+    store("gsf_dxy_firstPVtxwithBS"           , gsfiter->gsfTrack()->dxy(firstpvertexwithBS));
+    store("gsf_dxyError"                      , gsfiter->gsfTrack()->dxyError());
+    store("gsf_dz"                            , gsfiter->gsfTrack()->dz());
+    store("gsf_dz_beamSpot"                   , gsfiter->gsfTrack()->dz(beamspot));
+    store("gsf_dz_firstPVtx"                  , gsfiter->gsfTrack()->dz(firstpvertex));
+    store("gsf_dz_firstPVtxwithBS"            , gsfiter->gsfTrack()->dz(firstpvertexwithBS));
+    store("gsf_dzError"                       , gsfiter->gsfTrack()->dzError()); 
+    store("gsf_vz"                            , gsfiter->gsfTrack()->vz());
+    store("gsf_numberOfValidHits"             , gsfiter->gsfTrack()->numberOfValidHits());
+    store("gsf_nLostInnerHits"                , gsf_nLostInnerHits);
+    store("gsf_nLostOuterHits"                , gsf_nLostOuterHits);
+    store("gsf_convFlags"                     , gsfiter->convFlags());
+    store("gsf_convDist"                      , gsfiter->convDist());
+    store("gsf_convDcot"                      , gsfiter->convDcot());
+    store("gsf_convRadius"                    , gsfiter->convRadius());
+    store("gsf_fBrem"                         , gsfiter->fbrem());
+    store("gsf_e1x5"                          , gsfiter->e1x5()) ;
+    store("gsf_e2x5"                          , gsfiter->e2x5Max()) ;
+    store("gsf_e5x5"                          , gsfiter->e5x5()) ;
+    store("gsf_e1x3"                          , lazytool.e1x3(*seed)) ;
     
     //http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/DataFormats/TrackReco/interface/HitPattern.h?revision=1.32&view=markup
     reco::HitPattern kfHitPattern = gsfiter->gsfTrack()->hitPattern();
@@ -315,6 +344,90 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
     store("gsf_crystal_ietaorix", gsf_crystal_ietaorix) ;
     store("gsf_crystal_iphioriy", gsf_crystal_iphioriy) ;
     store("gsf_crystal_eta"     , gsf_crystal_eta     ) ;
+    
+    //////////////////////////////////////////////////////////////////////////////////////
+    //                                 Trigger matching                                 //
+    //////////////////////////////////////////////////////////////////////////////////////
+    const double barrelEnd       = 1.4791;
+    const double regionEtaSizeEB = 0.522 ;
+    const double regionEtaSizeEE = 1.0   ;
+    const double regionPhiSize   = 1.044 ;
+    
+    std::string branchPrefix = "gsfMatch_" ;
+    std::vector<std::string> filterNames ;
+    filterNames.push_back("hltL1sL1SingleEG12") ;
+    filterNames.push_back("hltL1sL1Mu3p5EG12" ) ;
+    filterNames.push_back("hltL1sL1SingleEG22") ;
+    
+    // L1 hltL1sL1SingleEG12
+    // Careful that L1 triggers only have discrete eta phi. Need to be extremely loose. 
+    // See here: http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/SHarper/SHNtupliser/src/SHTrigInfo.cc?revision=1.5&view=markup&pathrev=HEAD
+    // It is important to specify the right HLT process for the filter, not doing this is a common bug
+    for(unsigned int iFilter=0 ; iFilter<filterNames.size() ; iFilter++){
+      bool gsfMatch = false ;
+      int filterIndex = trigEvent->filterIndex(edm::InputTag(filterNames.at(iFilter),"",trigEventTag.process())); 
+      if(filterIndex<trigEvent->sizeFilters()){ 
+        const trigger::Keys& trigKeys = trigEvent->filterKeys(filterIndex); 
+        const trigger::TriggerObjectCollection & trigObjColl(trigEvent->getObjects());
+        // Now loop of the trigger objects passing filter
+        for(trigger::Keys::const_iterator keyIt=trigKeys.begin();keyIt!=trigKeys.end();++keyIt){ 
+          const trigger::TriggerObject& obj = trigObjColl[*keyIt];
+          // Do what you want with the trigger objects, you have
+          // eta,phi,pt,mass,p,px,py,pz,et,energy accessors
+          
+          float objeta = obj.eta(); 
+          float objphi = obj.phi();
+          
+          double etaBinLow  = 0.0 ;
+          double etaBinHigh = 0.0 ;
+          
+          if(fabs(objeta) < barrelEnd){
+            etaBinLow  = objeta - regionEtaSizeEB/2.;
+            etaBinHigh = etaBinLow + regionEtaSizeEB;
+          }
+          else{
+            etaBinLow  = objeta - regionEtaSizeEE/2.;
+            etaBinHigh = etaBinLow + regionEtaSizeEE;
+          }
+          
+          float deltaPhi = reco::deltaPhi(gsfiter->phi(),objphi);
+          
+          if(gsfiter->eta() < etaBinHigh && gsfiter->eta() > etaBinLow &&   deltaPhi <regionPhiSize/2. )  {
+            gsfMatch = true ;
+            break ;
+          }
+        }
+      }
+      std::string branchName = branchPrefix + filterNames.at(iFilter) ;
+      store(branchName, gsfMatch) ;
+    }//end filter size check
+    
+    filterNames.clear() ;
+    filterNames.push_back("hltEle33CaloIdLPixelMatchFilter") ;
+    filterNames.push_back("hltDiEle33CaloIdLGsfTrkIdVLDPhiDoubleFilter") ;
+    filterNames.push_back("hltEle17TightIdLooseIsoEle8TightIdLooseIsoTrackIsoFilter") ;
+    filterNames.push_back("hltEle17TightIdLooseIsoEle8TightIdLooseIsoTrackIsoDoubleFilter") ;
+    filterNames.push_back("hltEle32CaloIdTCaloIsoTTrkIdTTrkIsoTSC17TrackIsoFilter") ;
+    filterNames.push_back("hltEle27WP80TrackIsoFilter") ;
+    filterNames.push_back("hltMu22Photon22CaloIdLHEFilter") ;
+    for(unsigned iFilter=0 ; iFilter<filterNames.size() ; iFilter++){
+      bool gsfMatch = false ;
+      // It is important to specify the right HLT process for the filter, not doing this is a common bug
+      trigger::size_type filterIndex = trigEvent->filterIndex(edm::InputTag(filterNames.at(iFilter),"",trigEventTag.process())); 
+      if(filterIndex<trigEvent->sizeFilters()){ 
+        const trigger::Keys& trigKeys = trigEvent->filterKeys(filterIndex); 
+        const trigger::TriggerObjectCollection & trigObjColl(trigEvent->getObjects());
+        // Now loop over the trigger objects passing filter
+        for(trigger::Keys::const_iterator keyIt = trigKeys.begin(); keyIt != trigKeys.end(); ++keyIt) { 
+          const trigger::TriggerObject& obj = trigObjColl[*keyIt];
+          if(deltaR(gsfiter->eta(),gsfiter->phi(),obj.eta(), obj.phi())<0.5){
+            gsfMatch = true ;
+          }
+        }
+      }//end filter size check
+      std::string branchName = branchPrefix + filterNames.at(iFilter) ;
+      store(branchName, gsfMatch) ;
+    }
   }
 }
 
