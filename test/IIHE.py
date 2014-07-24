@@ -18,7 +18,8 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.source = cms.Source("PoolSource",fileNames = readFiles, secondaryFileNames = secFiles)
 
 readFiles.extend( [
-    'file:/tmp/Spring14miniaod__ZPrimePSIToEEMuMu_M-3000_13TeV_pythia8__MINIAODSIM__PU20bx25_POSTLS170_V5-v1__403D9883-C407-E411-80FA-003048CF6050.root'
+    'file:/tmp/aidan/ZPrimePSIToEEMuMu_M-3000_13TeV_pythia8__AODSIM__PU20bx25_POSTLS170_V5-v1__067C0233-6ED1-E311-8C07-0025902008EC.root'
+    #'file:/tmp/Spring14miniaod__ZPrimePSIToEEMuMu_M-3000_13TeV_pythia8__MINIAODSIM__PU20bx25_POSTLS170_V5-v1__403D9883-C407-E411-80FA-003048CF6050.root'
 ])
 
 # PFMET Type 1 (JEC) correction
@@ -91,9 +92,11 @@ process.load("RecoJets.JetProducers.kt4PFJets_cfi")
 process.kt6PFJets = process.kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True )
 process.kt6PFJets.Rho_EtaMax = cms.double(2.5)
 
-from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso
-process.eleIsoSequence = setupPFElectronIso(process, 'gedGsfElectrons')
-#process.muIsoSequence = setupPFMuonIso(process, 'muons')
+from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso, setupPFPhotonIso
+process.eleIsoSequence = cms.Sequence(setupPFElectronIso(process, 'gedGsfElectrons'))
+#process.muIsoSequence  = cms.Sequence(    setupPFMuonIso(process, 'muons'          ))
+#process.phoIsoSequence = cms.Sequence(  setupPFPhotonIso(process, 'photons'        ))
+
 
 process.load("UserCode.IIHETree.IIHETree_cfi")
 process.otherStuff = cms.Sequence( process.kt6PFJets )
@@ -103,4 +106,5 @@ process.load('RecoMET.METFilters.eeBadScFilter_cfi')
 process.MessageLogger.suppressError = cms.untracked.vstring ('ecalLaserCorrFilter')
 
 process.p1 = cms.Path(process.otherStuff * process.hltPhysicsDeclared * process.eeBadScFilter * process.ecalLaserCorrFilter * process.noscraping * process.primaryVertexFilter * process.pfParticleSelectionSequence * process.eleIsoSequence * process.producePFMETCorrections * process.IIHEAnalysis)
+
 
