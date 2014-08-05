@@ -43,6 +43,7 @@ IIHEModuleHEEP::~IIHEModuleHEEP(){}
 
 // ------------ method called once each job just before starting event loop  ------------
 void IIHEModuleHEEP::beginJob(){
+  setBranchType(kVectorBool) ;
   addBranch("HEEP_gsfpass_ET"             ) ;
   addBranch("HEEP_gsfpass_PT"             ) ;
   addBranch("HEEP_gsfpass_DETETA"         ) ;
@@ -63,6 +64,7 @@ void IIHEModuleHEEP::beginJob(){
   addBranch("HEEP_gsfpass_ID"             ) ;
   addBranch("HEEP_gsfpass_ISO"            ) ;
   addBranch("HEEP_gsfpass_HEEP"           ) ;
+  addBranch("HEEP_nHEEP", kInt);
 }
 
 // ------------ method called to for each event  ------------
@@ -181,6 +183,7 @@ void IIHEModuleHEEP::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     store("HEEP_gsfpass_HEEP"           , gsfpass_HEEP            ) ;
     if(gsfpass_HEEP) ++nHeepEle ;
   }
+  store("HEEP_nHEEP",nHeepEle);
 }
 
 void IIHEModuleHEEP::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){}
