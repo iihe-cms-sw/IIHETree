@@ -96,7 +96,7 @@ void IIHEModuleGedGsfElectron::beginJob(){
   addBranch("gsf_e1x5") ;
   addBranch("gsf_e2x5") ;
   addBranch("gsf_e5x5") ;
-  addBranch("gsf_e1x3") ;
+  addBranch("gsf_hitsinfo", kVectorVectorInt) ;
   
   
   std::string branchPrefix = "gsfMatch_" ;

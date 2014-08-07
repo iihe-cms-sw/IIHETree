@@ -74,7 +74,7 @@ void IIHEModuleHEEP::beginJob(){
   addBranch("HEEP_eseffsirir") ;
   addBranch("HEEP_preshowerEnergy") ;
   
-  addBranch("gsf_e1x3") ;
+  addBranch("HEEP_e1x3") ;
   
   // Crystal information
   setBranchType(kVectorVectorFloat) ;
@@ -85,9 +85,6 @@ void IIHEModuleHEEP::beginJob(){
   setBranchType(kVectorVectorInt) ;
   addBranch("HEEP_crystal_ietaorix") ;
   addBranch("HEEP_crystal_iphioriy") ;
-  addBranch("HEEP_hitsinfo") ;
-  
-  
 }
 
 // ------------ method called to for each event  ------------
@@ -227,25 +224,21 @@ void IIHEModuleHEEP::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     store("HEEP_gsfpass_ISO"            , gsfpass_ISO             ) ;
     store("HEEP_gsfpass_HEEP"           , gsfpass_HEEP            ) ;
     
-    
     // Preshower information
     // Get the preshower hits
     double x = gsfiter->superCluster()->x() ;
     double y = gsfiter->superCluster()->y() ;
     double z = gsfiter->superCluster()->z() ;
     store("HEEP_eshitsixix", lazytool.getESHits(x, y, z, lazytool.rechits_map_, geometry, topology_p, 0, 1)) ;
-    store("HHEP_eshitsiyiy", lazytool.getESHits(x, y, z, lazytool.rechits_map_, geometry, topology_p, 0, 2)) ;
+    store("HEEP_eshitsiyiy", lazytool.getESHits(x, y, z, lazytool.rechits_map_, geometry, topology_p, 0, 2)) ;
     store("HEEP_preshowerEnergy", gsfiter->superCluster()->preshowerEnergy()) ;
     
-    store("HEEP_eseffsixix"                    , lazytool.eseffsixix(*cl_ref)) ;
-    store("HEEP_eseffsiyiy"                    , lazytool.eseffsiyiy(*cl_ref)) ;
-    store("HEEP_eseffsirir"                    , lazytool.eseffsirir(*cl_ref)) ;
-    store("HEEP_e1x3"                          , lazytool.e1x3(*seed)) ;
+    store("HEEP_eseffsixix", lazytool.eseffsixix(*cl_ref)) ;
+    store("HEEP_eseffsiyiy", lazytool.eseffsiyiy(*cl_ref)) ;
+    store("HEEP_eseffsirir", lazytool.eseffsirir(*cl_ref)) ;
+    store("HEEP_e1x3"      , lazytool.e1x3(*seed)        ) ;
     
-    
-    
-    
-        // Try to add info about rechit in the SC 
+    // Try to add info about rechit in the SC 
     // Strongly inspired from : http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/DaveC/src/printPhoton.cc
     //Crystal variables
     std::vector<float> gsf_crystal_energy  ;
@@ -328,7 +321,6 @@ void IIHEModuleHEEP::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     store("HEEP_crystal_ietaorix", gsf_crystal_ietaorix) ;
     store("HEEP_crystal_iphioriy", gsf_crystal_iphioriy) ;
     store("HEEP_crystal_eta"     , gsf_crystal_eta     ) ;
-    
     
     if(gsfpass_HEEP) ++nHeepEle ;
   }
