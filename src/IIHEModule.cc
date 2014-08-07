@@ -17,14 +17,16 @@ bool IIHEModule::addBranch(std::string name){
   return result ;
 }
 
-void IIHEModule::store(std::string name, bool   value){ parent_->store(name, value) ; }
-void IIHEModule::store(std::string name, double value){ parent_->store(name, value) ; }
-void IIHEModule::store(std::string name, float  value){ parent_->store(name, value) ; }
-void IIHEModule::store(std::string name, int    value){ parent_->store(name, value) ; }
-void IIHEModule::store(std::string name, std::vector<bool>   value){ parent_->store(name, value) ; }
-void IIHEModule::store(std::string name, std::vector<double> value){ parent_->store(name, value) ; }
-void IIHEModule::store(std::string name, std::vector<float>  value){ parent_->store(name, value) ; }
-void IIHEModule::store(std::string name, std::vector<int>    value){ parent_->store(name, value) ; }
+void IIHEModule::store(std::string name, bool         value){ parent_->store(name, value) ; }
+void IIHEModule::store(std::string name, double       value){ parent_->store(name, value) ; }
+void IIHEModule::store(std::string name, float        value){ parent_->store(name, value) ; }
+void IIHEModule::store(std::string name, int          value){ parent_->store(name, value) ; }
+void IIHEModule::store(std::string name, unsigned int value){ parent_->store(name, value) ; }
+void IIHEModule::store(std::string name, std::vector<bool>         value){ parent_->store(name, value) ; }
+void IIHEModule::store(std::string name, std::vector<double>       value){ parent_->store(name, value) ; }
+void IIHEModule::store(std::string name, std::vector<float>        value){ parent_->store(name, value) ; }
+void IIHEModule::store(std::string name, std::vector<int>          value){ parent_->store(name, value) ; }
+void IIHEModule::store(std::string name, std::vector<unsigned int> value){ parent_->store(name, value) ; }
 void IIHEModule::setBranchType(int type){ parent_->setBranchType(type) ; }
 
 // ------------ method called once each job just before starting event loop  ------------

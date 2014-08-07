@@ -22,7 +22,7 @@ IIHEModuleMuon::~IIHEModuleMuon(){}
 
 // ------------ method called once each job just before starting event loop  ------------
 void IIHEModuleMuon::beginJob(){
-  addBranch("muon_n", kInt) ;
+  addBranch("muon_n", kUInt) ;
   addBranch("muon_charge", kVectorInt) ;
   setBranchType(kVectorFloat) ;
   addBranch("muon_qoverp") ;
@@ -64,6 +64,7 @@ void IIHEModuleMuon::beginJob(){
   addBranch("muon_validFraction", kVectorDouble) ;
   
   setBranchType(kVectorBool) ;
+  addBranch("muon_isGlobalMuon") ;
   addBranch("muon_isTrackerMuon") ;
   addBranch("muon_isPFMuon") ;
   addBranch("muon_isPFIsolationValid") ;
@@ -206,7 +207,7 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   edm::Handle<reco::MuonCollection> muonCollection;
   iEvent.getByLabel("muons",muonCollection);
   const reco::MuonCollection* muons = muonCollection.product();
-  store("muon_n", (int)muons->size()) ;
+  store("muon_n", (unsigned int)(muons->size())) ;
   for(reco::MuonCollection::const_iterator muIt = muons->begin(); muIt != muons->end(); ++muIt) {
     if (muIt->isGlobalMuon()) {
       // get TeV optimized track
@@ -262,6 +263,7 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       store("muon_numberOfMatchedStations"         , muIt->numberOfMatchedStations()                                  ) ; 
       store("muon_validFraction"                   , muIt->globalTrack()->validFraction()                             ) ; 
              
+      store("muon_isGlobalMuon"                    , muIt->isGlobalMuon()                                             ) ;        
       store("muon_isTrackerMuon"                   , muIt->isTrackerMuon()                                            ) ;        
       store("muon_isPFMuon"                        , muIt->isPFMuon()                                                 ) ;        
       store("muon_isPFIsolationValid"              , muIt->isPFIsolationValid()                                       ) ;        

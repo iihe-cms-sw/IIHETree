@@ -11,13 +11,12 @@ using namespace std ;
 using namespace reco;
 using namespace edm ;
 
-IIHEModuleVertex::IIHEModuleVertex(const edm::ParameterSet& iConfig): IIHEModule(iConfig){
-}
+IIHEModuleVertex::IIHEModuleVertex(const edm::ParameterSet& iConfig): IIHEModule(iConfig){}
 IIHEModuleVertex::~IIHEModuleVertex(){}
 
 // ------------ method called once each job just before starting event loop  ------------
 void IIHEModuleVertex::beginJob(){
-  addBranch("pv_n", kInt) ;
+  addBranch("pv_n", kUInt) ;
   setBranchType(kVectorFloat) ;
   addBranch("pv_x") ;
   addBranch("pv_y") ;
@@ -60,7 +59,7 @@ void IIHEModuleVertex::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     firstpvertexwithBS.SetXYZ(firstpv->x(),firstpv->y(),firstpv->z());
   }
 
-  store("pv_n", (int)(pvcoll->size())) ;
+  store("pv_n", (unsigned int) pvcoll->size()) ;
   for(reco::VertexCollection::const_iterator pvIt = pvcoll->begin(); pvIt != pvcoll->end(); ++pvIt){
     store("pv_x"             , pvIt->x()) ;
     store("pv_y"             , pvIt->y()) ;   

@@ -40,7 +40,7 @@ IIHEModuleGedGsfElectron::~IIHEModuleGedGsfElectron(){}
 
 // ------------ method called once each job just before starting event loop  ------------
 void IIHEModuleGedGsfElectron::beginJob(){
-  addBranch("gsf_n", kInt) ;
+  addBranch("gsf_n", kUInt) ;
   addBranch("gsf_classification", kVectorInt) ;
   setBranchType(kVectorFloat) ;
   addBranch("gsf_energy") ;
@@ -144,7 +144,7 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
   edm::Handle<trigger::TriggerEvent> trigEvent; 
   iEvent.getByLabel(trigEventTag,trigEvent);
   
-  store("gsf_n", (int)gsfelectrons.size()) ;
+  store("gsf_n", (unsigned int) gsfelectrons.size()) ;
   for(reco::GsfElectronCollection::const_iterator gsfiter = gsfelectrons.begin() ; gsfiter!=gsfelectrons.end() ; ++gsfiter){
     
     //Fill the gsf related variables

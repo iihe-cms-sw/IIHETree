@@ -64,7 +64,7 @@ void IIHEModuleHEEP::beginJob(){
   addBranch("HEEP_gsfpass_ID"             ) ;
   addBranch("HEEP_gsfpass_ISO"            ) ;
   addBranch("HEEP_gsfpass_HEEP"           ) ;
-  addBranch("HEEP_nHEEP", kInt);
+  addBranch("HEEP_nHEEP", kUInt);
   
   
   // Preshower information
@@ -129,7 +129,7 @@ void IIHEModuleHEEP::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   iEvent.getByLabel("reducedEcalRecHitsEE",EEhits);
   EcalClusterLazyTools lazytool(iEvent,iSetup,InputTag("reducedEcalRecHitsEB"),InputTag("reducedEcalRecHitsEE"),InputTag("reducedEcalRecHitsES"));
   
-  int nHeepEle = 0 ;
+  unsigned int nHeepEle = 0 ;
   for(reco::GsfElectronCollection::const_iterator gsfiter = gsfelectrons.begin() ; gsfiter!=gsfelectrons.end() ; ++gsfiter){
     // Required for preshower variables
     reco::SuperClusterRef cl_ref = gsfiter->superCluster();

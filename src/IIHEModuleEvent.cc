@@ -13,7 +13,7 @@ IIHEModuleEvent::~IIHEModuleEvent(){}
 
 // ------------ method called once each job just before starting event loop  ------------
 void IIHEModuleEvent::beginJob(){
-  setBranchType(kInt) ;
+  setBranchType(kUInt) ;
   addBranch("ev_event"          ) ;
   addBranch("ev_run"            ) ;
   addBranch("ev_luminosityBlock") ;
@@ -21,9 +21,9 @@ void IIHEModuleEvent::beginJob(){
 
 // ------------ method called to for each event  ------------
 void IIHEModuleEvent::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
-  store("ev_event"          , (int)(iEvent.id().run()            )) ;
-  store("ev_run"            , (int)(iEvent.id().event()          )) ;
-  store("ev_luminosityBlock", (int)(iEvent.id().luminosityBlock())) ;
+  store("ev_event"          , ((unsigned int) (iEvent.id().event()          ))) ;
+  store("ev_run"            , ((unsigned int) (iEvent.id().run()            ))) ;
+  store("ev_luminosityBlock", ((unsigned int) (iEvent.id().luminosityBlock()))) ;
 }
 
 void IIHEModuleEvent::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){}

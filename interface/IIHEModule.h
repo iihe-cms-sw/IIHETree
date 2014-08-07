@@ -53,14 +53,16 @@ public:
   bool addBranch(std::string,int);
   void config(IIHEAnalysis*);
   void begin();
-  void store(std::string, bool  );
-  void store(std::string, double);
-  void store(std::string, float );
-  void store(std::string, int   );
-  void store(std::string, std::vector<bool>  );
-  void store(std::string, std::vector<double>);
-  void store(std::string, std::vector<float> );
-  void store(std::string, std::vector<int>   );
+  void store(std::string, bool        );
+  void store(std::string, double      );
+  void store(std::string, float       );
+  void store(std::string, int         );
+  void store(std::string, unsigned int);
+  void store(std::string, std::vector<bool        >);
+  void store(std::string, std::vector<double      >);
+  void store(std::string, std::vector<float       >);
+  void store(std::string, std::vector<int         >);
+  void store(std::string, std::vector<unsigned int>);
   void setBranchType(int);
   
   void   pubBeginJob(){   beginJob() ; } ;

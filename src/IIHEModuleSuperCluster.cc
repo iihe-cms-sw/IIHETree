@@ -27,6 +27,7 @@ IIHEModuleSuperCluster::~IIHEModuleSuperCluster(){}
 
 // ------------ method called once each job just before starting event loop  ------------
 void IIHEModuleSuperCluster::beginJob(){
+  addBranch("sc_n",kUInt) ;
   setBranchType(kVectorFloat) ;
   addBranch("sc_energy") ;
   addBranch("sc_eta") ;
@@ -90,7 +91,7 @@ void IIHEModuleSuperCluster::analyze(const edm::Event& iEvent, const edm::EventS
     break ;
   }
   
-  
+  store("sc_n", (unsigned int) sclusters.size()) ;
   for(unsigned int i_sc=0 ; i_sc<sclusters.size() ; i_sc++){
     reco::SuperCluster* sc = (reco::SuperCluster*)sclusters.at(i_sc) ;
     float sc_energy = sc->rawEnergy()+sc->preshowerEnergy() ;

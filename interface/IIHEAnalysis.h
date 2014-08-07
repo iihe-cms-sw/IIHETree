@@ -39,14 +39,17 @@ enum variableTypes{
   kDouble,
   kFloat,
   kInt,
+  kUInt,
   kVectorBool,
   kVectorDouble,
   kVectorFloat,
   kVectorInt,
+  kVectorUInt,
   kVectorVectorBool,
   kVectorVectorDouble,
   kVectorVectorFloat,
-  kVectorVectorInt
+  kVectorVectorInt,
+  kVectorVectorUInt
 };
 
 
@@ -69,10 +72,11 @@ public:
   bool store(std::string, float   );
   bool store(std::string, int     );
   bool store(std::string, unsigned);
-  bool store(std::string, std::vector<bool>  );
-  bool store(std::string, std::vector<double>);
-  bool store(std::string, std::vector<float >);
-  bool store(std::string, std::vector<int   >);
+  bool store(std::string, std::vector<bool        >);
+  bool store(std::string, std::vector<double      >);
+  bool store(std::string, std::vector<float       >);
+  bool store(std::string, std::vector<int         >);
+  bool store(std::string, std::vector<unsigned int>);
   
   bool addBranch(std::string);
   bool addBranch(std::string,int);
@@ -98,17 +102,20 @@ private:
   std::vector<BranchWrapperDVV* > vars_DVV_;
   std::vector<BranchWrapperFVV* > vars_FVV_;
   std::vector<BranchWrapperIVV* > vars_IVV_;
+  std::vector<BranchWrapperUVV* > vars_UVV_;
   std::vector<BranchWrapperBV*  > vars_BV_ ;
   std::vector<BranchWrapperDV*  > vars_DV_ ;
   std::vector<BranchWrapperFV*  > vars_FV_ ;
   std::vector<BranchWrapperIV*  > vars_IV_ ;
+  std::vector<BranchWrapperUV*  > vars_UV_ ;
   std::vector<BranchWrapperB*   > vars_B_  ;
   std::vector<BranchWrapperD*   > vars_D_  ;
   std::vector<BranchWrapperF*   > vars_F_  ;
   std::vector<BranchWrapperI*   > vars_I_  ;
+  std::vector<BranchWrapperU*   > vars_U_  ;
   
   int currentVarType_ ;
-  std::vector< std::pair<std::string, int> > listOfBranches_ ;
+  std::vector< std::pair<std::string, int> > listOfBranches_  ;
   std::vector< std::pair<std::string, int> > missingBranches_ ;
   
   bool debug_;

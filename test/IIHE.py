@@ -18,8 +18,8 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.source = cms.Source("PoolSource",fileNames = readFiles, secondaryFileNames = secFiles)
 
 readFiles.extend( [
-    'file:/tmp/aidan/ZPrimePSIToEEMuMu_M-3000_13TeV_pythia8__AODSIM__PU20bx25_POSTLS170_V5-v1__067C0233-6ED1-E311-8C07-0025902008EC.root'
-    #'file:/tmp/Spring14miniaod__ZPrimePSIToEEMuMu_M-3000_13TeV_pythia8__MINIAODSIM__PU20bx25_POSTLS170_V5-v1__403D9883-C407-E411-80FA-003048CF6050.root'
+    #'file:/tmp/Spring14dr__ZPrimePSIToEEMuMu_M-3000_13TeV_pythia8__AODSIM__PU20bx25_POSTLS170_V5-v1__067C0233-6ED1-E311-8C07-0025902008EC.root'
+    'file:/afs/cern.ch/user/a/aidan/public/Spring14dr__ZPrimePSIToEEMuMu_M-3000_13TeV_pythia8__AODSIM__PU20bx25_POSTLS170_V5-v1__067C0233-6ED1-E311-8C07-0025902008EC.root'
 ])
 
 # PFMET Type 1 (JEC) correction

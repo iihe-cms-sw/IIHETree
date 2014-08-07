@@ -100,6 +100,26 @@ void BranchWrapperI::beginEvent(){
 }
 void BranchWrapperI::endEvent(){}
 
+// unsigned int
+BranchWrapperU::BranchWrapperU(std::string name): BranchWrapperBase(name){
+  value_ = 999 ;
+}
+int BranchWrapperU::config(TTree* tree){
+  if(!tree) return 1 ;
+  if(tree->GetBranch(name().c_str())) return 2 ;
+  tree->Branch(name().c_str(), &value_, Form("%s/i", name().c_str())) ;
+  return 0 ;
+}
+void BranchWrapperU::set(unsigned int value){
+  value_ = value ;
+  fill() ;
+}
+void BranchWrapperU::beginEvent(){
+  value_ = 999 ;
+  unfill() ;
+}
+void BranchWrapperU::endEvent(){}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 //                                    Vector classes                                    //
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -178,6 +198,25 @@ void BranchWrapperIV::beginEvent(){
   values_.clear() ;
 }
 void BranchWrapperIV::endEvent(){}
+
+// Vector of unsigned ints
+BranchWrapperUV::BranchWrapperUV(std::string name): BranchWrapperBase(name){}
+BranchWrapperUV::~BranchWrapperUV(){}
+int BranchWrapperUV::config(TTree* tree){
+  if(!tree) return 1 ;
+  if(tree->GetBranch(name().c_str())) return 2 ;
+  tree->Branch(name().c_str(), &values_) ;
+  return 0 ;
+}
+void BranchWrapperUV::push(unsigned int value){
+  values_.push_back(value) ;
+  fill() ;
+}
+void BranchWrapperUV::beginEvent(){
+  unfill();
+  values_.clear() ;
+}
+void BranchWrapperUV::endEvent(){}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -259,6 +298,25 @@ void BranchWrapperIVV::beginEvent(){
   values_.clear() ;
 }
 void BranchWrapperIVV::endEvent(){}
+
+// Vector of vector of unsigned ints
+BranchWrapperUVV::BranchWrapperUVV(std::string name): BranchWrapperBase(name){}
+BranchWrapperUVV::~BranchWrapperUVV(){}
+int BranchWrapperUVV::config(TTree* tree){
+  if(!tree) return 1 ;
+  if(tree->GetBranch(name().c_str())) return 2 ;
+  tree->Branch(name().c_str(), &values_) ;
+  return 0 ;
+}
+void BranchWrapperUVV::push(std::vector<unsigned int> value){
+  values_.push_back(value) ;
+  fill() ;
+}
+void BranchWrapperUVV::beginEvent(){
+  unfill() ;
+  values_.clear() ;
+}
+void BranchWrapperUVV::endEvent(){}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //                           Templated classes (not used, yet)                          //
