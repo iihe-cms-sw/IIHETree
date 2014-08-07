@@ -119,10 +119,13 @@ private:
   std::vector< std::pair<std::string, int> > missingBranches_ ;
   
   bool debug_;
+  std::string git_hash_  ;
+  std::string globalTag_ ;
 
   // config parameters -------------------------------
-  TFile* myFile ;
-  TTree* mytree ;
+  TFile* mainFile_ ;
+  TTree* dataTree_ ;
+  TTree* metaTree_ ;
   
   std::vector<IIHEModule*> childModules_;
 };

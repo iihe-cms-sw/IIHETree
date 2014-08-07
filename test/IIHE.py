@@ -36,6 +36,7 @@ for arg in sys.argv:
 if noDataset:
     dataset = 'none'
 
+globalTag = 'GR_R_70_V1::All'
 process.GlobalTag.globaltag = 'GR_R_70_V1::All'
 print "Global Tag is ", process.GlobalTag.globaltag
 
@@ -99,6 +100,8 @@ process.eleIsoSequence = cms.Sequence(setupPFElectronIso(process, 'gedGsfElectro
 
 
 process.load("UserCode.IIHETree.IIHETree_cfi")
+process.IIHEAnalysis.globalTag = cms.string(globalTag)
+
 process.otherStuff = cms.Sequence( process.kt6PFJets )
 
 process.load("RecoMET.METFilters.ecalLaserCorrFilter_cfi")

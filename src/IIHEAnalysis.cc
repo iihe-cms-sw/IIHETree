@@ -30,6 +30,8 @@ using namespace edm ;
 IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig){
   currentVarType_ = -1 ;
   debug_ = iConfig.getParameter<bool>("debug") ;
+  git_hash_  = iConfig.getParameter<string>("git_hash" ) ;
+  globalTag_ = iConfig.getParameter<string>("globalTag") ;
   beamSpotLabel_ = consumes<BeamSpot>(iConfig.getParameter<InputTag>("beamSpot")) ;
   
   childModules_.push_back(new IIHEModuleEvent(iConfig)         ) ;
@@ -159,8 +161,12 @@ bool IIHEAnalysis::addBranch(std::string name, int type){
 // ------------ method called once each job just before starting event loop  -------------
 void IIHEAnalysis::beginJob(){
   edm::Service<TFileService> fs;
-  myFile = new TFile("outfile.root", "RECREATE") ;
-  mytree = new TTree("IIHEAnalysis", "IIHEAnalysis") ;
+  mainFile_ = new TFile("outfile.root", "RECREATE") ;
+  dataTree_ = new TTree("IIHEAnalysis", "IIHEAnalysis") ;
+  metaTree_ = new TTree("meta", "Information about globalTag etc") ;
+  metaTree_->Branch("git_hash" , &git_hash_ ) ;
+  metaTree_->Branch("globalTag", &globalTag_) ;
+  metaTree_->Fill() ;
   for(unsigned int i=0 ; i<childModules_.size() ; i++){
     childModules_.at(i)->config(this) ;
     childModules_.at(i)->pubBeginJob() ;
@@ -170,7 +176,7 @@ void IIHEAnalysis::beginJob(){
 
 void IIHEAnalysis::configureBranches(){
   for(unsigned int i=0 ; i<allVars_.size() ; i++){
-    allVars_.at(i)->config(mytree) ;
+    allVars_.at(i)->config(dataTree_) ;
   }
   return ;
 }
@@ -182,7 +188,7 @@ void IIHEAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   for(unsigned i=0 ; i<childModules_.size() ; i++){
     childModules_.at(i)->pubAnalyze(iEvent, iSetup) ;
   }
-  mytree->Fill() ;
+  dataTree_->Fill() ;
   endEvent() ;
 }
 
@@ -215,9 +221,9 @@ IIHEAnalysis::endJob(){
     }
   }
   
-  if(myFile){
-    myFile->Write() ;
-    delete myFile ;
+  if(mainFile_){
+    mainFile_->Write() ;
+    delete mainFile_ ;
   }
 }
 
