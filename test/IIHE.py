@@ -18,8 +18,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.source = cms.Source("PoolSource",fileNames = readFiles, secondaryFileNames = secFiles)
 
 readFiles.extend( [
-    #'file:/tmp/Spring14dr__ZPrimePSIToEEMuMu_M-3000_13TeV_pythia8__AODSIM__PU20bx25_POSTLS170_V5-v1__067C0233-6ED1-E311-8C07-0025902008EC.root'
-    'file:/afs/cern.ch/user/a/aidan/public/Spring14dr__ZPrimePSIToEEMuMu_M-3000_13TeV_pythia8__AODSIM__PU20bx25_POSTLS170_V5-v1__067C0233-6ED1-E311-8C07-0025902008EC.root'
+    'file:/user/aidan/public/Spring14dr__ZPrimePSIToEEMuMu_M-3000_13TeV_pythia8__AODSIM__PU20bx25_POSTLS170_V5-v1__067C0233-6ED1-E311-8C07-0025902008EC.root'
 ])
 
 # PFMET Type 1 (JEC) correction
@@ -101,6 +100,11 @@ process.eleIsoSequence = cms.Sequence(setupPFElectronIso(process, 'gedGsfElectro
 
 process.load("UserCode.IIHETree.IIHETree_cfi")
 process.IIHEAnalysis.globalTag = cms.string(globalTag)
+process.IIHEAnalysis.MCTruth_ptThreshold = cms.untracked.double(10.0)
+process.IIHEAnalysis.MCTruth_mThreshold  = cms.untracked.double(20.0)
+process.IIHEAnalysis.photonCollection    = cms.InputTag('photons'        )
+process.IIHEAnalysis.electronCollection  = cms.InputTag('gedGsfElectrons')
+process.IIHEAnalysis.muonCollection      = cms.InputTag('muons'          )
 
 process.otherStuff = cms.Sequence( process.kt6PFJets )
 

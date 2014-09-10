@@ -111,9 +111,7 @@ void IIHEModulePhoton::beginJob(){
 
 // ------------ method called to for each event  ------------
 void IIHEModulePhoton::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
-  edm::Handle<reco::PhotonCollection> pPhotons;
-  iEvent.getByLabel("photons","",pPhotons);
-  reco::PhotonCollection photons(pPhotons->begin(),pPhotons->end()) ;
+  reco::PhotonCollection photons = parent_->getPhotonCollection() ;
   
   store("ph_n", (unsigned int) photons.size()) ;
   for(reco::PhotonCollection::const_iterator phiter = photons.begin() ; phiter!=photons.end() ; ++phiter){

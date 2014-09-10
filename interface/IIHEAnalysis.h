@@ -1,9 +1,6 @@
 #ifndef UserCode_IIHETree_IIHEAnalysis_h
 #define UserCode_IIHETree_IIHEAnalysis_h
 
-// Local includes
-#include "UserCode/IIHETree/interface/IIHEAnalysis.h"
-
 // System includes
 #include <memory>
 #include <string>
@@ -25,8 +22,15 @@
 #include "UserCode/IIHETree/interface/BranchWrapper.h"
 #include "UserCode/IIHETree/interface/IIHEModule.h"
 
+#include "DataFormats/EgammaCandidates/interface/Photon.h"
+#include "DataFormats/EgammaCandidates/interface/PhotonFwd.h"
+
+// ROOT includes
 #include "TFile.h"
 #include "TTree.h"
+
+// Local includes
+#include "UserCode/IIHETree/interface/IIHEAnalysis.h"
 
 namespace edm {
   class ParameterSet;
@@ -84,6 +88,23 @@ public:
   
   void setBranchType(int);
   int  getBranchType();
+  int saveToFile(TObject*);
+  
+  void addToMCTruthWhitelist(std::vector<int>) ;
+  std::vector<int> getMCTruthWhitelist(){ return MCTruthWhitelist_ ; }
+  
+  reco::PhotonCollection getPhotonCollection(){
+    reco::PhotonCollection        photons(  photonCollection_->begin(),   photonCollection_->end()) ;
+    return photons   ;
+  }
+  reco::GsfElectronCollection getElectronCollection(){
+    reco::GsfElectronCollection electrons(electronCollection_->begin(), electronCollection_->end());
+    return electrons ;
+  }
+  reco::MuonCollection getMuonCollection(){
+    reco::MuonCollection            muons(    muonCollection_->begin(),     muonCollection_->end()) ;
+    return muons     ;
+  }
   
 private:
   virtual void beginJob() ;
@@ -118,9 +139,20 @@ private:
   std::vector< std::pair<std::string, int> > listOfBranches_  ;
   std::vector< std::pair<std::string, int> > missingBranches_ ;
   
+  // Collections of physics objects
+  edm::Handle<reco::PhotonCollection     >   photonCollection_ ;
+  edm::Handle<reco::GsfElectronCollection> electronCollection_ ;
+  edm::Handle<reco::MuonCollection       >     muonCollection_ ;
+  
+  edm::InputTag   photonCollectionLabel_ ;
+  edm::InputTag electronCollectionLabel_ ;
+  edm::InputTag     muonCollectionLabel_ ;
+  
   bool debug_;
   std::string git_hash_  ;
   std::string globalTag_ ;
+  
+  std::vector<int> MCTruthWhitelist_ ;
 
   // config parameters -------------------------------
   TFile* mainFile_ ;

@@ -204,11 +204,10 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   
   
   // Muon collections
-  edm::Handle<reco::MuonCollection> muonCollection;
-  iEvent.getByLabel("muons",muonCollection);
-  const reco::MuonCollection* muons = muonCollection.product();
-  store("muon_n", (unsigned int)(muons->size())) ;
-  for(reco::MuonCollection::const_iterator muIt = muons->begin(); muIt != muons->end(); ++muIt) {
+  reco::MuonCollection muons = parent_->getMuonCollection() ;
+  
+  store("muon_n", (unsigned int)(muons.size())) ;
+  for(reco::MuonCollection::const_iterator muIt = muons.begin(); muIt != muons.end(); ++muIt) {
     if (muIt->isGlobalMuon()) {
       // get TeV optimized track
       reco::Muon::MuonTrackTypePair tevOptimizedTrk = muon::tevOptimized(*muIt, 200, 17., 40., 0.25) ;

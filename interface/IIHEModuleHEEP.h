@@ -1,13 +1,25 @@
 #ifndef UserCode_IIHETree_IIHEModuleHEEP_h
 #define UserCode_IIHETree_IIHEModuleHEEP_h
 
+class HEEPCut_41_isolEMHadDepth1 ;
+class HEEPCut_41_dxyFirstPV ;
+class HEEPCutCollection ;
+
 #include "UserCode/IIHETree/interface/IIHEModule.h"
+#include "UserCode/IIHETree/interface/HEEPCut.h"
 
 // class decleration
 class IIHEModuleHEEP : public IIHEModule {
 private:
   double EcalHcal1EffAreaBarrel_  ;
   double EcalHcal1EffAreaEndcaps_ ;
+  double rho_ ;
+  
+  HEEPCut_41_isolEMHadDepth1* cut_41_isolEMHadDepth1_ ;
+  HEEPCut_41_dxyFirstPV*      cut_41_dxyFirstPV_ ;
+  HEEPCutCollection* HEEPCutflow_41_ID_        ;
+  HEEPCutCollection* HEEPCutflow_41_isolation_ ;
+  HEEPCutCollection* HEEPCutflow_41_total_     ;
 public:
   explicit IIHEModuleHEEP(const edm::ParameterSet& iConfig);
   ~IIHEModuleHEEP();
@@ -24,4 +36,5 @@ public:
   virtual void endJob() ;
   virtual void beginRun(edm::Run const&, edm::EventSetup const&);
 };
+
 #endif

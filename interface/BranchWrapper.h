@@ -1,6 +1,9 @@
-#include "TTree.h"
+// System includes
 #include <vector>
 #include <iostream>
+
+// ROOT includes
+#include <TTree.h>
 
 #ifndef BRANCHWRAPPER
 #define BRANCHWRAPPER

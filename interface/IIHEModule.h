@@ -65,6 +65,8 @@ public:
   void store(std::string, std::vector<unsigned int>);
   void setBranchType(int);
   
+  void addToMCTruthWhitelist(std::vector<int>) ;
+  
   void   pubBeginJob(){   beginJob() ; } ;
   void pubBeginEvent(){ beginEvent() ; } ;
   void   pubEndEvent(){   endEvent() ; } ;

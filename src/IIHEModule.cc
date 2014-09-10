@@ -29,6 +29,8 @@ void IIHEModule::store(std::string name, std::vector<int>          value){ paren
 void IIHEModule::store(std::string name, std::vector<unsigned int> value){ parent_->store(name, value) ; }
 void IIHEModule::setBranchType(int type){ parent_->setBranchType(type) ; }
 
+void IIHEModule::addToMCTruthWhitelist(std::vector<int> pdgIds){ parent_->addToMCTruthWhitelist(pdgIds) ; }
+
 // ------------ method called once each job just before starting event loop  ------------
 void IIHEModule::beginJob(){}
 

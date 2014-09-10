@@ -1,3 +1,8 @@
+// System includes
+#include <iostream>
+#include <TMath.h>
+#include <vector>
+
 // CMSSW includes
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -5,7 +10,13 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 
-// Local includes
+#include "DataFormats/Common/interface/TriggerResults.h"
+#include "DataFormats/HLTReco/interface/TriggerEvent.h"
+#include "DataFormats/HLTReco/interface/TriggerObject.h"
+#include "DataFormats/HLTReco/interface/TriggerTypeDefs.h"
+#include "FWCore/Common/interface/TriggerNames.h"
+
+// IIHE includes
 #include "UserCode/IIHETree/interface/IIHEAnalysis.h"
 
 #include "UserCode/IIHETree/interface/BranchWrapper.h"
@@ -17,11 +28,8 @@
 #include "UserCode/IIHETree/interface/IIHEModuleGedGsfElectron.h"
 #include "UserCode/IIHETree/interface/IIHEModuleMuon.h"
 #include "UserCode/IIHETree/interface/IIHEModuleHEEP.h"
-
-// System includes
-#include <iostream>
-#include <TMath.h>
-#include <vector>
+#include "UserCode/IIHETree/interface/IIHEModuleMCTruth.h"
+#include "UserCode/IIHETree/interface/IIHEModuleTrigger.h"
 
 using namespace std ;
 using namespace reco;
@@ -29,10 +37,14 @@ using namespace edm ;
 
 IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig){
   currentVarType_ = -1 ;
-  debug_ = iConfig.getParameter<bool>("debug") ;
+  debug_     = iConfig.getParameter<bool  >("debug"    ) ;
   git_hash_  = iConfig.getParameter<string>("git_hash" ) ;
   globalTag_ = iConfig.getParameter<string>("globalTag") ;
   beamSpotLabel_ = consumes<BeamSpot>(iConfig.getParameter<InputTag>("beamSpot")) ;
+  
+  photonCollectionLabel_   = iConfig.getParameter<edm::InputTag>("photonCollection"  ) ;
+  electronCollectionLabel_ = iConfig.getParameter<edm::InputTag>("electronCollection") ;
+  muonCollectionLabel_     = iConfig.getParameter<edm::InputTag>("muonCollection"    ) ;
   
   childModules_.push_back(new IIHEModuleEvent(iConfig)         ) ;
   childModules_.push_back(new IIHEModuleVertex(iConfig)        ) ;
@@ -41,6 +53,8 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig){
   childModules_.push_back(new IIHEModuleGedGsfElectron(iConfig)) ;
   childModules_.push_back(new IIHEModuleMuon(iConfig)          ) ;
   childModules_.push_back(new IIHEModuleHEEP(iConfig)          ) ;
+  childModules_.push_back(new IIHEModuleMCTruth(iConfig)       ) ;
+  childModules_.push_back(new IIHEModuleTrigger(iConfig)       ) ;
 }
 
 IIHEAnalysis::~IIHEAnalysis(){}
@@ -174,6 +188,11 @@ void IIHEAnalysis::beginJob(){
   configureBranches() ;
 }
 
+int IIHEAnalysis::saveToFile(TObject* obj){
+  mainFile_->cd() ;
+  return obj->Write() ;
+}
+
 void IIHEAnalysis::configureBranches(){
   for(unsigned int i=0 ; i<allVars_.size() ; i++){
     allVars_.at(i)->config(dataTree_) ;
@@ -181,10 +200,32 @@ void IIHEAnalysis::configureBranches(){
   return ;
 }
 
+void IIHEAnalysis::addToMCTruthWhitelist(std::vector<int> pdgIds){
+  for(unsigned int i=0 ; i<pdgIds.size() ; i++){
+    bool add = true ;
+    for(unsigned int j=0 ; j<MCTruthWhitelist_.size() ; j++){
+      if(abs(MCTruthWhitelist_.at(j))==abs(pdgIds.at(i))){
+        add = false ;
+        break ;
+      }
+    }
+    if(add){
+      MCTruthWhitelist_.push_back(pdgIds.at(i)) ;
+    }
+  }
+}
+
 // ------------ method called to for each event  -----------------------------------------
 
 void IIHEAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   beginEvent() ;
+  
+  // Get the default collections
+  // These should be harmonised across submodules, where possible
+  iEvent.getByLabel(  photonCollectionLabel_,   photonCollection_) ;
+  iEvent.getByLabel(electronCollectionLabel_, electronCollection_) ;
+  iEvent.getByLabel(    muonCollectionLabel_,     muonCollection_) ;
+  
   for(unsigned i=0 ; i<childModules_.size() ; i++){
     childModules_.at(i)->pubAnalyze(iEvent, iSetup) ;
   }

@@ -1,6 +1,4 @@
 #include "UserCode/IIHETree/interface/BranchWrapper.h"
-#include <iostream>
-#include <vector>
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //                                   Inherited classes                                  //

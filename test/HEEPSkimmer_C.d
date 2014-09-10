@@ -1,0 +1,49 @@
+
+# DO NOT DELETE
+
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TString.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/Riosfwd.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/RConfig.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/RVersion.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TMathBase.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/Rtypes.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/DllImport.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/Rtypeinfo.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/snprintf.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/strlcpy.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TGenericClassInfo.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TSchemaHelper.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TFile.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TDirectoryFile.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TDirectory.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TNamed.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TObject.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TStorage.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TVersionCheck.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TBuffer.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TList.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TSeqCollection.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TCollection.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TIterator.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TDatime.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TUUID.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TMap.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/THashTable.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TUrl.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TTree.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TBranch.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TObjArray.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TAttFill.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TDataType.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TDictionary.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/Property.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TAttLine.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TAttMarker.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TArrayD.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TArray.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TArrayI.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TClass.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TObjString.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/TVirtualTreePlayer.h
+./UserCode/IIHETree/test/HEEPSkimmer_C.so: /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/cintdictversion.h /cvmfs/cms.cern.ch/slc6_amd64_gcc481/lcg/root/5.34.10-cms7/include/RVersion.h
+HEEPSkimmer_C__ROOTBUILDVERSION= 5.34/10
