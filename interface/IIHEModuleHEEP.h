@@ -3,6 +3,10 @@
 
 class HEEPCut_41_isolEMHadDepth1 ;
 class HEEPCut_41_dxyFirstPV ;
+class HEEPCut_50_50ns_isolEMHadDepth1 ;
+class HEEPCut_50_50ns_dxyFirstPV ;
+class HEEPCut_50_25ns_isolEMHadDepth1 ;
+class HEEPCut_50_25ns_dxyFirstPV ;
 class HEEPCutCollection ;
 
 #include "UserCode/IIHETree/interface/IIHEModule.h"
@@ -20,6 +24,18 @@ private:
   HEEPCutCollection* HEEPCutflow_41_ID_        ;
   HEEPCutCollection* HEEPCutflow_41_isolation_ ;
   HEEPCutCollection* HEEPCutflow_41_total_     ;
+  
+  HEEPCut_50_50ns_isolEMHadDepth1* cut_50_50ns_isolEMHadDepth1_ ;
+  HEEPCut_50_50ns_dxyFirstPV*      cut_50_50ns_dxyFirstPV_ ;
+  HEEPCutCollection* HEEPCutflow_50_50ns_ID_        ;
+  HEEPCutCollection* HEEPCutflow_50_50ns_isolation_ ;
+  HEEPCutCollection* HEEPCutflow_50_50ns_total_     ;
+  
+  HEEPCut_50_25ns_isolEMHadDepth1* cut_50_25ns_isolEMHadDepth1_ ;
+  HEEPCut_50_25ns_dxyFirstPV*      cut_50_25ns_dxyFirstPV_ ;
+  HEEPCutCollection* HEEPCutflow_50_25ns_ID_        ;
+  HEEPCutCollection* HEEPCutflow_50_25ns_isolation_ ;
+  HEEPCutCollection* HEEPCutflow_50_25ns_total_     ;
 public:
   explicit IIHEModuleHEEP(const edm::ParameterSet& iConfig);
   ~IIHEModuleHEEP();
@@ -35,6 +51,8 @@ public:
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
   virtual void beginRun(edm::Run const&, edm::EventSetup const&);
+  
+  std::vector<HEEPCutCollection*> HEEPCutflows_ ;
 };
 
 #endif

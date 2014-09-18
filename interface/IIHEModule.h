@@ -66,6 +66,8 @@ public:
   void setBranchType(int);
   
   void addToMCTruthWhitelist(std::vector<int>) ;
+  bool addTriggerL1Electron(std::string) ;
+  bool addTriggerHLTElectron(std::string, float) ;
   
   void   pubBeginJob(){   beginJob() ; } ;
   void pubBeginEvent(){ beginEvent() ; } ;

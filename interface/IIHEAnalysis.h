@@ -90,9 +90,11 @@ public:
   int  getBranchType();
   int saveToFile(TObject*);
   
+  // MC truth
   void addToMCTruthWhitelist(std::vector<int>) ;
   std::vector<int> getMCTruthWhitelist(){ return MCTruthWhitelist_ ; }
   
+  // Particle collections
   reco::PhotonCollection getPhotonCollection(){
     reco::PhotonCollection        photons(  photonCollection_->begin(),   photonCollection_->end()) ;
     return photons   ;
@@ -105,6 +107,13 @@ public:
     reco::MuonCollection            muons(    muonCollection_->begin(),     muonCollection_->end()) ;
     return muons     ;
   }
+  
+  // Triggers
+  bool addTriggerL1Electron(std::string) ;
+  bool addTriggerHLTElectron(std::string, float) ;
+  
+  std::vector<std::string>                   getTriggerL1FilterNamesElectron (){ return triggerL1FilterNamesElectron_  ; }
+  std::vector<std::pair<std::string,float> > getTriggerHLTFilterNamesElectron(){ return triggerHLTFilterNamesElectron_ ; }
   
 private:
   virtual void beginJob() ;
@@ -152,6 +161,11 @@ private:
   std::string git_hash_  ;
   std::string globalTag_ ;
   
+  // trigger module
+  std::vector<std::string>                   triggerL1FilterNamesElectron_  ;
+  std::vector<std::pair<std::string,float> > triggerHLTFilterNamesElectron_ ;
+  
+  // MC truth module
   std::vector<int> MCTruthWhitelist_ ;
 
   // config parameters -------------------------------

@@ -1,7 +1,7 @@
 #ifndef UserCode_IIHETree_HEEPCut_h
 #define UserCode_IIHETree_HEEPCut_h
 
-#include <TH1.h>
+#include <algorithm>
 
 #include "UserCode/IIHETree/interface/IIHEModuleHEEP.h"
 // These classes are used to make it easier to keep track of HEEP cuts
@@ -13,119 +13,248 @@ class IIHEModuleHEEP ;
 class HEEPCutBase{
 private:
   std::string name_ ;
+  std::string branchName_n_;
+  std::string branchName_nCumulative_ ;
   bool status_ ;
   int index_ ;
+  int nPass_ ;
+  int nPassCumulative_ ;
+  IIHEModuleHEEP* parent_mod_ ;
 public:
-  HEEPCutBase(std::string) ;
+  HEEPCutBase(std::string, IIHEModuleHEEP*) ;
   ~HEEPCutBase() ;
-  virtual bool applyCut(reco::GsfElectronCollection::const_iterator) ;
-  bool addBranch(IIHEModuleHEEP*) ;
-  void store(IIHEModuleHEEP*) ;
+  virtual bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
+  bool addBranches() ;
+  void store() ;
   void reset() ;
-  void setStatus(bool) ;
+  void setStatus(bool, bool) ;
   bool getStatus() ;
   std::string name(){ return name_ ; }
+  
+  void beginEvent() ;
+  void endEvent() ;
   
   bool isBarrel(reco::GsfElectronCollection::const_iterator) ;
   bool isEndcap(reco::GsfElectronCollection::const_iterator) ;
   int detectorRegion(reco::GsfElectronCollection::const_iterator) ;
   
+  bool isBarrel_50(reco::GsfElectronCollection::const_iterator) ;
+  bool isEndcap_50(reco::GsfElectronCollection::const_iterator) ;
+  int detectorRegion_50(reco::GsfElectronCollection::const_iterator) ;
+  
   enum DetectorRegion{ kNone , kBarrel , kEndcap } ;
 };
 
-class HEEPCut_41_Et             : HEEPCutBase{
+class HEEPCut_41_Et                  : HEEPCutBase{
 public:
-  HEEPCut_41_Et(std::string) ;
-  bool applyCut(reco::GsfElectronCollection::const_iterator) ;
+  HEEPCut_41_Et(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
 } ;
-class HEEPCut_41_pt             : HEEPCutBase{
+class HEEPCut_41_eta                 : HEEPCutBase{
 public:
-  HEEPCut_41_pt(std::string) ;
-  bool applyCut(reco::GsfElectronCollection::const_iterator) ;
+  HEEPCut_41_eta(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
 } ;
-class HEEPCut_41_dEta           : HEEPCutBase{
+class HEEPCut_41_EcalDriven          : HEEPCutBase{
 public:
-  HEEPCut_41_dEta(std::string) ;
-  bool applyCut(reco::GsfElectronCollection::const_iterator) ;
+  HEEPCut_41_EcalDriven(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
 } ;
-class HEEPCut_41_crack          : HEEPCutBase{
+class HEEPCut_41_dEtaIn              : HEEPCutBase{
 public:
-  HEEPCut_41_crack(std::string) ;
-  bool applyCut(reco::GsfElectronCollection::const_iterator) ;
+  HEEPCut_41_dEtaIn(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
 } ;
-class HEEPCut_41_dEtaIn         : HEEPCutBase{
+class HEEPCut_41_dPhiIn              : HEEPCutBase{
 public:
-  HEEPCut_41_dEtaIn(std::string) ;
-  bool applyCut(reco::GsfElectronCollection::const_iterator) ;
+  HEEPCut_41_dPhiIn(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
 } ;
-class HEEPCut_41_dPhiIn         : HEEPCutBase{
+class HEEPCut_41_HOverE              : HEEPCutBase{
 public:
-  HEEPCut_41_dPhiIn(std::string) ;
-  bool applyCut(reco::GsfElectronCollection::const_iterator) ;
+  HEEPCut_41_HOverE(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
 } ;
-class HEEPCut_41_HOverE         : HEEPCutBase{
+class HEEPCut_41_SigmaIetaIeta       : HEEPCutBase{
 public:
-  HEEPCut_41_HOverE(std::string) ;
-  bool applyCut(reco::GsfElectronCollection::const_iterator) ;
+  HEEPCut_41_SigmaIetaIeta(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
 } ;
-class HEEPCut_41_SigmaIetaIeta  : HEEPCutBase{
+class HEEPCut_41_E2x5OverE5x5        : HEEPCutBase{
 public:
-  HEEPCut_41_SigmaIetaIeta(std::string) ;
-  bool applyCut(reco::GsfElectronCollection::const_iterator) ;
+  HEEPCut_41_E2x5OverE5x5(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
 } ;
-class HEEPCut_41_E2x5OverE5x5   : HEEPCutBase{
-public:
-  HEEPCut_41_E2x5OverE5x5(std::string) ;
-  bool applyCut(reco::GsfElectronCollection::const_iterator) ;
-} ;
-class HEEPCut_41_isolEMHadDepth1: HEEPCutBase{
+class HEEPCut_41_isolEMHadDepth1     : HEEPCutBase{
 private:
   float rho_ ;
   float EcalHcal1EffAreaBarrel_  ;
   float EcalHcal1EffAreaEndcaps_ ;
 public:
-  HEEPCut_41_isolEMHadDepth1(std::string) ;
-  bool applyCut(reco::GsfElectronCollection::const_iterator) ;
+  HEEPCut_41_isolEMHadDepth1(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
   void setRho(float) ;
   void setEcalHcal1EffAreaBarrel (float) ;
   void setEcalHcal1EffAreaEndcaps(float) ;
 } ;
-class HEEPCut_41_HcalIso2       : HEEPCutBase{
+class HEEPCut_41_IsolPtTrks          : HEEPCutBase{
 public:
-  HEEPCut_41_HcalIso2(std::string) ;
-  bool applyCut(reco::GsfElectronCollection::const_iterator) ;
+  HEEPCut_41_IsolPtTrks(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
 } ;
-class HEEPCut_41_IsolPtTrks     : HEEPCutBase{
+class HEEPCut_41_missingHits         : HEEPCutBase{
 public:
-  HEEPCut_41_IsolPtTrks(std::string) ;
-  bool applyCut(reco::GsfElectronCollection::const_iterator) ;
+  HEEPCut_41_missingHits(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
 } ;
-class HEEPCut_41_EcalDriven     : HEEPCutBase{
-public:
-  HEEPCut_41_EcalDriven(std::string) ;
-  bool applyCut(reco::GsfElectronCollection::const_iterator) ;
-} ;
-class HEEPCut_41_invalid        : HEEPCutBase{
-public:
-  HEEPCut_41_invalid(std::string) ;
-  bool applyCut(reco::GsfElectronCollection::const_iterator) ;
-} ;
-class HEEPCut_41_missingHits    : HEEPCutBase{
-public:
-  HEEPCut_41_missingHits(std::string) ;
-  bool applyCut(reco::GsfElectronCollection::const_iterator) ;
-} ;
-class HEEPCut_41_conversion     : HEEPCutBase{
-public:
-  HEEPCut_41_conversion(std::string) ;
-  bool applyCut(reco::GsfElectronCollection::const_iterator) ;
-} ;
-class HEEPCut_41_dxyFirstPV     : HEEPCutBase{
+class HEEPCut_41_dxyFirstPV          : HEEPCutBase{
 private:
   math::XYZPoint firstPV_ ;
 public:
-  HEEPCut_41_dxyFirstPV(std::string) ;
-  bool applyCut(reco::GsfElectronCollection::const_iterator) ;
+  HEEPCut_41_dxyFirstPV(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
+  void setFirstPV(math::XYZPoint) ;
+} ;
+
+class HEEPCut_50_25ns_Et             : HEEPCutBase{
+public:
+  HEEPCut_50_25ns_Et(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
+} ;
+class HEEPCut_50_25ns_eta            : HEEPCutBase{
+public:
+  HEEPCut_50_25ns_eta(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
+} ;
+class HEEPCut_50_25ns_EcalDriven     : HEEPCutBase{
+public:
+  HEEPCut_50_25ns_EcalDriven(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
+} ;
+class HEEPCut_50_25ns_dEtaIn         : HEEPCutBase{
+public:
+  HEEPCut_50_25ns_dEtaIn(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
+} ;
+class HEEPCut_50_25ns_dPhiIn         : HEEPCutBase{
+public:
+  HEEPCut_50_25ns_dPhiIn(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
+} ;
+class HEEPCut_50_25ns_HOverE         : HEEPCutBase{
+public:
+  HEEPCut_50_25ns_HOverE(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
+} ;
+class HEEPCut_50_25ns_SigmaIetaIeta  : HEEPCutBase{
+public:
+  HEEPCut_50_25ns_SigmaIetaIeta(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
+} ;
+class HEEPCut_50_25ns_E2x5OverE5x5   : HEEPCutBase{
+public:
+  HEEPCut_50_25ns_E2x5OverE5x5(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
+} ;
+class HEEPCut_50_25ns_isolEMHadDepth1: HEEPCutBase{
+private:
+  float rho_ ;
+  float EcalHcal1EffAreaBarrel_  ;
+  float EcalHcal1EffAreaEndcaps_ ;
+public:
+  HEEPCut_50_25ns_isolEMHadDepth1(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
+  void setRho(float) ;
+  void setEcalHcal1EffAreaBarrel (float) ;
+  void setEcalHcal1EffAreaEndcaps(float) ;
+} ;
+class HEEPCut_50_25ns_IsolPtTrks     : HEEPCutBase{
+public:
+  HEEPCut_50_25ns_IsolPtTrks(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
+} ;
+class HEEPCut_50_25ns_missingHits    : HEEPCutBase{
+public:
+  HEEPCut_50_25ns_missingHits(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
+} ;
+class HEEPCut_50_25ns_dxyFirstPV     : HEEPCutBase{
+private:
+  math::XYZPoint firstPV_ ;
+public:
+  HEEPCut_50_25ns_dxyFirstPV(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
+  void setFirstPV(math::XYZPoint) ;
+} ;
+
+class HEEPCut_50_50ns_Et             : HEEPCutBase{
+public:
+  HEEPCut_50_50ns_Et(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
+} ;
+class HEEPCut_50_50ns_eta            : HEEPCutBase{
+public:
+  HEEPCut_50_50ns_eta(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
+} ;
+class HEEPCut_50_50ns_EcalDriven     : HEEPCutBase{
+public:
+  HEEPCut_50_50ns_EcalDriven(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
+} ;
+class HEEPCut_50_50ns_dEtaIn         : HEEPCutBase{
+public:
+  HEEPCut_50_50ns_dEtaIn(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
+} ;
+class HEEPCut_50_50ns_dPhiIn         : HEEPCutBase{
+public:
+  HEEPCut_50_50ns_dPhiIn(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
+} ;
+class HEEPCut_50_50ns_HOverE         : HEEPCutBase{
+public:
+  HEEPCut_50_50ns_HOverE(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
+} ;
+class HEEPCut_50_50ns_SigmaIetaIeta  : HEEPCutBase{
+public:
+  HEEPCut_50_50ns_SigmaIetaIeta(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
+} ;
+class HEEPCut_50_50ns_E2x5OverE5x5   : HEEPCutBase{
+public:
+  HEEPCut_50_50ns_E2x5OverE5x5(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
+} ;
+class HEEPCut_50_50ns_isolEMHadDepth1: HEEPCutBase{
+private:
+  float rho_ ;
+  float EcalHcal1EffAreaBarrel_  ;
+  float EcalHcal1EffAreaEndcaps_ ;
+public:
+  HEEPCut_50_50ns_isolEMHadDepth1(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
+  void setRho(float) ;
+  void setEcalHcal1EffAreaBarrel (float) ;
+  void setEcalHcal1EffAreaEndcaps(float) ;
+} ;
+class HEEPCut_50_50ns_IsolPtTrks     : HEEPCutBase{
+public:
+  HEEPCut_50_50ns_IsolPtTrks(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
+} ;
+class HEEPCut_50_50ns_missingHits    : HEEPCutBase{
+public:
+  HEEPCut_50_50ns_missingHits(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
+} ;
+class HEEPCut_50_50ns_dxyFirstPV     : HEEPCutBase{
+private:
+  math::XYZPoint firstPV_ ;
+public:
+  HEEPCut_50_50ns_dxyFirstPV(std::string, IIHEModuleHEEP*) ;
+  bool applyCut(reco::GsfElectronCollection::const_iterator, bool) ;
   void setFirstPV(math::XYZPoint) ;
 } ;
 
@@ -133,6 +262,10 @@ class HEEPCutCollection{
 private:
   bool status_ ;
   std::string name_ ;
+  std::string branchName_n_ ;
+  
+  IIHEModuleHEEP* parent_mod_ ;
+  
   std::vector<HEEPCutBase*      > listOfCuts_ ;
   std::vector<HEEPCutCollection*> listOfCutCollections_ ;
   
@@ -141,20 +274,23 @@ private:
   int cutIndex_ ;
   int collectionIndex_ ;
   
-  // Histograms to keep track of things
-  TH1F* hNElectrons_     ;
-  TH1F* hNElectronsPass_ ;
+  int nPass_ ;
   
   enum cutType{ kCut , kCollection } ;
 public:
-  HEEPCutCollection(std::string) ;
+  HEEPCutCollection(std::string, IIHEModuleHEEP*) ;
   ~HEEPCutCollection() ;
+  
+  void beginEvent() ;
+  void endEvent() ;
+  
   void addCut(HEEPCutBase*) ;
   void addCutCollection(HEEPCutCollection*) ;
-  bool applyCuts(reco::GsfElectronCollection::const_iterator, IIHEModuleHEEP*) ;
+  bool applyCuts(reco::GsfElectronCollection::const_iterator, bool) ;
+  bool applyCuts(reco::GsfElectronCollection::const_iterator) ;
   bool getStatus(){ return status_ ; }
   void makeCutflowHistogram() ;
-  void config(IIHEModuleHEEP*) ;
+  void config() ;
 };
 
 #endif

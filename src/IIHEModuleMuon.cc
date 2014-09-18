@@ -8,7 +8,6 @@
 #include "DataFormats/HLTReco/interface/TriggerTypeDefs.h"
 #include "FWCore/Common/interface/TriggerNames.h"
 
-
 #include <iostream>
 #include <TMath.h>
 #include <vector>

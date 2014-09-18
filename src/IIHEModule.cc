@@ -31,6 +31,14 @@ void IIHEModule::setBranchType(int type){ parent_->setBranchType(type) ; }
 
 void IIHEModule::addToMCTruthWhitelist(std::vector<int> pdgIds){ parent_->addToMCTruthWhitelist(pdgIds) ; }
 
+bool IIHEModule::addTriggerL1Electron(std::string name){
+  return parent_->addTriggerL1Electron(name) ;
+}
+bool IIHEModule::addTriggerHLTElectron(std::string name, float DeltaRCut){
+  return parent_->addTriggerHLTElectron(name, DeltaRCut) ;
+}
+
+
 // ------------ method called once each job just before starting event loop  ------------
 void IIHEModule::beginJob(){}
 

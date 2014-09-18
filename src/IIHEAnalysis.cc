@@ -46,6 +46,8 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig){
   electronCollectionLabel_ = iConfig.getParameter<edm::InputTag>("electronCollection") ;
   muonCollectionLabel_     = iConfig.getParameter<edm::InputTag>("muonCollection"    ) ;
   
+  IIHEModuleTrigger* mod_trigger = new IIHEModuleTrigger(iConfig) ;
+  
   childModules_.push_back(new IIHEModuleEvent(iConfig)         ) ;
   childModules_.push_back(new IIHEModuleVertex(iConfig)        ) ;
   childModules_.push_back(new IIHEModuleSuperCluster(iConfig)  ) ;
@@ -54,7 +56,8 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig){
   childModules_.push_back(new IIHEModuleMuon(iConfig)          ) ;
   childModules_.push_back(new IIHEModuleHEEP(iConfig)          ) ;
   childModules_.push_back(new IIHEModuleMCTruth(iConfig)       ) ;
-  childModules_.push_back(new IIHEModuleTrigger(iConfig)       ) ;
+  childModules_.push_back(mod_trigger                          ) ;
+  mod_trigger->config(this) ;
 }
 
 IIHEAnalysis::~IIHEAnalysis(){}
@@ -215,6 +218,22 @@ void IIHEAnalysis::addToMCTruthWhitelist(std::vector<int> pdgIds){
   }
 }
 
+bool IIHEAnalysis::addTriggerL1Electron(std::string name){
+  for(unsigned int i=0 ; i<triggerL1FilterNamesElectron_.size() ; ++i){
+    if(name==triggerL1FilterNamesElectron_.at(i)) return false ;
+  }
+  triggerL1FilterNamesElectron_.push_back(name) ;
+  return true ;
+}
+bool IIHEAnalysis::addTriggerHLTElectron(std::string name, float DeltaRCut){
+  for(unsigned int i=0 ; i<triggerHLTFilterNamesElectron_.size() ; ++i){
+    if(name==triggerHLTFilterNamesElectron_.at(i).first) return false ;
+  }
+  std::pair<std::string,float> values(name,DeltaRCut) ;
+  triggerHLTFilterNamesElectron_.push_back(values) ;
+  return true ;
+}
+
 // ------------ method called to for each event  -----------------------------------------
 
 void IIHEAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
@@ -229,8 +248,8 @@ void IIHEAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   for(unsigned i=0 ; i<childModules_.size() ; i++){
     childModules_.at(i)->pubAnalyze(iEvent, iSetup) ;
   }
-  dataTree_->Fill() ;
   endEvent() ;
+  dataTree_->Fill() ;
 }
 
 void IIHEAnalysis::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){}
