@@ -31,7 +31,7 @@ bool HEEPCutBase::addBranches(){
   return success ;
 }
 void HEEPCutBase::store(){ parent_mod_->store(name_, status_) ; }
-bool HEEPCutBase::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){ return status_ ; }
+bool HEEPCutBase::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){ return status_ ; }
 void HEEPCutBase::beginEvent(){
   nPass_           = 0 ;
   nPassCumulative_ = 0 ;
@@ -41,26 +41,26 @@ void HEEPCutBase::endEvent(){
   parent_mod_->store(branchName_nCumulative_, nPassCumulative_) ;
 }
 
-bool HEEPCutBase::isBarrel(reco::GsfElectronCollection::const_iterator gsfiter){
+bool HEEPCutBase::isBarrel(reco::GsfElectron* gsfiter){
   return (fabs(gsfiter->superCluster()->eta()) < 1.442) ;
 }
-bool HEEPCutBase::isEndcap(reco::GsfElectronCollection::const_iterator gsfiter){
+bool HEEPCutBase::isEndcap(reco::GsfElectron* gsfiter){
   float eta = gsfiter->superCluster()->eta() ;
   return (fabs(eta) > 1.56 && fabs(eta) < 2.5) ;
 }
-int  HEEPCutBase::detectorRegion(reco::GsfElectronCollection::const_iterator gsfiter){
+int  HEEPCutBase::detectorRegion(reco::GsfElectron* gsfiter){
   if(isBarrel(gsfiter)) return kBarrel ;
   if(isEndcap(gsfiter)) return kEndcap ;
   return kNone ;
 }
-bool HEEPCutBase::isBarrel_50(reco::GsfElectronCollection::const_iterator gsfiter){
+bool HEEPCutBase::isBarrel_50(reco::GsfElectron* gsfiter){
   return (fabs(gsfiter->superCluster()->eta()) < 1.4442) ;
 }
-bool HEEPCutBase::isEndcap_50(reco::GsfElectronCollection::const_iterator gsfiter){
+bool HEEPCutBase::isEndcap_50(reco::GsfElectron* gsfiter){
   float eta = gsfiter->superCluster()->eta() ;
   return (fabs(eta) > 1.566 && fabs(eta) < 2.5) ;
 }
-int  HEEPCutBase::detectorRegion_50(reco::GsfElectronCollection::const_iterator gsfiter){
+int  HEEPCutBase::detectorRegion_50(reco::GsfElectron* gsfiter){
   if(isBarrel_50(gsfiter)) return kBarrel ;
   if(isEndcap_50(gsfiter)) return kEndcap ;
   return kNone ;
@@ -82,7 +82,7 @@ HEEPCut_41_IsolPtTrks      ::HEEPCut_41_IsolPtTrks     (std::string name, IIHEMo
 HEEPCut_41_missingHits     ::HEEPCut_41_missingHits    (std::string name, IIHEModuleHEEP* mod): HEEPCutBase(name, mod){} ;
 HEEPCut_41_dxyFirstPV      ::HEEPCut_41_dxyFirstPV     (std::string name, IIHEModuleHEEP* mod): HEEPCutBase(name, mod){} ;
 
-bool HEEPCut_41_Et             ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_41_Et             ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   float Et  = gsfiter->caloEnergy()*sin(gsfiter->p4().theta()) ;
   int region = detectorRegion(gsfiter) ;
   bool result = true ;
@@ -94,18 +94,18 @@ bool HEEPCut_41_Et             ::applyCut(reco::GsfElectronCollection::const_ite
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
-bool HEEPCut_41_eta            ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_41_eta            ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   int region = detectorRegion(gsfiter) ;
   bool result = (region==kBarrel || region==kEndcap) ;
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
-bool HEEPCut_41_EcalDriven     ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_41_EcalDriven     ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   bool result = gsfiter->ecalDrivenSeed() ;
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
-bool HEEPCut_41_dEtaIn         ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_41_dEtaIn         ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   float deltaEta = gsfiter->deltaEtaSuperClusterTrackAtVtx() ;
   int region = detectorRegion(gsfiter) ;
   bool result = true ;
@@ -117,7 +117,7 @@ bool HEEPCut_41_dEtaIn         ::applyCut(reco::GsfElectronCollection::const_ite
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
-bool HEEPCut_41_dPhiIn         ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_41_dPhiIn         ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   float deltaPhi = gsfiter->deltaPhiSuperClusterTrackAtVtx() ;
   int region = detectorRegion(gsfiter) ;
   bool result = true ;
@@ -129,7 +129,7 @@ bool HEEPCut_41_dPhiIn         ::applyCut(reco::GsfElectronCollection::const_ite
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
-bool HEEPCut_41_HOverE         ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_41_HOverE         ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   float HOverE = gsfiter->hadronicOverEm() ;
   int region = detectorRegion(gsfiter) ;
   bool result = true ;
@@ -141,7 +141,7 @@ bool HEEPCut_41_HOverE         ::applyCut(reco::GsfElectronCollection::const_ite
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
-bool HEEPCut_41_SigmaIetaIeta  ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_41_SigmaIetaIeta  ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   int region = detectorRegion(gsfiter) ;
   bool result = true ;
   switch(region){
@@ -152,7 +152,7 @@ bool HEEPCut_41_SigmaIetaIeta  ::applyCut(reco::GsfElectronCollection::const_ite
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
-bool HEEPCut_41_E2x5OverE5x5   ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_41_E2x5OverE5x5   ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   int region = detectorRegion(gsfiter) ;
   bool result = true ;
   switch(region){
@@ -164,7 +164,7 @@ bool HEEPCut_41_E2x5OverE5x5   ::applyCut(reco::GsfElectronCollection::const_ite
   return getStatus() ;
 }
 
-bool HEEPCut_41_isolEMHadDepth1::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_41_isolEMHadDepth1::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   float gsf_ecaliso  = gsfiter->dr03EcalRecHitSumEt() ;
   float gsf_hcaliso1 = gsfiter->dr03HcalDepth1TowerSumEt() ;
   float gsf_gsfet   = gsfiter->caloEnergy()*sin(gsfiter->p4().theta()) ;
@@ -187,7 +187,7 @@ void HEEPCut_41_isolEMHadDepth1::setRho(float rho){ rho_ = rho ; }
 void HEEPCut_41_isolEMHadDepth1::setEcalHcal1EffAreaBarrel (float EcalHcal1EffAreaBarrel ){ EcalHcal1EffAreaBarrel_  = EcalHcal1EffAreaBarrel  ; }
 void HEEPCut_41_isolEMHadDepth1::setEcalHcal1EffAreaEndcaps(float EcalHcal1EffAreaEndcaps){ EcalHcal1EffAreaEndcaps_ = EcalHcal1EffAreaEndcaps ; }
 
-bool HEEPCut_41_IsolPtTrks     ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_41_IsolPtTrks     ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   float gsf_trackIso = gsfiter->dr03TkSumPt() ;
   int region = detectorRegion(gsfiter) ;
   bool result = true ;
@@ -199,13 +199,13 @@ bool HEEPCut_41_IsolPtTrks     ::applyCut(reco::GsfElectronCollection::const_ite
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
-bool HEEPCut_41_missingHits    ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_41_missingHits    ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   bool result = (gsfiter->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits() <= 1) ;
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
 
-bool HEEPCut_41_dxyFirstPV     ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_41_dxyFirstPV     ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   float gsf_dxy_firstPVtx = gsfiter->gsfTrack()->dxy(firstPV_) ;
   int region = detectorRegion(gsfiter) ;
   bool result = true ;
@@ -235,7 +235,7 @@ HEEPCut_50_25ns_EcalDriven      ::HEEPCut_50_25ns_EcalDriven     (std::string na
 HEEPCut_50_25ns_missingHits     ::HEEPCut_50_25ns_missingHits    (std::string name, IIHEModuleHEEP* mod): HEEPCutBase(name, mod){} ;
 HEEPCut_50_25ns_dxyFirstPV      ::HEEPCut_50_25ns_dxyFirstPV     (std::string name, IIHEModuleHEEP* mod): HEEPCutBase(name, mod){} ;
 
-bool HEEPCut_50_25ns_Et             ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_25ns_Et             ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   float Et  = gsfiter->caloEnergy()*sin(gsfiter->p4().theta()) ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
@@ -247,18 +247,18 @@ bool HEEPCut_50_25ns_Et             ::applyCut(reco::GsfElectronCollection::cons
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
-bool HEEPCut_50_25ns_eta            ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_25ns_eta            ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   int region = detectorRegion_50(gsfiter) ;
   bool result = (region==kBarrel || region==kEndcap) ;
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
-bool HEEPCut_50_25ns_EcalDriven     ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_25ns_EcalDriven     ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   bool result = gsfiter->ecalDrivenSeed() ;
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
-bool HEEPCut_50_25ns_dEtaIn         ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_25ns_dEtaIn         ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   float deltaEta = gsfiter->deltaEtaSuperClusterTrackAtVtx() ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
@@ -280,7 +280,7 @@ bool HEEPCut_50_25ns_dEtaIn         ::applyCut(reco::GsfElectronCollection::cons
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
-bool HEEPCut_50_25ns_dPhiIn         ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_25ns_dPhiIn         ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   float deltaPhi = gsfiter->deltaPhiSuperClusterTrackAtVtx() ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
@@ -292,7 +292,7 @@ bool HEEPCut_50_25ns_dPhiIn         ::applyCut(reco::GsfElectronCollection::cons
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
-bool HEEPCut_50_25ns_HOverE         ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_25ns_HOverE         ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   float HOverE = gsfiter->hadronicOverEm() ;
   float E      = gsfiter->caloEnergy() ;
   int region = detectorRegion_50(gsfiter) ;
@@ -305,7 +305,7 @@ bool HEEPCut_50_25ns_HOverE         ::applyCut(reco::GsfElectronCollection::cons
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
-bool HEEPCut_50_25ns_SigmaIetaIeta  ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_25ns_SigmaIetaIeta  ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
   switch(region){
@@ -316,7 +316,7 @@ bool HEEPCut_50_25ns_SigmaIetaIeta  ::applyCut(reco::GsfElectronCollection::cons
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
-bool HEEPCut_50_25ns_E2x5OverE5x5   ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_25ns_E2x5OverE5x5   ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
   switch(region){
@@ -328,7 +328,7 @@ bool HEEPCut_50_25ns_E2x5OverE5x5   ::applyCut(reco::GsfElectronCollection::cons
   return getStatus() ;
 }
 
-bool HEEPCut_50_25ns_isolEMHadDepth1::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_25ns_isolEMHadDepth1::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   float gsf_ecaliso  = gsfiter->dr03EcalRecHitSumEt() ;
   float gsf_hcaliso1 = gsfiter->dr03HcalDepth1TowerSumEt() ;
   float gsf_gsfet    = gsfiter->caloEnergy()*sin(gsfiter->p4().theta()) ;
@@ -351,7 +351,7 @@ void HEEPCut_50_25ns_isolEMHadDepth1::setRho(float rho){ rho_ = rho ; }
 void HEEPCut_50_25ns_isolEMHadDepth1::setEcalHcal1EffAreaBarrel (float EcalHcal1EffAreaBarrel ){ EcalHcal1EffAreaBarrel_  = EcalHcal1EffAreaBarrel  ; }
 void HEEPCut_50_25ns_isolEMHadDepth1::setEcalHcal1EffAreaEndcaps(float EcalHcal1EffAreaEndcaps){ EcalHcal1EffAreaEndcaps_ = EcalHcal1EffAreaEndcaps ; }
 
-bool HEEPCut_50_25ns_IsolPtTrks     ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_25ns_IsolPtTrks     ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   float gsf_trackIso = gsfiter->dr03TkSumPt() ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
@@ -363,12 +363,12 @@ bool HEEPCut_50_25ns_IsolPtTrks     ::applyCut(reco::GsfElectronCollection::cons
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
-bool HEEPCut_50_25ns_missingHits    ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_25ns_missingHits    ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   bool result = (gsfiter->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits() <= 1) ;
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
-bool HEEPCut_50_25ns_dxyFirstPV     ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_25ns_dxyFirstPV     ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   float gsf_dxy_firstPVtx = gsfiter->gsfTrack()->dxy(firstPV_) ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
@@ -398,7 +398,7 @@ HEEPCut_50_50ns_EcalDriven      ::HEEPCut_50_50ns_EcalDriven     (std::string na
 HEEPCut_50_50ns_missingHits     ::HEEPCut_50_50ns_missingHits    (std::string name, IIHEModuleHEEP* mod): HEEPCutBase(name, mod){} ;
 HEEPCut_50_50ns_dxyFirstPV      ::HEEPCut_50_50ns_dxyFirstPV     (std::string name, IIHEModuleHEEP* mod): HEEPCutBase(name, mod){} ;
 
-bool HEEPCut_50_50ns_Et             ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_50ns_Et             ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   float Et  = gsfiter->caloEnergy()*sin(gsfiter->p4().theta()) ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
@@ -410,18 +410,18 @@ bool HEEPCut_50_50ns_Et             ::applyCut(reco::GsfElectronCollection::cons
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
-bool HEEPCut_50_50ns_eta            ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_50ns_eta            ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   int region = detectorRegion_50(gsfiter) ;
   bool result = (region==kBarrel || region==kEndcap) ;
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
-bool HEEPCut_50_50ns_EcalDriven     ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_50ns_EcalDriven     ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   bool result = gsfiter->ecalDrivenSeed() ;
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
-bool HEEPCut_50_50ns_dEtaIn         ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_50ns_dEtaIn         ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   float deltaEta = gsfiter->deltaEtaSuperClusterTrackAtVtx() ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
@@ -441,7 +441,7 @@ bool HEEPCut_50_50ns_dEtaIn         ::applyCut(reco::GsfElectronCollection::cons
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
-bool HEEPCut_50_50ns_dPhiIn         ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_50ns_dPhiIn         ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   float deltaPhi = gsfiter->deltaPhiSuperClusterTrackAtVtx() ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
@@ -453,7 +453,7 @@ bool HEEPCut_50_50ns_dPhiIn         ::applyCut(reco::GsfElectronCollection::cons
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
-bool HEEPCut_50_50ns_HOverE         ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_50ns_HOverE         ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   float HOverE = gsfiter->hadronicOverEm() ;
   float E      = gsfiter->caloEnergy() ;
   int region = detectorRegion_50(gsfiter) ;
@@ -466,7 +466,7 @@ bool HEEPCut_50_50ns_HOverE         ::applyCut(reco::GsfElectronCollection::cons
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
-bool HEEPCut_50_50ns_SigmaIetaIeta  ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_50ns_SigmaIetaIeta  ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
   switch(region){
@@ -477,7 +477,7 @@ bool HEEPCut_50_50ns_SigmaIetaIeta  ::applyCut(reco::GsfElectronCollection::cons
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
-bool HEEPCut_50_50ns_E2x5OverE5x5   ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_50ns_E2x5OverE5x5   ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
   switch(region){
@@ -489,7 +489,7 @@ bool HEEPCut_50_50ns_E2x5OverE5x5   ::applyCut(reco::GsfElectronCollection::cons
   return getStatus() ;
 }
 
-bool HEEPCut_50_50ns_isolEMHadDepth1::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_50ns_isolEMHadDepth1::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   float gsf_ecaliso  = gsfiter->dr03EcalRecHitSumEt() ;
   float gsf_hcaliso1 = gsfiter->dr03HcalDepth1TowerSumEt() ;
   float gsf_gsfet   = gsfiter->caloEnergy()*sin(gsfiter->p4().theta()) ;
@@ -512,7 +512,7 @@ void HEEPCut_50_50ns_isolEMHadDepth1::setRho(float rho){ rho_ = rho ; }
 void HEEPCut_50_50ns_isolEMHadDepth1::setEcalHcal1EffAreaBarrel (float EcalHcal1EffAreaBarrel ){ EcalHcal1EffAreaBarrel_  = EcalHcal1EffAreaBarrel  ; }
 void HEEPCut_50_50ns_isolEMHadDepth1::setEcalHcal1EffAreaEndcaps(float EcalHcal1EffAreaEndcaps){ EcalHcal1EffAreaEndcaps_ = EcalHcal1EffAreaEndcaps ; }
 
-bool HEEPCut_50_50ns_IsolPtTrks     ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_50ns_IsolPtTrks     ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   float gsf_trackIso = gsfiter->dr03TkSumPt() ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
@@ -524,12 +524,12 @@ bool HEEPCut_50_50ns_IsolPtTrks     ::applyCut(reco::GsfElectronCollection::cons
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
-bool HEEPCut_50_50ns_missingHits    ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_50ns_missingHits    ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   bool result = (gsfiter->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits() <= 1) ;
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
-bool HEEPCut_50_50ns_dxyFirstPV     ::applyCut(reco::GsfElectronCollection::const_iterator gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_50ns_dxyFirstPV     ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   float gsf_dxy_firstPVtx = gsfiter->gsfTrack()->dxy(firstPV_) ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
@@ -621,10 +621,10 @@ void HEEPCutCollection::addCutCollection(HEEPCutCollection* collection){
   listOfCutCollections_.push_back(collection) ;
   cutTypes_.push_back(kCollection) ;
 }
-bool HEEPCutCollection::applyCuts(reco::GsfElectronCollection::const_iterator gsfiter){
+bool HEEPCutCollection::applyCuts(reco::GsfElectron* gsfiter){
   return applyCuts(gsfiter, true) ;
 }
-bool HEEPCutCollection::applyCuts(reco::GsfElectronCollection::const_iterator gsfiter, bool status_in){
+bool HEEPCutCollection::applyCuts(reco::GsfElectron* gsfiter, bool status_in){
   cutIndex_        = 0 ;
   collectionIndex_ = 0 ;
   status_ = status_in ;

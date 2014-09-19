@@ -257,22 +257,24 @@ void IIHEModuleHEEP::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   EcalClusterLazyTools lazytool(iEvent,iSetup,InputTag("reducedEcalRecHitsEB"),InputTag("reducedEcalRecHitsEE"),InputTag("reducedEcalRecHitsES"));
   
   for(reco::GsfElectronCollection::const_iterator gsfiter = electrons.begin() ; gsfiter!=electrons.end() ; ++gsfiter){
-    // Required for preshower variables
-    reco::SuperClusterRef cl_ref = gsfiter->superCluster();
-    const reco::CaloClusterPtr seed = gsfiter->superCluster()->seed();
+    reco::GsfElectron* gsf = (reco::GsfElectron*) &*gsfiter ;
     
-    HEEPCutflow_41_total_     ->applyCuts(gsfiter) ;
-    HEEPCutflow_50_50ns_total_->applyCuts(gsfiter) ;
-    HEEPCutflow_50_25ns_total_->applyCuts(gsfiter) ;
+    // Required for preshower variables
+    reco::SuperClusterRef    cl_ref = gsf->superCluster() ;
+    const reco::CaloClusterPtr seed = gsf->superCluster()->seed() ;
+    
+    HEEPCutflow_41_total_     ->applyCuts(gsf) ;
+    HEEPCutflow_50_50ns_total_->applyCuts(gsf) ;
+    HEEPCutflow_50_25ns_total_->applyCuts(gsf) ;
     
     // Preshower information
     // Get the preshower hits
-    double x = gsfiter->superCluster()->x() ;
-    double y = gsfiter->superCluster()->y() ;
-    double z = gsfiter->superCluster()->z() ;
+    double x = gsf->superCluster()->x() ;
+    double y = gsf->superCluster()->y() ;
+    double z = gsf->superCluster()->z() ;
     store("HEEP_eshitsixix", lazytool.getESHits(x, y, z, lazytool.rechits_map_, geometry, topology_p, 0, 1)) ;
     store("HEEP_eshitsiyiy", lazytool.getESHits(x, y, z, lazytool.rechits_map_, geometry, topology_p, 0, 2)) ;
-    store("HEEP_preshowerEnergy", gsfiter->superCluster()->preshowerEnergy()) ;
+    store("HEEP_preshowerEnergy", gsf->superCluster()->preshowerEnergy()) ;
     
     store("HEEP_eseffsixix", lazytool.eseffsixix(*cl_ref)) ;
     store("HEEP_eseffsiyiy", lazytool.eseffsiyiy(*cl_ref)) ;
@@ -288,31 +290,19 @@ void IIHEModuleHEEP::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     std::vector<float> gsf_crystal_eta     ;
     
     if(fabs((*gsfiter).superCluster()->eta())<1.479){ //First : Barrel
-      int iebhit = -1, nclust = 0;
-      double amplitot = 0.0;
-      double clustot = 0.0;
-      
-      for(reco::CaloCluster_iterator bcIt = (*gsfiter).superCluster()->clustersBegin() ; bcIt!=(*gsfiter).superCluster()->clustersEnd() ; ++bcIt) {
+      for(reco::CaloCluster_iterator bcIt = gsf->superCluster()->clustersBegin() ; bcIt!=gsf->superCluster()->clustersEnd() ; ++bcIt) {
         // Loop over basic clusters in SC
-        // bcIt seems to be a pointer to a pointer
-   
-        double clusterEnergy = (*bcIt)->energy();
-        clustot += clusterEnergy;
-        nclust += 1;
-        for(std::vector< std::pair<DetId, float> >::const_iterator rhIt = (*bcIt)->hitsAndFractions().begin() ; rhIt!=(*bcIt)->hitsAndFractions().end() ; ++rhIt) {
+        for(std::vector< std::pair<DetId, float> >::const_iterator rhIt = (*bcIt)->hitsAndFractions().begin() ; rhIt!=(*bcIt)->hitsAndFractions().end() ; ++rhIt){
           // Loop over rec hits in basic cluster
           for(EcalRecHitCollection::const_iterator it=EBhits->begin() ; it!=EBhits->end() ; ++it){
             // Loop over all rec hits to find the right ones
             if(rhIt->first==(*it).id()){ // Found the matching rechit
-              iebhit +=1; 
-              EcalRecHit hit = (*it);
-              EBDetId det    = hit.id(); 
-              float ampli    = hit.energy();
-              amplitot += ampli;
+              EBDetId det    = it->id(); 
+              float ampli    = it->energy();
         
-              GlobalPoint poseb = geometry->getPosition(hit.detid());
+              GlobalPoint poseb = geometry->getPosition(it->detid());
               float eta_eb = poseb.eta();
-              int   ieta   = det.ieta() ;      
+              int   ieta   = det.ieta() ;
               int   iphi   = det.iphi() ;
         
               gsf_crystal_energy  .push_back(ampli ) ;
@@ -325,25 +315,17 @@ void IIHEModuleHEEP::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       }
     }
     else{ // Now looking at endcaps rechits
-      int ieehit = -1, nclustee = 0;
-      double amplitotee = 0.0, clustotee = 0.0;
-      for(reco::CaloCluster_iterator bcIt = (*gsfiter).superCluster()->clustersBegin() ; bcIt!=(*gsfiter).superCluster()->clustersEnd() ; ++bcIt){
+      for(reco::CaloCluster_iterator bcIt = gsf->superCluster()->clustersBegin() ; bcIt!=gsf->superCluster()->clustersEnd() ; ++bcIt){
         // Loop over basic clusters in SC
-        nclustee +=1;
-        double clusterEnergyee = (*bcIt)->energy();
-        clustotee += clusterEnergyee;
         for(std::vector< std::pair<DetId, float> >::const_iterator rhIt = (*bcIt)->hitsAndFractions().begin() ; rhIt!=(*bcIt)->hitsAndFractions().end() ; ++rhIt){
           // Loop over rec hits in basic cluster
           for(EcalRecHitCollection::const_iterator it = EEhits->begin() ; it!=EEhits->end(); ++it){
             // Loop over all rec hits to find the right ones
-            if(rhIt->first==(*it).id() ){ //found the matching rechit
-              ieehit += 1;
-              EcalRecHit hit = (*it);
-              EEDetId det = hit.id(); 
-              float ampli = hit.energy();
-              amplitotee += ampli;
+            if(rhIt->first==it->id()){ //found the matching rechit
+              EEDetId det = it->id(); 
+              float ampli = it->energy();
         
-              GlobalPoint posee = geometry->getPosition(hit.detid());
+              GlobalPoint posee = geometry->getPosition(it->detid());
               float eta_ee = posee.eta();
               int   ix     = det.ix();
               int   iy     = det.iy();

@@ -28,6 +28,7 @@
 #include "UserCode/IIHETree/interface/IIHEModuleGedGsfElectron.h"
 #include "UserCode/IIHETree/interface/IIHEModuleMuon.h"
 #include "UserCode/IIHETree/interface/IIHEModuleHEEP.h"
+#include "UserCode/IIHETree/interface/IIHEModuleMET.h"
 #include "UserCode/IIHETree/interface/IIHEModuleMCTruth.h"
 #include "UserCode/IIHETree/interface/IIHEModuleTrigger.h"
 
@@ -54,6 +55,7 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig){
   childModules_.push_back(new IIHEModulePhoton(iConfig)        ) ;
   childModules_.push_back(new IIHEModuleGedGsfElectron(iConfig)) ;
   childModules_.push_back(new IIHEModuleMuon(iConfig)          ) ;
+  childModules_.push_back(new IIHEModuleMET(iConfig)           ) ;
   childModules_.push_back(new IIHEModuleHEEP(iConfig)          ) ;
   childModules_.push_back(new IIHEModuleMCTruth(iConfig)       ) ;
   childModules_.push_back(mod_trigger                          ) ;
