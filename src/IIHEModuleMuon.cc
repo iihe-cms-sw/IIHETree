@@ -40,10 +40,8 @@ void IIHEModuleMuon::beginJob(){
   addBranch("muon_dz" ) ;
   addBranch("muon_dxy_beamSpot" ) ;
   addBranch("muon_dxy_firstPVtx" ) ;
-  addBranch("muon_dxy_firstPVtxwithBS" ) ;
   addBranch("muon_dz_beamSpot" ) ;
   addBranch("muon_dz_firstPVtx" ) ;
-  addBranch("muon_dz_firstPVtxwithBS" ) ;
   addBranch("muon_vx" ) ;
   addBranch("muon_vy" ) ;
   addBranch("muon_vz" ) ;
@@ -145,11 +143,9 @@ void IIHEModuleMuon::beginJob(){
   addBranch("muon_tevOptimized_dz") ;
   addBranch("muon_tevOptimized_dz_beamSpot") ;
   addBranch("muon_tevOptimized_dz_firstPVtx") ;
-  addBranch("muon_tevOptimized_dz_firstPVtxwithBS") ;
   addBranch("muon_tevOptimized_dxy") ;
   addBranch("muon_tevOptimized_dxy_beamSpot") ;
   addBranch("muon_tevOptimized_dxy_firstPVtx") ;
-  addBranch("muon_tevOptimized_dxy_firstPVtxwithBS") ;
   
   addBranch("muon_tevOptimized_ptError") ;
   addBranch("muon_tevOptimized_etaError") ;
@@ -159,11 +155,14 @@ void IIHEModuleMuon::beginJob(){
   addBranch("muon_tevOptimized_dzError") ;
   addBranch("muon_tevOptimized_dxyError") ;
   
-  setBranchType(kVectorBool) ;
-  addBranch("muMatch_hltL1sMu16Eta2p1") ;
-  addBranch("muMatch_hltL1sL1Mu3p5EG12") ;
-  addBranch("muMatch_hltL1Mu3p5EG12L3Filtered22") ;
-  addBranch("muMatch_hltL3fL1sMu16Eta2p1L1f0L2f16QL3Filtered40Q") ;
+  ////////////////////////////////////////////////////////////////////////////////////////
+  //                                      Triggers                                      //
+  ////////////////////////////////////////////////////////////////////////////////////////
+  float DeltaRCut = 1.0 ;
+  addTriggerHLTMuon("hltL1sMu16Eta2p1"                          , DeltaRCut) ;
+  addTriggerHLTMuon("hltL1sL1Mu3p5EG12"                         , DeltaRCut) ;
+  addTriggerHLTMuon("hltL1Mu3p5EG12L3Filtered22"                , DeltaRCut) ;
+  addTriggerHLTMuon("hltL3fL1sMu16Eta2p1L1f0L2f16QL3Filtered40Q", DeltaRCut) ;
 }
 
 // ------------ method called to for each event  ------------
@@ -175,32 +174,12 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   iEvent.getByToken(parent_->beamSpotLabel_, theBeamSpot);
 
   math::XYZPoint beamspot(theBeamSpot->position().x(),theBeamSpot->position().y(),theBeamSpot->position().z());
-  math::XYZPoint firstpvertex      (0.0,0.0,0.0) ;
-  math::XYZPoint firstpvertexwithBS(0.0,0.0,0.0) ;
+  math::XYZPoint* firstPrimaryVertex = parent_->getFirstPrimaryVertex() ;
 
-  // Retrieve primary vertex collection
-  Handle<reco::VertexCollection> primaryVertexColl;
-  iEvent.getByLabel("offlinePrimaryVertices",primaryVertexColl);
-  const reco::VertexCollection* pvcoll = primaryVertexColl.product();
-  
-  Handle<reco::VertexCollection> primaryVertexCollwithBS;
-  iEvent.getByLabel("offlinePrimaryVerticesWithBS",primaryVertexCollwithBS);
-  const reco::VertexCollection* pvcollwithBS = primaryVertexCollwithBS.product();
-  
-  if(pvcoll->size()>0){
-    reco::VertexCollection::const_iterator firstpv = pvcoll->begin();
-    firstpvertex.SetXYZ(firstpv->x(),firstpv->y(),firstpv->z());
-  }
-  if(pvcollwithBS->size()>0){
-    reco::VertexCollection::const_iterator firstpv = pvcollwithBS->begin();
-    firstpvertexwithBS.SetXYZ(firstpv->x(),firstpv->y(),firstpv->z());
-  }
-  
   // Trigger information
   edm::InputTag trigEventTag("hltTriggerSummaryAOD","","HLT");
   edm::Handle<trigger::TriggerEvent> trigEvent; 
   iEvent.getByLabel(trigEventTag,trigEvent);
-  
   
   // Muon collections
   reco::MuonCollection muons = parent_->getMuonCollection() ;
@@ -225,12 +204,10 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       store("muon_d0"                              , muIt->globalTrack()->d0()                                        ) ;
       store("muon_dz"                              , muIt->globalTrack()->dz()                                        ) ;
       store("muon_dz_beamSpot"                     , muIt->globalTrack()->dz(beamspot)                                ) ;
-      store("muon_dz_firstPVtx"                    , muIt->globalTrack()->dz(firstpvertex)                            ) ;
-      store("muon_dz_firstPVtxwithBS"              , muIt->globalTrack()->dz(firstpvertexwithBS)                      ) ;
+      store("muon_dz_firstPVtx"                    , muIt->globalTrack()->dz(*firstPrimaryVertex)                     ) ;
       store("muon_dxy"                             , muIt->globalTrack()->dxy()                                       ) ;
       store("muon_dxy_beamSpot"                    , muIt->globalTrack()->dxy(beamspot)                               ) ;
-      store("muon_dxy_firstPVtx"                   , muIt->globalTrack()->dxy(firstpvertex)                           ) ;
-      store("muon_dxy_firstPVtxwithBS"             , muIt->globalTrack()->dxy(firstpvertexwithBS)                     ) ;
+      store("muon_dxy_firstPVtx"                   , muIt->globalTrack()->dxy(*firstPrimaryVertex)                    ) ;
       store("muon_dxy"                             , muIt->globalTrack()->dxy(beamspot)                               ) ;
       store("muon_dsz"                             , muIt->globalTrack()->dsz(beamspot)                               ) ;
       store("muon_dz"                              , muIt->globalTrack()->dz(beamspot)                                ) ;
@@ -325,12 +302,10 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       store("muon_tevOptimized_d0"                 , tevOptimizedTrk.first->d0()                                      ) ;
       store("muon_tevOptimized_dz"                 , tevOptimizedTrk.first->dz()                                      ) ;
       store("muon_tevOptimized_dz_beamSpot"        , tevOptimizedTrk.first->dz(beamspot)                              ) ;
-      store("muon_tevOptimized_dz_firstPVtx"       , tevOptimizedTrk.first->dz(firstpvertex)                          ) ;
-      store("muon_tevOptimized_dz_firstPVtxwithBS" , tevOptimizedTrk.first->dz(firstpvertexwithBS)                    ) ;
+      store("muon_tevOptimized_dz_firstPVtx"       , tevOptimizedTrk.first->dz(*firstPrimaryVertex)                   ) ;
       store("muon_tevOptimized_dxy"                , tevOptimizedTrk.first->dxy()                                     ) ;
       store("muon_tevOptimized_dxy_beamSpot"       , tevOptimizedTrk.first->dxy(beamspot)                             ) ;
-      store("muon_tevOptimized_dxy_firstPVtx"      , tevOptimizedTrk.first->dxy(firstpvertex)                         ) ;
-      store("muon_tevOptimized_dxy_firstPVtxwithBS", tevOptimizedTrk.first->dxy(firstpvertexwithBS)                   ) ;
+      store("muon_tevOptimized_dxy_firstPVtx"      , tevOptimizedTrk.first->dxy(*firstPrimaryVertex)                  ) ;
       
       store("muon_tevOptimized_ptError"            , tevOptimizedTrk.first->ptError()                                 ) ;
       store("muon_tevOptimized_etaError"           , tevOptimizedTrk.first->etaError()                                ) ;
@@ -339,32 +314,6 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       store("muon_tevOptimized_d0Error"            , tevOptimizedTrk.first->d0Error()                                 ) ;
       store("muon_tevOptimized_dzError"            , tevOptimizedTrk.first->dzError()                                 ) ;
       store("muon_tevOptimized_dxyError"           , tevOptimizedTrk.first->dxyError()                                ) ;
-
-      std::string branchPrefix = "muMatch_" ;
-      std::vector<std::string> filterNames ;
-      filterNames.push_back("hltL1sMu16Eta2p1") ;
-      filterNames.push_back("hltL1sL1Mu3p5EG12") ;
-      filterNames.push_back("hltL1Mu3p5EG12L3Filtered22") ;
-      filterNames.push_back("hltL3fL1sMu16Eta2p1L1f0L2f16QL3Filtered40Q") ;
-      
-      for(unsigned iFilter=0 ; iFilter<filterNames.size() ; iFilter++){
-        bool muMatch = false ;
-        // It is important to specify the right HLT process for the filter, not doing this is a common bug
-        trigger::size_type filterIndex = trigEvent->filterIndex(edm::InputTag(filterNames.at(iFilter),"",trigEventTag.process())); 
-        if(filterIndex<trigEvent->sizeFilters()){ 
-          const trigger::Keys& trigKeys = trigEvent->filterKeys(filterIndex); 
-          const trigger::TriggerObjectCollection & trigObjColl(trigEvent->getObjects());
-          // Now loop over the trigger objects passing filter
-          for(trigger::Keys::const_iterator keyIt = trigKeys.begin(); keyIt != trigKeys.end(); ++keyIt) { 
-            const trigger::TriggerObject& obj = trigObjColl[*keyIt];
-            if(deltaR(tevOptimizedTrk.first->eta(), tevOptimizedTrk.first->phi(), obj.eta(), obj.phi())<1.){
-              muMatch = true ;
-            }
-          }
-        }//end filter size check
-        std::string branchName = branchPrefix + filterNames.at(iFilter) ;
-        store(branchName, muMatch) ;
-      }
     }
   }
 }

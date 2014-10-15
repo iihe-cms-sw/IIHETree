@@ -34,40 +34,18 @@ void IIHEModuleVertex::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   // Get the beamspot from the Event:
   // The beamspot is passed to the IIHEAnalysis class, so we call it from parent_
   // Don't forget to declare IIHEModuleVertex as a friend of IIHEAnalysis!
-  edm::Handle<reco::BeamSpot> theBeamSpot;
-  iEvent.getByToken(parent_->beamSpotLabel_, theBeamSpot);
-
-  math::XYZPoint beamspot(theBeamSpot->position().x(),theBeamSpot->position().y(),theBeamSpot->position().z());
-  math::XYZPoint firstpvertex      (0.0,0.0,0.0) ;
-  math::XYZPoint firstpvertexwithBS(0.0,0.0,0.0) ;
 
   // Retrieve primary vertex collection
-  Handle<reco::VertexCollection> primaryVertexColl;
-  iEvent.getByLabel("offlinePrimaryVertices",primaryVertexColl);
-  const reco::VertexCollection* pvcoll = primaryVertexColl.product();
-  
-  Handle<reco::VertexCollection> primaryVertexCollwithBS;
-  iEvent.getByLabel("offlinePrimaryVerticesWithBS",primaryVertexCollwithBS);
-  const reco::VertexCollection* pvcollwithBS = primaryVertexCollwithBS.product();
-  
-  if(pvcoll->size()>0){
-    reco::VertexCollection::const_iterator firstpv = pvcoll->begin();
-    firstpvertex.SetXYZ(firstpv->x(),firstpv->y(),firstpv->z());
-  }
-  if(pvcollwithBS->size()>0){
-    reco::VertexCollection::const_iterator firstpv = pvcollwithBS->begin();
-    firstpvertexwithBS.SetXYZ(firstpv->x(),firstpv->y(),firstpv->z());
-  }
-
+  const reco::VertexCollection* pvcoll = parent_->getPrimaryVertices() ;
   store("pv_n", (unsigned int) pvcoll->size()) ;
-  for(reco::VertexCollection::const_iterator pvIt = pvcoll->begin(); pvIt != pvcoll->end(); ++pvIt){
-    store("pv_x"             , pvIt->x()) ;
-    store("pv_y"             , pvIt->y()) ;   
-    store("pv_z"             , pvIt->z()) ;  
-    store("pv_isValid"       , pvIt->isValid()) ;
-    store("pv_ndof"          , (int)pvIt->ndof()) ;
-    store("pv_nTracks"       , (int)(pvIt->nTracks())) ;
-    store("pv_normalizedChi2", pvIt->normalizedChi2()) ;
+  for(reco::VertexCollection::const_iterator pvIt = pvcoll->begin(); pvIt!=pvcoll->end(); ++pvIt){
+    store("pv_x"             , pvIt->x()                ) ;
+    store("pv_y"             , pvIt->y()                ) ;   
+    store("pv_z"             , pvIt->z()                ) ;  
+    store("pv_isValid"       , pvIt->isValid()          ) ;
+    store("pv_ndof"          , (int)pvIt->ndof()        ) ;
+    store("pv_nTracks"       , (int)(pvIt->nTracks())   ) ;
+    store("pv_normalizedChi2", pvIt->normalizedChi2()   ) ;
     store("pv_totTrackSize"  , (int)(pvIt->tracksSize())) ;
   }
 }
@@ -75,7 +53,6 @@ void IIHEModuleVertex::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 void IIHEModuleVertex::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){}
 void IIHEModuleVertex::beginEvent(){}
 void IIHEModuleVertex::endEvent(){}
-
 
 // ------------ method called once each job just after ending the event loop  ------------
 void IIHEModuleVertex::endJob(){}

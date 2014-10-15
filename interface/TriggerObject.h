@@ -2,6 +2,9 @@
 #define UserCode_IIHETree_TriggerObject_h
 
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
+#include "DataFormats/MuonReco/interface/Muon.h"
+#include "DataFormats/MuonReco/interface/MuonFwd.h"
+#include "DataFormats/MuonReco/interface/MuonCocktails.h"
 #include "DataFormats/HLTReco/interface/TriggerEvent.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
 #include "DataFormats/Math/interface/deltaR.h"
@@ -20,6 +23,8 @@ private:
   const double regionEtaSizeEB_ ;
   const double regionEtaSizeEE_ ;
   const double regionPhiSize_   ;
+  
+  bool matchObject(edm::Handle<trigger::TriggerEvent>, float, float) ;
 public:
   L1Trigger(std::string, std::string) ;
   ~L1Trigger() ;
@@ -27,7 +32,8 @@ public:
   std::string       name(){ return       name_ ; }
   std::string branchName(){ return branchName_ ; }
   int setFilterIndex(edm::Handle<trigger::TriggerEvent>, edm::InputTag) ;
-  bool matchElectron(edm::Handle<trigger::TriggerEvent>, reco::GsfElectronCollection::const_iterator) ;
+  bool matchElectron(edm::Handle<trigger::TriggerEvent>, reco::GsfElectron*) ;
+  bool matchMuon    (edm::Handle<trigger::TriggerEvent>, reco::Muon*       ) ;
 };
 
 class HLTrigger{
@@ -36,6 +42,8 @@ private:
   std::string branchName_ ;
   int filterIndex_;
   float DeltaRCut_ ;
+  
+  bool matchObject(edm::Handle<trigger::TriggerEvent>, float, float) ;
 public:
   HLTrigger(std::string, std::string, float) ;
   ~HLTrigger() ;
@@ -43,7 +51,8 @@ public:
   std::string       name(){ return       name_ ; }
   std::string branchName(){ return branchName_ ; }
   int setFilterIndex(edm::Handle<trigger::TriggerEvent>, edm::InputTag) ;
-  bool matchElectron(edm::Handle<trigger::TriggerEvent>, reco::GsfElectronCollection::const_iterator) ;
+  bool matchElectron(edm::Handle<trigger::TriggerEvent>, reco::GsfElectron*) ;
+  bool matchMuon    (edm::Handle<trigger::TriggerEvent>, reco::Muon*       ) ;
 };
 
 #endif

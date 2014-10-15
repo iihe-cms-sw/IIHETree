@@ -89,7 +89,7 @@ void IIHEModuleHEEP::beginJob(){
   
   // These cuts must be updated so declare them separately
   cut_41_isolEMHadDepth1_       = new HEEPCut_41_isolEMHadDepth1(prefix_41 + "_isolEMHadDepth1", this) ;
-  cut_41_dxyFirstPV_           = new HEEPCut_41_dxyFirstPV      (prefix_41 + "_dxyFirstPV "    , this) ;
+  cut_41_dxyFirstPV_            = new HEEPCut_41_dxyFirstPV      (prefix_41 + "_dxyFirstPV"    , this) ;
   
   cut_41_isolEMHadDepth1_->setEcalHcal1EffAreaBarrel (EcalHcal1EffAreaBarrel_ ) ;
   cut_41_isolEMHadDepth1_->setEcalHcal1EffAreaEndcaps(EcalHcal1EffAreaEndcaps_) ;
@@ -103,6 +103,7 @@ void IIHEModuleHEEP::beginJob(){
   HEEPCutflow_41_ID_->addCut( (HEEPCutBase*) new HEEPCut_41_dPhiIn       (prefix_41 + "_dPhiIn"       , this)) ;
   HEEPCutflow_41_ID_->addCut( (HEEPCutBase*) new HEEPCut_41_HOverE       (prefix_41 + "_HOverE"       , this)) ;
   HEEPCutflow_41_ID_->addCut( (HEEPCutBase*) new HEEPCut_41_SigmaIetaIeta(prefix_41 + "_SigmaIetaIeta", this)) ;
+  HEEPCutflow_41_ID_->addCut( (HEEPCutBase*) new HEEPCut_41_E1x5OverE5x5 (prefix_41 + "_E1x5OverE5x5" , this)) ;
   HEEPCutflow_41_ID_->addCut( (HEEPCutBase*) new HEEPCut_41_E2x5OverE5x5 (prefix_41 + "_E2x5OverE5x5" , this)) ;
   HEEPCutflow_41_ID_->addCut( (HEEPCutBase*) new HEEPCut_41_missingHits  (prefix_41 + "_missingHits"  , this)) ;
   HEEPCutflow_41_ID_->addCut( (HEEPCutBase*) cut_41_dxyFirstPV_) ;
@@ -118,6 +119,45 @@ void IIHEModuleHEEP::beginJob(){
   HEEPCutflow_41_total_->config() ;
   
   ////////////////////////////////////////////////////////////////////////////////////////
+  //                                        5.0 50ns                                    //
+  ////////////////////////////////////////////////////////////////////////////////////////
+  std::string prefix_50_50ns = "HEEP_cutflow50_50ns" ;
+  HEEPCutflow_50_50ns_ID_        = new HEEPCutCollection(prefix_50_50ns+"_ID"       , this) ;
+  HEEPCutflow_50_50ns_isolation_ = new HEEPCutCollection(prefix_50_50ns+"_isolation", this) ;
+  HEEPCutflow_50_50ns_total_     = new HEEPCutCollection(prefix_50_50ns+"_total"    , this) ;
+  
+  // These cuts must be updated so declare them separately
+  cut_50_50ns_isolEMHadDepth1_ = new HEEPCut_50_50ns_isolEMHadDepth1(prefix_50_50ns+"_isolEMHadDepth1", this) ;
+  cut_50_50ns_dxyFirstPV_      = new HEEPCut_50_50ns_dxyFirstPV     (prefix_50_50ns+"_dxyFirstPV"     , this) ;
+  
+  cut_50_50ns_isolEMHadDepth1_->setEcalHcal1EffAreaBarrel (EcalHcal1EffAreaBarrel_ ) ;
+  cut_50_50ns_isolEMHadDepth1_->setEcalHcal1EffAreaEndcaps(EcalHcal1EffAreaEndcaps_) ;
+  cut_50_50ns_isolEMHadDepth1_->setRho(rho_) ;
+  
+  // Define the ID
+  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_50ns_Et           (prefix_50_50ns+"_Et"           , this)) ;
+  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_50ns_eta          (prefix_50_50ns+"_eta"          , this)) ;
+  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_50ns_EcalDriven   (prefix_50_50ns+"_EcalDriven"   , this)) ;
+  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_50ns_dEtaIn       (prefix_50_50ns+"_dEtaIn"       , this)) ;
+  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_50ns_dPhiIn       (prefix_50_50ns+"_dPhiIn"       , this)) ;
+  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_50ns_HOverE       (prefix_50_50ns+"_HOverE"       , this)) ;
+  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_50ns_SigmaIetaIeta(prefix_50_50ns+"_SigmaIetaIeta", this)) ;
+  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_50ns_E1x5OverE5x5 (prefix_50_50ns+"_E1x5OverE5x5" , this)) ;
+  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_50ns_E2x5OverE5x5 (prefix_50_50ns+"_E2x5OverE5x5" , this)) ;
+  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_50ns_missingHits  (prefix_50_50ns+"_missingHits"  , this)) ;
+  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) cut_50_50ns_dxyFirstPV_) ;
+  
+  // Define the isolation
+  HEEPCutflow_50_50ns_isolation_->addCut( (HEEPCutBase*) cut_50_50ns_isolEMHadDepth1_) ;
+  HEEPCutflow_50_50ns_isolation_->addCut( (HEEPCutBase*) new HEEPCut_50_50ns_IsolPtTrks(prefix_50_50ns+"_IsolPtTrks", this)) ;
+  
+  // Put it all together
+  HEEPCutflow_50_50ns_total_->addCutCollection(HEEPCutflow_50_50ns_ID_       ) ;
+  HEEPCutflow_50_50ns_total_->addCutCollection(HEEPCutflow_50_50ns_isolation_) ;
+  
+  HEEPCutflow_50_50ns_total_->config() ;
+  
+  ////////////////////////////////////////////////////////////////////////////////////////
   //                                        5.0 25ns                                    //
   ////////////////////////////////////////////////////////////////////////////////////////
   std::string prefix_50_25ns = "HEEP_cutflow50_25ns" ;
@@ -127,7 +167,7 @@ void IIHEModuleHEEP::beginJob(){
   
   // These cuts must be updated so declare them separately
   cut_50_25ns_isolEMHadDepth1_ = new HEEPCut_50_25ns_isolEMHadDepth1(prefix_50_25ns+"_isolEMHadDepth1", this) ;
-  cut_50_25ns_dxyFirstPV_      = new HEEPCut_50_25ns_dxyFirstPV     (prefix_50_25ns+"_dxyFirstPV "    , this) ;
+  cut_50_25ns_dxyFirstPV_      = new HEEPCut_50_25ns_dxyFirstPV     (prefix_50_25ns+"_dxyFirstPV"     , this) ;
   
   cut_50_25ns_isolEMHadDepth1_->setEcalHcal1EffAreaBarrel (EcalHcal1EffAreaBarrel_ ) ;
   cut_50_25ns_isolEMHadDepth1_->setEcalHcal1EffAreaEndcaps(EcalHcal1EffAreaEndcaps_) ;
@@ -141,6 +181,7 @@ void IIHEModuleHEEP::beginJob(){
   HEEPCutflow_50_25ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_25ns_dPhiIn       (prefix_50_25ns+"_dPhiIn"       , this)) ;
   HEEPCutflow_50_25ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_25ns_HOverE       (prefix_50_25ns+"_HOverE"       , this)) ;
   HEEPCutflow_50_25ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_25ns_SigmaIetaIeta(prefix_50_25ns+"_SigmaIetaIeta", this)) ;
+  HEEPCutflow_50_25ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_25ns_E1x5OverE5x5 (prefix_50_25ns+"_E1x5OverE5x5" , this)) ;
   HEEPCutflow_50_25ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_25ns_E2x5OverE5x5 (prefix_50_25ns+"_E2x5OverE5x5" , this)) ;
   HEEPCutflow_50_25ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_25ns_missingHits  (prefix_50_25ns+"_missingHits"  , this)) ;
   HEEPCutflow_50_25ns_ID_->addCut( (HEEPCutBase*) cut_50_25ns_dxyFirstPV_) ;
@@ -156,42 +197,8 @@ void IIHEModuleHEEP::beginJob(){
   HEEPCutflow_50_25ns_total_->config() ;
   
   ////////////////////////////////////////////////////////////////////////////////////////
-  //                                        5.0 50ns                                    //
+  //                     Add everything to the vector of cutflows                       //
   ////////////////////////////////////////////////////////////////////////////////////////
-  std::string prefix_50_50ns = "HEEP_cutflow50_50ns" ;
-  HEEPCutflow_50_50ns_ID_        = new HEEPCutCollection(prefix_50_50ns+"_ID"       , this) ;
-  HEEPCutflow_50_50ns_isolation_ = new HEEPCutCollection(prefix_50_50ns+"_isolation", this) ;
-  HEEPCutflow_50_50ns_total_     = new HEEPCutCollection(prefix_50_50ns+"_total"    , this) ;
-  
-  // These cuts must be updated so declare them separately
-  cut_50_50ns_isolEMHadDepth1_ = new HEEPCut_50_50ns_isolEMHadDepth1(prefix_50_50ns+"_isolEMHadDepth1", this) ;
-  cut_50_50ns_dxyFirstPV_      = new HEEPCut_50_50ns_dxyFirstPV     (prefix_50_50ns+"_dxyFirstPV "    , this) ;
-  
-  cut_50_50ns_isolEMHadDepth1_->setEcalHcal1EffAreaBarrel (EcalHcal1EffAreaBarrel_ ) ;
-  cut_50_50ns_isolEMHadDepth1_->setEcalHcal1EffAreaEndcaps(EcalHcal1EffAreaEndcaps_) ;
-  cut_50_50ns_isolEMHadDepth1_->setRho(rho_) ;
-  
-  // Define the ID
-  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_50ns_Et           (prefix_50_50ns+"_Et"           , this)) ;
-  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_50ns_eta          (prefix_50_50ns+"_eta"          , this)) ;
-  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_50ns_EcalDriven   (prefix_50_50ns+"_EcalDriven"   , this)) ;
-  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_50ns_dEtaIn       (prefix_50_50ns+"_dEtaIn"       , this)) ;
-  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_50ns_dPhiIn       (prefix_50_50ns+"_dPhiIn"       , this)) ;
-  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_50ns_HOverE       (prefix_50_50ns+"_HOverE"       , this)) ;
-  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_50ns_SigmaIetaIeta(prefix_50_50ns+"_SigmaIetaIeta", this)) ;
-  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_50ns_E2x5OverE5x5 (prefix_50_50ns+"_E2x5OverE5x5" , this)) ;
-  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_50ns_missingHits  (prefix_50_50ns+"_missingHits"  , this)) ;
-  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) cut_50_50ns_dxyFirstPV_) ;
-  
-  // Define the isolation
-  HEEPCutflow_50_50ns_isolation_->addCut( (HEEPCutBase*) cut_50_50ns_isolEMHadDepth1_) ;
-  HEEPCutflow_50_50ns_isolation_->addCut( (HEEPCutBase*) new HEEPCut_50_50ns_IsolPtTrks(prefix_50_50ns+"_IsolPtTrks", this)) ;
-  
-  // Put it all together
-  HEEPCutflow_50_50ns_total_->addCutCollection(HEEPCutflow_50_50ns_ID_       ) ;
-  HEEPCutflow_50_50ns_total_->addCutCollection(HEEPCutflow_50_50ns_isolation_) ;
-  
-  HEEPCutflow_50_50ns_total_->config() ;
   
   HEEPCutflows_.push_back(HEEPCutflow_41_ID_            ) ;
   HEEPCutflows_.push_back(HEEPCutflow_41_isolation_     ) ;
@@ -224,20 +231,10 @@ void IIHEModuleHEEP::beginJob(){
 void IIHEModuleHEEP::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   reco::GsfElectronCollection electrons = parent_->getElectronCollection() ;
   
-  // Retrieve primary vertex collection
-  Handle<reco::VertexCollection> primaryVertexColl;
-  iEvent.getByLabel("offlinePrimaryVertices",primaryVertexColl);
-  const reco::VertexCollection* pvcoll = primaryVertexColl.product();
-  
-  math::XYZPoint firstpvertex(0.0,0.0,0.0) ;
-  // We take only the first primary vertex, i.e. the one with the electrons
-  if(pvcoll->size() > 0) {
-    reco::VertexCollection::const_iterator firstpv = pvcoll->begin();
-    firstpvertex.SetXYZ(firstpv->x(),firstpv->y(),firstpv->z());
-  }
-  cut_41_dxyFirstPV_->setFirstPV(firstpvertex) ;
-  cut_50_50ns_dxyFirstPV_->setFirstPV(firstpvertex) ;
-  cut_50_25ns_dxyFirstPV_->setFirstPV(firstpvertex) ;
+  math::XYZPoint* firstPrimaryVertex = parent_->getFirstPrimaryVertex() ;
+  cut_41_dxyFirstPV_     ->setFirstPV(firstPrimaryVertex) ;
+  cut_50_50ns_dxyFirstPV_->setFirstPV(firstPrimaryVertex) ;
+  cut_50_25ns_dxyFirstPV_->setFirstPV(firstPrimaryVertex) ;
   
   // Information for preshower
   edm::ESHandle<CaloGeometry> pGeometry ;

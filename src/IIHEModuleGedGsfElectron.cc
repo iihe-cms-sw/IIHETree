@@ -78,12 +78,10 @@ void IIHEModuleGedGsfElectron::beginJob(){
   addBranch("gsf_dxy") ;
   addBranch("gsf_dxy_beamSpot") ;
   addBranch("gsf_dxy_firstPVtx") ;
-  addBranch("gsf_dxy_firstPVtxwithBS") ;
   addBranch("gsf_dxyError") ;
   addBranch("gsf_dz") ;
   addBranch("gsf_dz_beamSpot") ;
   addBranch("gsf_dz_firstPVtx") ;
-  addBranch("gsf_dz_firstPVtxwithBS") ;
   addBranch("gsf_dzError") ;
   addBranch("gsf_vz") ;
   addBranch("gsf_numberOfValidHits", kVectorInt) ;
@@ -104,16 +102,6 @@ void IIHEModuleGedGsfElectron::beginJob(){
 void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   // Delegate default electron collection name to IIHEAnalysis class
   reco::GsfElectronCollection electrons = parent_->getElectronCollection() ;
-  
-  math::XYZPoint firstpvertexwithBS(0.0,0.0,0.0);
-  Handle<reco::VertexCollection> primaryVertexCollwithBS;
-  iEvent.getByLabel("offlinePrimaryVerticesWithBS",primaryVertexCollwithBS);
-  const reco::VertexCollection* pvcollwithBS = primaryVertexCollwithBS.product();
-
-  if(pvcollwithBS->size()>0){
-    reco::VertexCollection::const_iterator firstpv = pvcollwithBS->begin();
-    firstpvertexwithBS.SetXYZ(firstpv->x(),firstpv->y(),firstpv->z());
-  }
   
   edm::Handle<reco::BeamSpot> theBeamSpot;
   iEvent.getByLabel("offlineBeamSpot", theBeamSpot);
@@ -164,12 +152,10 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
     store("gsf_dxy"                           , gsfiter->gsfTrack()->dxy());
     store("gsf_dxy_beamSpot"                  , gsfiter->gsfTrack()->dxy(beamspot));
     store("gsf_dxy_firstPVtx"                 , gsfiter->gsfTrack()->dxy(firstpvertex));
-    store("gsf_dxy_firstPVtxwithBS"           , gsfiter->gsfTrack()->dxy(firstpvertexwithBS));
     store("gsf_dxyError"                      , gsfiter->gsfTrack()->dxyError());
     store("gsf_dz"                            , gsfiter->gsfTrack()->dz());
     store("gsf_dz_beamSpot"                   , gsfiter->gsfTrack()->dz(beamspot));
     store("gsf_dz_firstPVtx"                  , gsfiter->gsfTrack()->dz(firstpvertex));
-    store("gsf_dz_firstPVtxwithBS"            , gsfiter->gsfTrack()->dz(firstpvertexwithBS));
     store("gsf_dzError"                       , gsfiter->gsfTrack()->dzError()); 
     store("gsf_vz"                            , gsfiter->gsfTrack()->vz());
     store("gsf_numberOfValidHits"             , gsfiter->gsfTrack()->numberOfValidHits());

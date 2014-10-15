@@ -31,11 +31,16 @@ void IIHEModule::setBranchType(int type){ parent_->setBranchType(type) ; }
 
 void IIHEModule::addToMCTruthWhitelist(std::vector<int> pdgIds){ parent_->addToMCTruthWhitelist(pdgIds) ; }
 
+// Trigger matching
 bool IIHEModule::addTriggerL1Electron(std::string name){
   return parent_->addTriggerL1Electron(name) ;
 }
 bool IIHEModule::addTriggerHLTElectron(std::string name, float DeltaRCut){
   return parent_->addTriggerHLTElectron(name, DeltaRCut) ;
+}
+
+bool IIHEModule::addTriggerHLTMuon(std::string name, float DeltaRCut){
+  return parent_->addTriggerHLTMuon(name, DeltaRCut) ;
 }
 
 

@@ -25,13 +25,18 @@ public:
 private:
   void addBranches() ;
   
-  bool addL1TriggerElecton(std::string) ;
-  bool addHLTriggerElecton(std::string, float) ;
+  bool addL1TriggerElectron(std::string) ;
+  bool addHLTriggerElectron(std::string, float) ;
+  bool addL1TriggerMuon(std::string) ;
+  bool addHLTriggerMuon(std::string, float) ;
   
   std::vector<L1Trigger*> L1TriggersElectron_ ;
   std::vector<HLTrigger*> HLTriggersElectron_ ;
+  std::vector<L1Trigger*> L1TriggersMuon_ ;
+  std::vector<HLTrigger*> HLTriggersMuon_ ;
   
   std::string branchPrefixElectronMatch_ ;
+  std::string branchPrefixMuonMatch_ ;
   
   std::vector<std::string>  L1FilterNamesPhoton_   ;
   std::vector<std::string>  L1FilterNamesElectron_ ;

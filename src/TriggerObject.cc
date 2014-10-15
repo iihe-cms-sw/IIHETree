@@ -16,7 +16,19 @@ int L1Trigger::setFilterIndex(edm::Handle<trigger::TriggerEvent> trigEvent, edm:
   return filterIndex_ ;
 }
 
-bool L1Trigger::matchElectron(edm::Handle<trigger::TriggerEvent> trigEvent, reco::GsfElectronCollection::const_iterator gsfiter){
+bool L1Trigger::matchElectron(edm::Handle<trigger::TriggerEvent> trigEvent, reco::GsfElectron* gsf){
+  float eta = gsf->eta() ;
+  float phi = gsf->phi() ;
+  return matchObject(trigEvent, eta, phi) ;
+}
+
+bool L1Trigger::matchMuon(edm::Handle<trigger::TriggerEvent> trigEvent, reco::Muon* muon){
+  float eta = muon->eta() ;
+  float phi = muon->phi() ;
+  return matchObject(trigEvent, eta, phi) ;
+}
+
+bool L1Trigger::matchObject(edm::Handle<trigger::TriggerEvent> trigEvent, float eta, float phi){
   // Careful that L1 triggers only have discrete eta phi. Need to be extremely loose. 
   // See here: http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/SHarper/SHNtupliser/src/SHTrigInfo.cc?revision=1.5&view=markup&pathrev=HEAD
   // It is important to specify the right HLT process for the filter, not doing this is a common bug
@@ -27,17 +39,17 @@ bool L1Trigger::matchElectron(edm::Handle<trigger::TriggerEvent> trigEvent, reco
     const trigger::TriggerObjectCollection& trigObjColl(trigEvent->getObjects()) ;
     
     // Now loop of the trigger objects passing filter
-    for(trigger::Keys::const_iterator keyIt=trigKeys.begin();keyIt!=trigKeys.end();++keyIt){ 
+    for(trigger::Keys::const_iterator keyIt=trigKeys.begin() ; keyIt!=trigKeys.end() ; ++keyIt){ 
       
       const trigger::TriggerObject& obj = trigObjColl[*keyIt] ;
       
-      float objeta = obj.eta(); 
-      float objphi = obj.phi();
+      float objeta = obj.eta() ;
+      float objphi = obj.phi() ;
       
       double etaBinLow  = 0.0 ;
       double etaBinHigh = 0.0 ;
       
-      if(fabs(objeta) < barrelEnd_){
+      if(fabs(objeta)<barrelEnd_){
         etaBinLow  = objeta    - regionEtaSizeEB_/2.0 ;
         etaBinHigh = etaBinLow + regionEtaSizeEB_     ;
       }
@@ -46,11 +58,11 @@ bool L1Trigger::matchElectron(edm::Handle<trigger::TriggerEvent> trigEvent, reco
         etaBinHigh = etaBinLow + regionEtaSizeEE_     ;
       }
       
-      if(gsfiter->eta() < etaBinHigh && gsfiter->eta() > etaBinLow){
+      if(eta<etaBinHigh && eta>etaBinLow){
         return true ;
       }
-      float dPhi = reco::deltaPhi(gsfiter->phi(),objphi) ;
-      if(gsfiter->eta() < etaBinHigh && gsfiter->eta() > etaBinLow &&  dPhi<regionPhiSize_/2.0){
+      float dPhi = reco::deltaPhi(phi,objphi) ;
+      if(eta<etaBinHigh && eta>etaBinLow &&  dPhi<regionPhiSize_/2.0){
         return true ;
       }
     }
@@ -71,17 +83,30 @@ int HLTrigger::setFilterIndex(edm::Handle<trigger::TriggerEvent> trigEvent, edm:
   return filterIndex_ ;
 }
 
-bool HLTrigger::matchElectron(edm::Handle<trigger::TriggerEvent> trigEvent, reco::GsfElectronCollection::const_iterator gsfiter){
+bool HLTrigger::matchElectron(edm::Handle<trigger::TriggerEvent> trigEvent, reco::GsfElectron* gsf){
+  if(filterIndex_<0) return false ;
+  float eta = gsf->eta() ;
+  float phi = gsf->phi() ;
+  return matchObject(trigEvent, eta, phi) ;
+}
+
+bool HLTrigger::matchMuon(edm::Handle<trigger::TriggerEvent> trigEvent, reco::Muon* muon){
+  if(filterIndex_<0) return false ;
+  float eta = muon->eta() ;
+  float phi = muon->phi() ;
+  return matchObject(trigEvent, eta, phi) ;
+}
+
+bool HLTrigger::matchObject(edm::Handle<trigger::TriggerEvent> trigEvent, float eta, float phi){
   if(filterIndex_<0) return false ;
   if(filterIndex_<trigEvent->sizeFilters()){ 
     const trigger::Keys& trigKeys = trigEvent->filterKeys(filterIndex_) ; 
-    
     const trigger::TriggerObjectCollection & trigObjColl(trigEvent->getObjects()) ;
     
     // Now loop over the trigger objects passing filter
     for(trigger::Keys::const_iterator keyIt = trigKeys.begin(); keyIt != trigKeys.end(); ++keyIt) { 
       const trigger::TriggerObject& obj = trigObjColl[*keyIt] ;
-      if(deltaR(gsfiter->eta(),gsfiter->phi(),obj.eta(), obj.phi())<DeltaRCut_){
+      if(deltaR(eta,phi,obj.eta(),obj.phi())<DeltaRCut_){
         return true ;
       }
     }

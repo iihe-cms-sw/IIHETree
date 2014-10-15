@@ -25,6 +25,9 @@
 #include "DataFormats/EgammaCandidates/interface/Photon.h"
 #include "DataFormats/EgammaCandidates/interface/PhotonFwd.h"
 
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+
 // ROOT includes
 #include "TFile.h"
 #include "TTree.h"
@@ -67,6 +70,7 @@ friend class IIHEModuleMuon ;
 
 private:
   edm::EDGetTokenT<reco::BeamSpot> beamSpotLabel_ ;
+  math::XYZPoint* firstPrimaryVertex_ ;
 public:
   explicit IIHEAnalysis(const edm::ParameterSet& iConfig);
   ~IIHEAnalysis();
@@ -108,12 +112,23 @@ public:
     return muons     ;
   }
   
+  // Primary vertices
+  const reco::VertexCollection* getPrimaryVertices(){
+    const reco::VertexCollection* primaryVertices = pvCollection_.product() ;
+    return primaryVertices ;
+  }
+  math::XYZPoint* getFirstPrimaryVertex(){ return firstPrimaryVertex_ ; }
+  
   // Triggers
   bool addTriggerL1Electron(std::string) ;
   bool addTriggerHLTElectron(std::string, float) ;
+  bool addTriggerL1Muon(std::string) ;
+  bool addTriggerHLTMuon(std::string, float) ;
   
   std::vector<std::string>                   getTriggerL1FilterNamesElectron (){ return triggerL1FilterNamesElectron_  ; }
   std::vector<std::pair<std::string,float> > getTriggerHLTFilterNamesElectron(){ return triggerHLTFilterNamesElectron_ ; }
+  std::vector<std::string>                   getTriggerL1FilterNamesMuon     (){ return triggerL1FilterNamesMuon_      ; }
+  std::vector<std::pair<std::string,float> > getTriggerHLTFilterNamesMuon    (){ return triggerHLTFilterNamesMuon_     ; }
   
 private:
   virtual void beginJob() ;
@@ -152,10 +167,12 @@ private:
   edm::Handle<reco::PhotonCollection     >   photonCollection_ ;
   edm::Handle<reco::GsfElectronCollection> electronCollection_ ;
   edm::Handle<reco::MuonCollection       >     muonCollection_ ;
+  edm::Handle<reco::VertexCollection     >       pvCollection_ ;
   
   edm::InputTag   photonCollectionLabel_ ;
   edm::InputTag electronCollectionLabel_ ;
   edm::InputTag     muonCollectionLabel_ ;
+  edm::InputTag      primaryVertexLabel_ ;
   
   bool debug_;
   std::string git_hash_  ;
@@ -164,6 +181,8 @@ private:
   // trigger module
   std::vector<std::string>                   triggerL1FilterNamesElectron_  ;
   std::vector<std::pair<std::string,float> > triggerHLTFilterNamesElectron_ ;
+  std::vector<std::string>                   triggerL1FilterNamesMuon_      ;
+  std::vector<std::pair<std::string,float> > triggerHLTFilterNamesMuon_     ;
   
   // MC truth module
   std::vector<int> MCTruthWhitelist_ ;

@@ -68,6 +68,8 @@ public:
   void addToMCTruthWhitelist(std::vector<int>) ;
   bool addTriggerL1Electron(std::string) ;
   bool addTriggerHLTElectron(std::string, float) ;
+  bool addTriggerL1Muon(std::string) ;
+  bool addTriggerHLTMuon(std::string, float) ;
   
   void   pubBeginJob(){   beginJob() ; } ;
   void pubBeginEvent(){ beginEvent() ; } ;

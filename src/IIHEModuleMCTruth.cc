@@ -79,7 +79,7 @@ void IIHEModuleMCTruth::analyze(const edm::Event& iEvent, const edm::EventSetup&
     if(false==accept) continue ;
     
     const Candidate* mother = mc_iter->mother() ;
-    while(abs(mother->pdgId())==abs(pdgId)){  mother = mother->mother() ; }
+    while(abs(mother->pdgId())==abs(pdgId)){ mother = mother->mother() ; }
     
     mc_pt .push_back(pt ) ;
     mc_eta.push_back(eta) ;
@@ -111,8 +111,7 @@ void IIHEModuleMCTruth::analyze(const edm::Event& iEvent, const edm::EventSetup&
         mother_index = j ;
       }
     }
-    store("mc_mother_index", mother_index  ) ;
-    
+    store("mc_mother_index", mother_index) ;
   }
 }
 

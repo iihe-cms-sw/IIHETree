@@ -41,11 +41,12 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig){
   debug_     = iConfig.getParameter<bool  >("debug"    ) ;
   git_hash_  = iConfig.getParameter<string>("git_hash" ) ;
   globalTag_ = iConfig.getParameter<string>("globalTag") ;
-  beamSpotLabel_ = consumes<BeamSpot>(iConfig.getParameter<InputTag>("beamSpot")) ;
+  beamSpotLabel_      = consumes<BeamSpot>(iConfig.getParameter<InputTag>("beamSpot")) ;
+  primaryVertexLabel_ = iConfig.getParameter<edm::InputTag>("primaryVertex") ;
   
-  photonCollectionLabel_   = iConfig.getParameter<edm::InputTag>("photonCollection"  ) ;
-  electronCollectionLabel_ = iConfig.getParameter<edm::InputTag>("electronCollection") ;
-  muonCollectionLabel_     = iConfig.getParameter<edm::InputTag>("muonCollection"    ) ;
+  photonCollectionLabel_   = iConfig.getParameter<edm::InputTag>("photonCollection"       ) ;
+  electronCollectionLabel_ = iConfig.getParameter<edm::InputTag>("electronCollection"     ) ;
+  muonCollectionLabel_     = iConfig.getParameter<edm::InputTag>("muonCollection"         ) ;
   
   IIHEModuleTrigger* mod_trigger = new IIHEModuleTrigger(iConfig) ;
   
@@ -236,16 +237,40 @@ bool IIHEAnalysis::addTriggerHLTElectron(std::string name, float DeltaRCut){
   return true ;
 }
 
+bool IIHEAnalysis::addTriggerL1Muon(std::string name){
+  for(unsigned int i=0 ; i<triggerL1FilterNamesMuon_.size() ; ++i){
+    if(name==triggerL1FilterNamesMuon_.at(i)) return false ;
+  }
+  triggerL1FilterNamesMuon_.push_back(name) ;
+  return true ;
+}
+bool IIHEAnalysis::addTriggerHLTMuon(std::string name, float DeltaRCut){
+  for(unsigned int i=0 ; i<triggerHLTFilterNamesMuon_.size() ; ++i){
+    if(name==triggerHLTFilterNamesMuon_.at(i).first) return false ;
+  }
+  std::pair<std::string,float> values(name,DeltaRCut) ;
+  triggerHLTFilterNamesMuon_.push_back(values) ;
+  return true ;
+}
+
 // ------------ method called to for each event  -----------------------------------------
 
 void IIHEAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   beginEvent() ;
-  
   // Get the default collections
   // These should be harmonised across submodules, where possible
   iEvent.getByLabel(  photonCollectionLabel_,   photonCollection_) ;
   iEvent.getByLabel(electronCollectionLabel_, electronCollection_) ;
   iEvent.getByLabel(    muonCollectionLabel_,     muonCollection_) ;
+  iEvent.getByLabel(     primaryVertexLabel_,       pvCollection_) ;
+  
+  // We take only the first primary vertex
+  firstPrimaryVertex_ = new math::XYZPoint(0.0,0.0,0.0) ;
+  const reco::VertexCollection* primaryVertices = getPrimaryVertices() ;
+  if(primaryVertices->size()>0){
+    reco::VertexCollection::const_iterator firstpv = primaryVertices->begin();
+    firstPrimaryVertex_->SetXYZ(firstpv->x(),firstpv->y(),firstpv->z());
+  }
   
   for(unsigned i=0 ; i<childModules_.size() ; i++){
     childModules_.at(i)->pubAnalyze(iEvent, iSetup) ;
