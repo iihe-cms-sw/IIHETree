@@ -2,9 +2,11 @@
 #define UserCode_IIHETree_IIHEModuleMCTruth_h
 
 #include "UserCode/IIHETree/interface/IIHEModule.h"
+#include "UserCode/IIHETree/interface/MCTruthObject.h"
 
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+#include "DataFormats/Candidate/interface/Candidate.h"
 
 // class decleration
 class IIHEModuleMCTruth : public IIHEModule {

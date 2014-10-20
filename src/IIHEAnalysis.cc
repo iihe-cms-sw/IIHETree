@@ -42,11 +42,15 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig){
   git_hash_  = iConfig.getParameter<string>("git_hash" ) ;
   globalTag_ = iConfig.getParameter<string>("globalTag") ;
   beamSpotLabel_      = consumes<BeamSpot>(iConfig.getParameter<InputTag>("beamSpot")) ;
+  //beamSpotLabel_      = iConfig.getParameter<edm::InputTag>("beamSpot"     ) ;
   primaryVertexLabel_ = iConfig.getParameter<edm::InputTag>("primaryVertex") ;
   
   photonCollectionLabel_   = iConfig.getParameter<edm::InputTag>("photonCollection"       ) ;
   electronCollectionLabel_ = iConfig.getParameter<edm::InputTag>("electronCollection"     ) ;
   muonCollectionLabel_     = iConfig.getParameter<edm::InputTag>("muonCollection"         ) ;
+  
+  firstPrimaryVertex_ = new math::XYZPoint(0.0,0.0,0.0) ;
+  beamspot_           = new math::XYZPoint(0.0,0.0,0.0) ;
   
   IIHEModuleTrigger* mod_trigger = new IIHEModuleTrigger(iConfig) ;
   
@@ -263,9 +267,10 @@ void IIHEAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   iEvent.getByLabel(electronCollectionLabel_, electronCollection_) ;
   iEvent.getByLabel(    muonCollectionLabel_,     muonCollection_) ;
   iEvent.getByLabel(     primaryVertexLabel_,       pvCollection_) ;
+  iEvent.getByToken(          beamSpotLabel_,     beamspotHandle_) ;
+  beamspot_->SetXYZ(beamspotHandle_->position().x(),beamspotHandle_->position().y(),beamspotHandle_->position().z()) ;
   
   // We take only the first primary vertex
-  firstPrimaryVertex_ = new math::XYZPoint(0.0,0.0,0.0) ;
   const reco::VertexCollection* primaryVertices = getPrimaryVertices() ;
   if(primaryVertices->size()>0){
     reco::VertexCollection::const_iterator firstpv = primaryVertices->begin();

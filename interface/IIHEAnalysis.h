@@ -70,6 +70,7 @@ friend class IIHEModuleMuon ;
 
 private:
   edm::EDGetTokenT<reco::BeamSpot> beamSpotLabel_ ;
+  math::XYZPoint* beamspot_ ;
   math::XYZPoint* firstPrimaryVertex_ ;
 public:
   explicit IIHEAnalysis(const edm::ParameterSet& iConfig);
@@ -118,6 +119,7 @@ public:
     return primaryVertices ;
   }
   math::XYZPoint* getFirstPrimaryVertex(){ return firstPrimaryVertex_ ; }
+  math::XYZPoint* getBeamspot(){ return beamspot_ ; }
   
   // Triggers
   bool addTriggerL1Electron(std::string) ;
@@ -169,10 +171,11 @@ private:
   edm::Handle<reco::MuonCollection       >     muonCollection_ ;
   edm::Handle<reco::VertexCollection     >       pvCollection_ ;
   
-  edm::InputTag   photonCollectionLabel_ ;
-  edm::InputTag electronCollectionLabel_ ;
-  edm::InputTag     muonCollectionLabel_ ;
-  edm::InputTag      primaryVertexLabel_ ;
+  edm::InputTag        photonCollectionLabel_ ;
+  edm::InputTag      electronCollectionLabel_ ;
+  edm::InputTag          muonCollectionLabel_ ;
+  edm::InputTag           primaryVertexLabel_ ;
+  edm::Handle<reco::BeamSpot> beamspotHandle_ ;
   
   bool debug_;
   std::string git_hash_  ;
