@@ -101,19 +101,19 @@ HEEPCut_41_missingHits     ::HEEPCut_41_missingHits    (std::string name, IIHEMo
 HEEPCut_41_dxyFirstPV      ::HEEPCut_41_dxyFirstPV     (std::string name, IIHEModuleHEEP* mod): HEEPCutBase(name, mod){} ;
 
 bool HEEPCut_41_Et             ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->caloEnergy()*sin(gsfiter->p4().theta()) ;
+  setValue(gsfiter->caloEnergy()*sin(gsfiter->p4().theta())) ;
   int region = detectorRegion_41(gsfiter) ;
   bool result = true ;
   switch(region){
-    case kBarrel: result = (value_ > 35.0) ; break ;
-    case kEndcap: result = (value_ > 35.0) ; break ;
+    case kBarrel: result = (value() > 35.0) ; break ;
+    case kEndcap: result = (value() > 35.0) ; break ;
     default : break ;
   }
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
 bool HEEPCut_41_eta            ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->superCluster()->eta() ;
+  setValue(gsfiter->superCluster()->eta()) ;
   int region = detectorRegion_41(gsfiter) ;
   bool result = (region==kBarrel || region==kEndcap) ;
   setStatus(result, cumulativeSuccess) ;
@@ -122,65 +122,65 @@ bool HEEPCut_41_eta            ::applyCut(reco::GsfElectron* gsfiter, bool cumul
 bool HEEPCut_41_EcalDriven     ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   bool result = gsfiter->ecalDrivenSeed() ;
   setStatus(result, cumulativeSuccess) ;
-  value_ = (float) result ;
+  setValue((float) result) ;
   return getStatus() ;
 }
 bool HEEPCut_41_dEtaIn         ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->deltaEtaSuperClusterTrackAtVtx() ;
+  setValue(gsfiter->deltaEtaSuperClusterTrackAtVtx()) ;
   int region = detectorRegion_41(gsfiter) ;
   bool result = true ;
   switch(region){
-    case kBarrel: result = (fabs(value_) < 0.005) ; break ;
-    case kEndcap: result = (fabs(value_) < 0.007) ; break ;
+    case kBarrel: result = (fabs(value()) < 0.005) ; break ;
+    case kEndcap: result = (fabs(value()) < 0.007) ; break ;
     default : break ;
   }
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
 bool HEEPCut_41_dPhiIn         ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->deltaPhiSuperClusterTrackAtVtx() ;
+  setValue(gsfiter->deltaPhiSuperClusterTrackAtVtx()) ;
   int region = detectorRegion_41(gsfiter) ;
   bool result = true ;
   switch(region){
-    case kBarrel: result = (fabs(value_) < 0.06) ; break ;
-    case kEndcap: result = (fabs(value_) < 0.06) ; break ;
+    case kBarrel: result = (fabs(value()) < 0.06) ; break ;
+    case kEndcap: result = (fabs(value()) < 0.06) ; break ;
     default : break ;
   }
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
 bool HEEPCut_41_HOverE         ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->hadronicOverEm() ;
+  setValue(gsfiter->hadronicOverEm()) ;
   int region = detectorRegion_41(gsfiter) ;
   bool result = true ;
   switch(region){
-    case kBarrel: result = (value_ < 0.05) ; break ;
-    case kEndcap: result = (value_ < 0.05) ; break ;
+    case kBarrel: result = (value() < 0.05) ; break ;
+    case kEndcap: result = (value() < 0.05) ; break ;
     default : break ;
   }
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
 bool HEEPCut_41_SigmaIetaIeta  ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->sigmaIetaIeta() ;
+  setValue(gsfiter->sigmaIetaIeta()) ;
   int region = detectorRegion_41(gsfiter) ;
   bool result = true ;
   switch(region){
     case kBarrel: result = true ; break ;
-    case kEndcap: result = (value_ < 0.03) ; break ;
+    case kEndcap: result = (value() < 0.03) ; break ;
     default : break ;
   }
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
 bool HEEPCut_41_E1x5OverE5x5   ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->scE1x5()/gsfiter->scE5x5() ;
+  setValue(gsfiter->scE1x5()/gsfiter->scE5x5()) ;
   bool result = true ;
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
 bool HEEPCut_41_E2x5OverE5x5   ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->scE2x5Max()/gsfiter->scE5x5() ;
+  setValue(gsfiter->scE2x5Max()/gsfiter->scE5x5()) ;
   int region = detectorRegion_41(gsfiter) ;
   bool result = true ;
   switch(region){
@@ -196,16 +196,16 @@ bool HEEPCut_41_isolEMHadDepth1::applyCut(reco::GsfElectron* gsfiter, bool cumul
   float gsf_ecaliso  = gsfiter->dr03EcalRecHitSumEt() ;
   float gsf_hcaliso1 = gsfiter->dr03HcalDepth1TowerSumEt() ;
   float gsf_gsfet   = gsfiter->caloEnergy()*sin(gsfiter->p4().theta()) ;
-  value_ = gsf_ecaliso+gsf_hcaliso1 ;
+  setValue(gsf_ecaliso+gsf_hcaliso1) ;
   int region = detectorRegion_41(gsfiter) ;
   bool result = true ;
   switch(region){
     case kBarrel:
-      result = (value_) < (2.+0.03*gsf_gsfet + rho_*EcalHcal1EffAreaBarrel_) ;
+      result = (value()) < (2.+0.03*gsf_gsfet + rho_*EcalHcal1EffAreaBarrel_) ;
       break ;
     case kEndcap:
-      if(gsf_gsfet<50.0){ result = value_ <  2.5                       + rho_*EcalHcal1EffAreaEndcaps_   ; }
-      else              { result = value_ < (2.5+0.03*(gsf_gsfet-50.0) + rho_*EcalHcal1EffAreaEndcaps_ ) ; }
+      if(gsf_gsfet<50.0){ result = value() <  2.5                       + rho_*EcalHcal1EffAreaEndcaps_   ; }
+      else              { result = value() < (2.5+0.03*(gsf_gsfet-50.0) + rho_*EcalHcal1EffAreaEndcaps_ ) ; }
       break ;
     default : break ;
   }
@@ -217,31 +217,31 @@ void HEEPCut_41_isolEMHadDepth1::setEcalHcal1EffAreaBarrel (float EcalHcal1EffAr
 void HEEPCut_41_isolEMHadDepth1::setEcalHcal1EffAreaEndcaps(float EcalHcal1EffAreaEndcaps){ EcalHcal1EffAreaEndcaps_ = EcalHcal1EffAreaEndcaps ; }
 
 bool HEEPCut_41_IsolPtTrks     ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->dr03TkSumPt() ;
+  setValue(gsfiter->dr03TkSumPt()) ;
   int region = detectorRegion_41(gsfiter) ;
   bool result = true ;
   switch(region){
-    case kBarrel: result = (value_ < 5.0) ; break ;
-    case kEndcap: result = (value_ < 5.0) ; break ;
+    case kBarrel: result = (value() < 5.0) ; break ;
+    case kEndcap: result = (value() < 5.0) ; break ;
     default : break ;
   }
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
 bool HEEPCut_41_missingHits    ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = (float) (gsfiter->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits()) ;
-  bool result = (value_ < 1.5) ;
+  setValue((float) (gsfiter->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits())) ;
+  bool result = (value() < 1.5) ;
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
 
 bool HEEPCut_41_dxyFirstPV     ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->gsfTrack()->dxy(firstPV_) ;
+  setValue(gsfiter->gsfTrack()->dxy(firstPV_)) ;
   int region = detectorRegion_41(gsfiter) ;
   bool result = true ;
   switch(region){
-    case kBarrel: result = (fabs(value_) < 0.02) ; break ;
-    case kEndcap: result = (fabs(value_) < 0.05) ; break ;
+    case kBarrel: result = (fabs(value()) < 0.02) ; break ;
+    case kEndcap: result = (fabs(value()) < 0.05) ; break ;
     default : break ;
   }
   setStatus(result, cumulativeSuccess) ;
@@ -267,19 +267,19 @@ HEEPCut_50_50ns_missingHits     ::HEEPCut_50_50ns_missingHits    (std::string na
 HEEPCut_50_50ns_dxyFirstPV      ::HEEPCut_50_50ns_dxyFirstPV     (std::string name, IIHEModuleHEEP* mod): HEEPCutBase(name, mod){} ;
 
 bool HEEPCut_50_50ns_Et             ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->caloEnergy()*sin(gsfiter->p4().theta()) ;
+  setValue(gsfiter->caloEnergy()*sin(gsfiter->p4().theta())) ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
   switch(region){
-    case kBarrel: result = (value_ > 35.0) ; break ;
-    case kEndcap: result = (value_ > 35.0) ; break ;
+    case kBarrel: result = (value() > 35.0) ; break ;
+    case kEndcap: result = (value() > 35.0) ; break ;
     default : break ;
   }
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
 bool HEEPCut_50_50ns_eta            ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->superCluster()->eta() ;
+  setValue(gsfiter->superCluster()->eta()) ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = (region==kBarrel || region==kEndcap) ;
   setStatus(result, cumulativeSuccess) ;
@@ -287,23 +287,23 @@ bool HEEPCut_50_50ns_eta            ::applyCut(reco::GsfElectron* gsfiter, bool 
 }
 bool HEEPCut_50_50ns_EcalDriven     ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   bool result = gsfiter->ecalDrivenSeed() ;
-  value_ = (float) result ;
+  setValue((float) result) ;
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
 bool HEEPCut_50_50ns_dEtaIn         ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->deltaEtaSuperClusterTrackAtVtx() ;
+  setValue(gsfiter->deltaEtaSuperClusterTrackAtVtx()) ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
   switch(region){
     case kBarrel:{
       float Et  = gsfiter->caloEnergy()*sin(gsfiter->p4().theta()) ;
       float threshold = std::max(0.016-1.0e-4*Et, 0.004) ;
-      result = (fabs(value_) < threshold) ;
+      result = (fabs(value()) < threshold) ;
       break ;
     }
     case kEndcap:{
-      result = (fabs(value_) < 0.02) ;
+      result = (fabs(value()) < 0.02) ;
       break ;
     }
     default : break ;
@@ -312,50 +312,50 @@ bool HEEPCut_50_50ns_dEtaIn         ::applyCut(reco::GsfElectron* gsfiter, bool 
   return getStatus() ;
 }
 bool HEEPCut_50_50ns_dPhiIn         ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->deltaPhiSuperClusterTrackAtVtx() ;
+  setValue(gsfiter->deltaPhiSuperClusterTrackAtVtx()) ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
   switch(region){
-    case kBarrel: result = (fabs(value_) < 0.06) ; break ;
-    case kEndcap: result = (fabs(value_) < 0.15) ; break ;
+    case kBarrel: result = (fabs(value()) < 0.06) ; break ;
+    case kEndcap: result = (fabs(value()) < 0.15) ; break ;
     default : break ;
   }
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
 bool HEEPCut_50_50ns_HOverE         ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->hadronicOverEm() ;
+  setValue(gsfiter->hadronicOverEm()) ;
   float E    = gsfiter->caloEnergy() ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
   switch(region){
-    case kBarrel: result = (value_ <  2.0/E + 0.05) ; break ;
-    case kEndcap: result = (value_ < 12.5/E + 0.05) ; break ;
+    case kBarrel: result = (value() <  2.0/E + 0.05) ; break ;
+    case kEndcap: result = (value() < 12.5/E + 0.05) ; break ;
     default : break ;
   }
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
 bool HEEPCut_50_50ns_SigmaIetaIeta  ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->sigmaIetaIeta() ;
+  setValue(gsfiter->sigmaIetaIeta()) ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
   switch(region){
     case kBarrel: result = true ; break ;
-    case kEndcap: result = (value_ < 0.03) ; break ;
+    case kEndcap: result = (value() < 0.03) ; break ;
     default : break ;
   }
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
 bool HEEPCut_50_50ns_E1x5OverE5x5   ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->scE1x5()/gsfiter->scE5x5() ;
+  setValue(gsfiter->scE1x5()/gsfiter->scE5x5()) ;
   bool result = true ;
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
 bool HEEPCut_50_50ns_E2x5OverE5x5   ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->scE2x5Max()/gsfiter->scE5x5() ;
+  setValue(gsfiter->scE2x5Max()/gsfiter->scE5x5()) ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
   switch(region){
@@ -371,16 +371,16 @@ bool HEEPCut_50_50ns_isolEMHadDepth1::applyCut(reco::GsfElectron* gsfiter, bool 
   float gsf_ecaliso  = gsfiter->dr03EcalRecHitSumEt() ;
   float gsf_hcaliso1 = gsfiter->dr03HcalDepth1TowerSumEt() ;
   float gsf_gsfet   = gsfiter->caloEnergy()*sin(gsfiter->p4().theta()) ;
-  value_ = gsf_ecaliso+gsf_hcaliso1 ;
+  setValue(gsf_ecaliso+gsf_hcaliso1) ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
   switch(region){
     case kBarrel:
-      result = (value_) < (2.0+0.03*gsf_gsfet + rho_*EcalHcal1EffAreaBarrel_) ;
+      result = (value()) < (2.0+0.03*gsf_gsfet + rho_*EcalHcal1EffAreaBarrel_) ;
       break ;
     case kEndcap:
-      if(gsf_gsfet<50.0){ result = (value_) <  2.5                       + rho_*EcalHcal1EffAreaEndcaps_   ; }
-      else              { result = (value_) < (2.5+0.03*(gsf_gsfet-50.0) + rho_*EcalHcal1EffAreaEndcaps_ ) ; }
+      if(gsf_gsfet<50.0){ result = (value()) <  2.5                       + rho_*EcalHcal1EffAreaEndcaps_   ; }
+      else              { result = (value()) < (2.5+0.03*(gsf_gsfet-50.0) + rho_*EcalHcal1EffAreaEndcaps_ ) ; }
       break ;
     default : break ;
   }
@@ -392,30 +392,30 @@ void HEEPCut_50_50ns_isolEMHadDepth1::setEcalHcal1EffAreaBarrel (float EcalHcal1
 void HEEPCut_50_50ns_isolEMHadDepth1::setEcalHcal1EffAreaEndcaps(float EcalHcal1EffAreaEndcaps){ EcalHcal1EffAreaEndcaps_ = EcalHcal1EffAreaEndcaps ; }
 
 bool HEEPCut_50_50ns_IsolPtTrks     ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->dr03TkSumPt() ;
+  setValue(gsfiter->dr03TkSumPt()) ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
   switch(region){
-    case kBarrel: result = (value_ < 5.0) ; break ;
-    case kEndcap: result = (value_ < 5.0) ; break ;
+    case kBarrel: result = (value() < 5.0) ; break ;
+    case kEndcap: result = (value() < 5.0) ; break ;
     default : break ;
   }
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
 bool HEEPCut_50_50ns_missingHits    ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = (float)(gsfiter->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits()) ;
-  bool result = (value_ < 1.5) ;
+  setValue((float)(gsfiter->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits())) ;
+  bool result = (value() < 1.5) ;
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
 bool HEEPCut_50_50ns_dxyFirstPV     ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->gsfTrack()->dxy(firstPV_) ;
+  setValue(gsfiter->gsfTrack()->dxy(firstPV_)) ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
   switch(region){
-    case kBarrel: result = (fabs(value_) < 0.02) ; break ;
-    case kEndcap: result = (fabs(value_) < 0.05) ; break ;
+    case kBarrel: result = (fabs(value()) < 0.02) ; break ;
+    case kEndcap: result = (fabs(value()) < 0.05) ; break ;
     default : break ;
   }
   setStatus(result, cumulativeSuccess) ;
@@ -441,19 +441,19 @@ HEEPCut_50_25ns_missingHits     ::HEEPCut_50_25ns_missingHits    (std::string na
 HEEPCut_50_25ns_dxyFirstPV      ::HEEPCut_50_25ns_dxyFirstPV     (std::string name, IIHEModuleHEEP* mod): HEEPCutBase(name, mod){} ;
 
 bool HEEPCut_50_25ns_Et             ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_  = gsfiter->caloEnergy()*sin(gsfiter->p4().theta()) ;
+  setValue(gsfiter->caloEnergy()*sin(gsfiter->p4().theta())) ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
   switch(region){
-    case kBarrel: result = (value_ > 35.0) ; break ;
-    case kEndcap: result = (value_ > 35.0) ; break ;
+    case kBarrel: result = (value() > 35.0) ; break ;
+    case kEndcap: result = (value() > 35.0) ; break ;
     default : break ;
   }
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
 bool HEEPCut_50_25ns_eta            ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->superCluster()->eta() ;
+  setValue(gsfiter->superCluster()->eta()) ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = (region==kBarrel || region==kEndcap) ;
   setStatus(result, cumulativeSuccess) ;
@@ -461,25 +461,25 @@ bool HEEPCut_50_25ns_eta            ::applyCut(reco::GsfElectron* gsfiter, bool 
 }
 bool HEEPCut_50_25ns_EcalDriven     ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   bool result = gsfiter->ecalDrivenSeed() ;
-  value_ = (float) result ;
+  setValue((float) result) ;
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
 bool HEEPCut_50_25ns_dEtaIn         ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->deltaEtaSuperClusterTrackAtVtx() ;
+  setValue(gsfiter->deltaEtaSuperClusterTrackAtVtx()) ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
   switch(region){
     case kBarrel:{
       float Et  = gsfiter->caloEnergy()*sin(gsfiter->p4().theta()) ;
       float threshold = std::max(0.016-1.0e-4*Et, 0.004) ;
-      result = (fabs(value_) < threshold) ;
+      result = (fabs(value()) < threshold) ;
       break ;
     }
     case kEndcap:{
       float Et  = gsfiter->caloEnergy()*sin(gsfiter->p4().theta()) ;
       float threshold = std::max(0.015-8.5e-5*Et, 0.006) ;
-      result = (fabs(value_) < threshold) ;
+      result = (fabs(value()) < threshold) ;
       break ;
     }
     default : break ;
@@ -488,50 +488,50 @@ bool HEEPCut_50_25ns_dEtaIn         ::applyCut(reco::GsfElectron* gsfiter, bool 
   return getStatus() ;
 }
 bool HEEPCut_50_25ns_dPhiIn         ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->deltaPhiSuperClusterTrackAtVtx() ;
+  setValue(gsfiter->deltaPhiSuperClusterTrackAtVtx()) ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
   switch(region){
-    case kBarrel: result = (fabs(value_) < 0.06) ; break ;
-    case kEndcap: result = (fabs(value_) < 0.06) ; break ;
+    case kBarrel: result = (fabs(value()) < 0.06) ; break ;
+    case kEndcap: result = (fabs(value()) < 0.06) ; break ;
     default : break ;
   }
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
 bool HEEPCut_50_25ns_HOverE         ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->hadronicOverEm() ;
+  setValue(gsfiter->hadronicOverEm()) ;
   float E      = gsfiter->caloEnergy() ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
   switch(region){
-    case kBarrel: result = (value_ <  2.0/E + 0.05) ; break ;
-    case kEndcap: result = (value_ < 12.5/E + 0.05) ; break ;
+    case kBarrel: result = (value() <  2.0/E + 0.05) ; break ;
+    case kEndcap: result = (value() < 12.5/E + 0.05) ; break ;
     default : break ;
   }
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
 bool HEEPCut_50_25ns_SigmaIetaIeta  ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->sigmaIetaIeta() ;
+  setValue(gsfiter->sigmaIetaIeta()) ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
   switch(region){
     case kBarrel: result = true ; break ;
-    case kEndcap: result = (value_ < 0.03) ; break ;
+    case kEndcap: result = (value() < 0.03) ; break ;
     default : break ;
   }
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
 bool HEEPCut_50_25ns_E1x5OverE5x5   ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->scE1x5()/gsfiter->scE5x5() ;
+  setValue(gsfiter->scE1x5()/gsfiter->scE5x5()) ;
   bool result = true ;
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
 bool HEEPCut_50_25ns_E2x5OverE5x5   ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->scE2x5Max()/gsfiter->scE5x5() ;
+  setValue(gsfiter->scE2x5Max()/gsfiter->scE5x5()) ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
   switch(region){
@@ -547,16 +547,16 @@ bool HEEPCut_50_25ns_isolEMHadDepth1::applyCut(reco::GsfElectron* gsfiter, bool 
   float gsf_ecaliso  = gsfiter->dr03EcalRecHitSumEt() ;
   float gsf_hcaliso1 = gsfiter->dr03HcalDepth1TowerSumEt() ;
   float gsf_gsfet    = gsfiter->caloEnergy()*sin(gsfiter->p4().theta()) ;
-  value_ = gsf_ecaliso+gsf_hcaliso1 ;
+  setValue(gsf_ecaliso+gsf_hcaliso1) ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
   switch(region){
     case kBarrel:
-      result = (value_) < (2.+0.03*gsf_gsfet + rho_*EcalHcal1EffAreaBarrel_) ;
+      result = (value()) < (2.+0.03*gsf_gsfet + rho_*EcalHcal1EffAreaBarrel_) ;
       break ;
     case kEndcap:
-      if(gsf_gsfet<50.0){ result = (value_) <  2.5                       + rho_*EcalHcal1EffAreaEndcaps_   ; }
-      else              { result = (value_) < (2.5+0.03*(gsf_gsfet-50.0) + rho_*EcalHcal1EffAreaEndcaps_ ) ; }
+      if(gsf_gsfet<50.0){ result = (value()) <  2.5                       + rho_*EcalHcal1EffAreaEndcaps_   ; }
+      else              { result = (value()) < (2.5+0.03*(gsf_gsfet-50.0) + rho_*EcalHcal1EffAreaEndcaps_ ) ; }
       break ;
     default : break ;
   }
@@ -568,30 +568,30 @@ void HEEPCut_50_25ns_isolEMHadDepth1::setEcalHcal1EffAreaBarrel (float EcalHcal1
 void HEEPCut_50_25ns_isolEMHadDepth1::setEcalHcal1EffAreaEndcaps(float EcalHcal1EffAreaEndcaps){ EcalHcal1EffAreaEndcaps_ = EcalHcal1EffAreaEndcaps ; }
 
 bool HEEPCut_50_25ns_IsolPtTrks     ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->dr03TkSumPt() ;
+  setValue(gsfiter->dr03TkSumPt()) ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
   switch(region){
-    case kBarrel: result = (value_ < 5.0) ; break ;
-    case kEndcap: result = (value_ < 5.0) ; break ;
+    case kBarrel: result = (value() < 5.0) ; break ;
+    case kEndcap: result = (value() < 5.0) ; break ;
     default : break ;
   }
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
 bool HEEPCut_50_25ns_missingHits    ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = (float) gsfiter->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits() ;
-  bool result = (value_ < 1.5) ;
+  setValue((float) gsfiter->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits()) ;
+  bool result = (value() < 1.5) ;
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
 bool HEEPCut_50_25ns_dxyFirstPV     ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  value_ = gsfiter->gsfTrack()->dxy(firstPV_) ;
+  setValue(gsfiter->gsfTrack()->dxy(firstPV_)) ;
   int region = detectorRegion_50(gsfiter) ;
   bool result = true ;
   switch(region){
-    case kBarrel: result = (fabs(value_) < 0.02) ; break ;
-    case kEndcap: result = (fabs(value_) < 0.05) ; break ;
+    case kBarrel: result = (fabs(value()) < 0.02) ; break ;
+    case kEndcap: result = (fabs(value()) < 0.05) ; break ;
     default : break ;
   }
   setStatus(result, cumulativeSuccess) ;

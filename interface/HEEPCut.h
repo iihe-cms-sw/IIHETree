@@ -16,6 +16,7 @@ private:
   std::string branchName_n_ ;
   std::string branchName_nCumulative_ ;
   std::string branchName_value_ ;
+  float value_ ; // Value of the variable
   bool status_ ;
   int index_ ;
   int nPass_ ;
@@ -30,9 +31,11 @@ public:
   void reset() ;
   void setStatus(bool, bool) ;
   bool getStatus() ;
+  void setValue(float value){ value_ = value ; }
+  float value(){ return value_ ; }
   std::string name(){ return name_ ; }
   
-  float value_ ; // Value of the variable.  public for now, should be changed to private with accessor methods later
+  
   
   void beginEvent() ;
   void endEvent() ;
