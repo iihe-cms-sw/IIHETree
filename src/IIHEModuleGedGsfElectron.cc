@@ -95,6 +95,7 @@ void IIHEModuleGedGsfElectron::beginJob(){
   addBranch("gsf_e1x5") ;
   addBranch("gsf_e2x5Max") ;
   addBranch("gsf_e5x5") ;
+  addBranch("gsf_r9") ;
   addBranch("gsf_hitsinfo", kVectorVectorInt) ;
 }
 
@@ -165,6 +166,7 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
     store("gsf_convRadius"                    , gsfiter->convRadius()                    ) ;
     store("gsf_fBrem"                         , gsfiter->fbrem()                         ) ;
     store("gsf_e1x5"                          , gsfiter->e1x5()                          ) ;
+    store("gsf_r9"                            , gsfiter->r9()                            ) ;
     store("gsf_e2x5Max"                       , gsfiter->e2x5Max()                       ) ;
     store("gsf_e5x5"                          , gsfiter->e5x5()                          ) ;
     
