@@ -231,10 +231,17 @@ void IIHEModuleHEEP::beginJob(){
 void IIHEModuleHEEP::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   reco::GsfElectronCollection electrons = parent_->getElectronCollection() ;
   
+  // Pass parameters to the HEEP cutflow objects
   math::XYZPoint* firstPrimaryVertex = parent_->getFirstPrimaryVertex() ;
   cut_41_dxyFirstPV_     ->setFirstPV(firstPrimaryVertex) ;
   cut_50_50ns_dxyFirstPV_->setFirstPV(firstPrimaryVertex) ;
   cut_50_25ns_dxyFirstPV_->setFirstPV(firstPrimaryVertex) ;
+  
+  // Get the hit information
+  Handle<EcalRecHitCollection> EBhits;
+  Handle<EcalRecHitCollection> EEhits;
+  iEvent.getByLabel("reducedEcalRecHitsEB",EBhits);
+  iEvent.getByLabel("reducedEcalRecHitsEE",EEhits); 
   
   // Information for preshower
   edm::ESHandle<CaloGeometry> pGeometry ;
@@ -247,11 +254,7 @@ void IIHEModuleHEEP::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   edm::ESHandle<CaloTopology> pTopology;
   iSetup.get<CaloTopologyRecord>().get(pTopology);
   
-  Handle<EcalRecHitCollection> EBhits;
-  Handle<EcalRecHitCollection> EEhits;
-  iEvent.getByLabel("reducedEcalRecHitsEB",EBhits);
-  iEvent.getByLabel("reducedEcalRecHitsEE",EEhits);
-  EcalClusterLazyTools lazytool(iEvent,iSetup,InputTag("reducedEcalRecHitsEB"),InputTag("reducedEcalRecHitsEE"),InputTag("reducedEcalRecHitsES"));
+  EcalClusterLazyTools lazytool(iEvent,iSetup, parent_->getReducedBarrelRecHitCollectionToken(), parent_->getReducedEndcapRecHitCollectionToken()) ;
   
   for(reco::GsfElectronCollection::const_iterator gsfiter = electrons.begin() ; gsfiter!=electrons.end() ; ++gsfiter){
     reco::GsfElectron* gsf = (reco::GsfElectron*) &*gsfiter ;

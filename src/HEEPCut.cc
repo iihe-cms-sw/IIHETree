@@ -229,7 +229,7 @@ bool HEEPCut_41_IsolPtTrks     ::applyCut(reco::GsfElectron* gsfiter, bool cumul
   return getStatus() ;
 }
 bool HEEPCut_41_missingHits    ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  setValue((float) (gsfiter->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits())) ;
+  setValue((float) (gsfiter->gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS))) ;
   bool result = (value() < 1.5) ;
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
@@ -404,7 +404,7 @@ bool HEEPCut_50_50ns_IsolPtTrks     ::applyCut(reco::GsfElectron* gsfiter, bool 
   return getStatus() ;
 }
 bool HEEPCut_50_50ns_missingHits    ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  setValue((float)(gsfiter->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits())) ;
+  setValue((float) (gsfiter->gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS))) ;
   bool result = (value() < 1.5) ;
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
@@ -580,7 +580,7 @@ bool HEEPCut_50_25ns_IsolPtTrks     ::applyCut(reco::GsfElectron* gsfiter, bool 
   return getStatus() ;
 }
 bool HEEPCut_50_25ns_missingHits    ::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  setValue((float) gsfiter->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits()) ;
+  setValue((float) (gsfiter->gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS))) ;
   bool result = (value() < 1.5) ;
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;

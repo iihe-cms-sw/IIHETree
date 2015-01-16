@@ -132,6 +132,9 @@ public:
   std::vector<std::string>                   getTriggerL1FilterNamesMuon     (){ return triggerL1FilterNamesMuon_      ; }
   std::vector<std::pair<std::string,float> > getTriggerHLTFilterNamesMuon    (){ return triggerHLTFilterNamesMuon_     ; }
   
+  edm::EDGetTokenT<EcalRecHitCollection> getReducedBarrelRecHitCollectionToken(){ return reducedBarrelRecHitCollectionToken_ ; }
+  edm::EDGetTokenT<EcalRecHitCollection> getReducedEndcapRecHitCollectionToken(){ return reducedEndcapRecHitCollectionToken_ ; }
+  
 private:
   virtual void beginJob() ;
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
@@ -176,6 +179,11 @@ private:
   edm::InputTag          muonCollectionLabel_ ;
   edm::InputTag           primaryVertexLabel_ ;
   edm::Handle<reco::BeamSpot> beamspotHandle_ ;
+  
+  edm::InputTag reducedBarrelRecHitCollection_ ;
+  edm::InputTag reducedEndcapRecHitCollection_ ;
+  edm::EDGetTokenT<EcalRecHitCollection> reducedBarrelRecHitCollectionToken_ ;
+  edm::EDGetTokenT<EcalRecHitCollection> reducedEndcapRecHitCollectionToken_ ;
   
   bool debug_;
   std::string git_hash_  ;

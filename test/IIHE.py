@@ -105,6 +105,8 @@ process.IIHEAnalysis.MCTruth_mThreshold  = cms.untracked.double(20.0)
 process.IIHEAnalysis.photonCollection    = cms.InputTag('photons'        )
 process.IIHEAnalysis.electronCollection  = cms.InputTag('gedGsfElectrons')
 process.IIHEAnalysis.muonCollection      = cms.InputTag('muons'          )
+process.IIHEAnalysis.reducedBarrelRecHitCollection = cms.InputTag('reducedEcalRecHitsEB')
+process.IIHEAnalysis.reducedEndcapRecHitCollection = cms.InputTag('reducedEcalRecHitsEE')
 
 process.otherStuff = cms.Sequence( process.kt6PFJets )
 
