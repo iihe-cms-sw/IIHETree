@@ -26,14 +26,8 @@ void IIHEModuleMET::beginJob(){
   addBranch("MET_met_et") ;
   addBranch("MET_met_phi") ;
   
-  //addBranch("MET_htMetKT4_et") ;
-  //addBranch("MET_htMetKT4_phi") ;
-  
   addBranch("MET_pfMet_et") ;
   addBranch("MET_pfMet_phi") ;
-  
-  addBranch("pfType1CorrectedMet_met_et") ;
-  addBranch("pfType1CorrectedMet_met_phi") ;
 }
 
 // ------------ method called to for each event  ------------
@@ -42,33 +36,17 @@ void IIHEModuleMET::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   bool calometisvalid = iEvent.getByLabel("met", pCaloMET);
   const CaloMETCollection *caloMET  = pCaloMET.product();
 
-  //edm::Handle<METCollection> pMET;
-  //bool metisvalid = iEvent.getByLabel("htMetKT4", pMET);
-  //const METCollection *MET  = pMET.product();
-
   edm::Handle<PFMETCollection> pPFMET;
   bool pfmetisvalid = iEvent.getByLabel("pfMet", pPFMET);
   const PFMETCollection *PFMET  = pPFMET.product();
-
-  edm::Handle<PFMETCollection> pPFMETcor;
-  bool pfmetcorisvalid = iEvent.getByLabel("pfType1CorrectedMet", pPFMETcor);
-  const PFMETCollection *PFMETcor  = pPFMETcor.product();
   
   if(calometisvalid){
     store("MET_met_et"                 , caloMET->begin()->et()  ) ;
     store("MET_met_phi"                , caloMET->begin()->phi() ) ;
   }
-  //if(metisvalid){
-  //  store("MET_htMetKT4_et"            , MET->begin()->et()      ) ;
-  //  store("MET_htMetKT4_phi"           , MET->begin()->phi()     ) ;
-  //}
   if(pfmetisvalid){
     store("MET_pfMet_et"               , PFMET->begin()->et()    ) ;
     store("MET_pfMet_phi"              , PFMET->begin()->phi()   ) ;
-  }
-  if(pfmetcorisvalid){
-    store("pfType1CorrectedMet_met_et" , PFMETcor->begin()->et() ) ;
-    store("pfType1CorrectedMet_met_phi", PFMETcor->begin()->phi()) ;
   }
 }
 
