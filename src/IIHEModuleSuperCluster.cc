@@ -73,18 +73,8 @@ void IIHEModuleSuperCluster::analyze(const edm::Event& iEvent, const edm::EventS
   std::sort(   sclusters.begin(),   sclusters.end(),   scEtGreater) ;
   
   // Retrieve primary vertex collection
-  Handle<reco::VertexCollection> primaryVertexColl;
-  iEvent.getByLabel("offlinePrimaryVertices",primaryVertexColl);
-  const reco::VertexCollection* pvcoll = primaryVertexColl.product();
-  
-  math::XYZPoint firstpvertex(0.0,0.0,0.0) ;
-  float pv_z = -999 ;
-  // We take only the first primary vertex, i.e. the one with the electrons
-  if(pvcoll->size() > 0) {
-    reco::VertexCollection::const_iterator firstpv = pvcoll->begin() ;
-    firstpvertex.SetXYZ(firstpv->x(),firstpv->y(),firstpv->z()) ;
-    pv_z = firstpv->z() ;
-  }
+  math::XYZPoint* firstPV = parent_->getFirstPrimaryVertex() ;
+  float pv_z = firstPV->z() ;
   
   store("sc_n", (unsigned int) sclusters.size()) ;
   for(unsigned int i_sc=0 ; i_sc<sclusters.size() ; i_sc++){

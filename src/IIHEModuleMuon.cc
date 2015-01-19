@@ -16,7 +16,9 @@ using namespace std ;
 using namespace reco;
 using namespace edm ;
 
-IIHEModuleMuon::IIHEModuleMuon(const edm::ParameterSet& iConfig): IIHEModule(iConfig){}
+IIHEModuleMuon::IIHEModuleMuon(const edm::ParameterSet& iConfig): IIHEModule(iConfig){
+  triggerDeltaRThreshold_ = iConfig.getUntrackedParameter<double>("muon_triggerDeltaRThreshold", 1.0) ;
+}
 IIHEModuleMuon::~IIHEModuleMuon(){}
 
 // ------------ method called once each job just before starting event loop  ------------
@@ -158,11 +160,10 @@ void IIHEModuleMuon::beginJob(){
   ////////////////////////////////////////////////////////////////////////////////////////
   //                                      Triggers                                      //
   ////////////////////////////////////////////////////////////////////////////////////////
-  float DeltaRCut = 1.0 ;
-  addTriggerHLTMuon("hltL1sMu16Eta2p1"                          , DeltaRCut) ;
-  addTriggerHLTMuon("hltL1sL1Mu3p5EG12"                         , DeltaRCut) ;
-  addTriggerHLTMuon("hltL1Mu3p5EG12L3Filtered22"                , DeltaRCut) ;
-  addTriggerHLTMuon("hltL3fL1sMu16Eta2p1L1f0L2f16QL3Filtered40Q", DeltaRCut) ;
+  addTriggerHLTMuon("hltL1sMu16Eta2p1"                          , triggerDeltaRThreshold_) ;
+  addTriggerHLTMuon("hltL1sL1Mu3p5EG12"                         , triggerDeltaRThreshold_) ;
+  addTriggerHLTMuon("hltL1Mu3p5EG12L3Filtered22"                , triggerDeltaRThreshold_) ;
+  addTriggerHLTMuon("hltL3fL1sMu16Eta2p1L1f0L2f16QL3Filtered40Q", triggerDeltaRThreshold_) ;
 }
 
 // ------------ method called to for each event  ------------

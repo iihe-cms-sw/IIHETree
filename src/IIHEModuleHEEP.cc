@@ -37,6 +37,7 @@ using namespace edm ;
 IIHEModuleHEEP::IIHEModuleHEEP(const edm::ParameterSet& iConfig): IIHEModule(iConfig){
   EcalHcal1EffAreaBarrel_  = iConfig.getUntrackedParameter<double>("EcalHcal1EffAreaBarrel" , 0.28) ;
   EcalHcal1EffAreaEndcaps_ = iConfig.getUntrackedParameter<double>("EcalHcal1EffAreaEndcaps", 0.28) ;
+  triggerDeltaRThreshold_  = iConfig.getUntrackedParameter<double>("HEEP_triggerDeltaRThreshold", 1.0) ;
   rho_ = iConfig.getUntrackedParameter<double>("kt6PFJets:rho", 0.) ;
 }
 IIHEModuleHEEP::~IIHEModuleHEEP(){}
@@ -217,7 +218,7 @@ void IIHEModuleHEEP::beginJob(){
   addTriggerL1Electron("hltL1sL1Mu3p5EG12" ) ;
   addTriggerL1Electron("hltL1sL1SingleEG22") ;
   
-  float DeltaRCut = 0.5 ;
+  float DeltaRCut = triggerDeltaRThreshold_ ;
   addTriggerHLTElectron("hltEle33CaloIdLPixelMatchFilter"                               , DeltaRCut) ;
   addTriggerHLTElectron("hltDiEle33CaloIdLGsfTrkIdVLDPhiDoubleFilter"                   , DeltaRCut) ;
   addTriggerHLTElectron("hltEle17TightIdLooseIsoEle8TightIdLooseIsoTrackIsoFilter"      , DeltaRCut) ;

@@ -275,6 +275,7 @@ void IIHEAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   beamspot_->SetXYZ(beamspotHandle_->position().x(),beamspotHandle_->position().y(),beamspotHandle_->position().z()) ;
   
   // We take only the first primary vertex
+  firstPrimaryVertex_->SetXYZ(0,0,0);
   const reco::VertexCollection* primaryVertices = getPrimaryVertices() ;
   if(primaryVertices->size()>0){
     reco::VertexCollection::const_iterator firstpv = primaryVertices->begin();

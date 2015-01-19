@@ -20,5 +20,8 @@ public:
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
   virtual void beginRun(edm::Run const&, edm::EventSetup const&);
+  
+private:
+  float triggerDeltaRThreshold_ ;
 };
 #endif

@@ -18,6 +18,7 @@ private:
   double EcalHcal1EffAreaBarrel_  ;
   double EcalHcal1EffAreaEndcaps_ ;
   double rho_ ;
+  float triggerDeltaRThreshold_ ;
   
   HEEPCut_41_isolEMHadDepth1* cut_41_isolEMHadDepth1_ ;
   HEEPCut_41_dxyFirstPV*      cut_41_dxyFirstPV_ ;
