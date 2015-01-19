@@ -72,6 +72,7 @@ void IIHEModuleGedGsfElectron::beginJob(){
   addBranch("gsf_trackerdrivenSeed") ;
   addBranch("gsf_isEB") ;
   addBranch("gsf_isEE") ;
+  setBranchType(kVectorFloat) ;
   addBranch("gsf_deltaEtaSeedClusterTrackAtCalo") ;
   addBranch("gsf_deltaPhiSeedClusterTrackAtCalo") ;
   addBranch("gsf_ecalEnergy") ;
