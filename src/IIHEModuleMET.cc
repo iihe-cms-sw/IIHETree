@@ -23,30 +23,29 @@ IIHEModuleMET::~IIHEModuleMET(){}
 // ------------ method called once each job just before starting event loop  ------------
 void IIHEModuleMET::beginJob(){
   setBranchType(kFloat) ;
-  addBranch("MET_met_et") ;
-  addBranch("MET_met_phi") ;
-  
-  addBranch("MET_pfMet_et") ;
-  addBranch("MET_pfMet_phi") ;
+  addBranch("MET_caloMet_et" ) ;
+  addBranch("MET_caloMet_phi") ;
+  addBranch("MET_pfMet_et"   ) ;
+  addBranch("MET_pfMet_phi"  ) ;
 }
 
 // ------------ method called to for each event  ------------
 void IIHEModuleMET::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   edm::Handle<CaloMETCollection> pCaloMET;
-  bool calometisvalid = iEvent.getByLabel("met", pCaloMET);
-  const CaloMETCollection *caloMET  = pCaloMET.product();
+  bool caloMetIsValid = iEvent.getByLabel("caloMet", pCaloMET);
+  const CaloMETCollection *caloMET = pCaloMET.product();
 
   edm::Handle<PFMETCollection> pPFMET;
-  bool pfmetisvalid = iEvent.getByLabel("pfMet", pPFMET);
-  const PFMETCollection *PFMET  = pPFMET.product();
+  bool pfMetIsValid = iEvent.getByLabel("pfMet", pPFMET);
+  const PFMETCollection *PFMET = pPFMET.product();
   
-  if(calometisvalid){
-    store("MET_met_et"                 , caloMET->begin()->et()  ) ;
-    store("MET_met_phi"                , caloMET->begin()->phi() ) ;
+  if(caloMetIsValid){
+    store("MET_caloMet_et" , caloMET->begin()->et()  ) ;
+    store("MET_caloMet_phi", caloMET->begin()->phi() ) ;
   }
-  if(pfmetisvalid){
-    store("MET_pfMet_et"               , PFMET->begin()->et()    ) ;
-    store("MET_pfMet_phi"              , PFMET->begin()->phi()   ) ;
+  if(pfMetIsValid){
+    store("MET_pfMet_et"   , PFMET->begin()->et()    ) ;
+    store("MET_pfMet_phi"  , PFMET->begin()->phi()   ) ;
   }
 }
 
