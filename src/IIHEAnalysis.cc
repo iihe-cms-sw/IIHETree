@@ -42,12 +42,16 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig){
   git_hash_  = iConfig.getParameter<string>("git_hash" ) ;
   globalTag_ = iConfig.getParameter<string>("globalTag") ;
   beamSpotLabel_      = consumes<BeamSpot>(iConfig.getParameter<InputTag>("beamSpot")) ;
-  //beamSpotLabel_      = iConfig.getParameter<edm::InputTag>("beamSpot"     ) ;
   primaryVertexLabel_ = iConfig.getParameter<edm::InputTag>("primaryVertex") ;
   
-  photonCollectionLabel_   = iConfig.getParameter<edm::InputTag>("photonCollection"       ) ;
-  electronCollectionLabel_ = iConfig.getParameter<edm::InputTag>("electronCollection"     ) ;
-  muonCollectionLabel_     = iConfig.getParameter<edm::InputTag>("muonCollection"         ) ;
+  photonCollectionLabel_   = iConfig.getParameter<edm::InputTag>("photonCollection"  ) ;
+  electronCollectionLabel_ = iConfig.getParameter<edm::InputTag>("electronCollection") ;
+  muonCollectionLabel_     = iConfig.getParameter<edm::InputTag>("muonCollection"    ) ;
+  
+  reducedBarrelRecHitCollection_ = iConfig.getParameter<edm::InputTag>("reducedBarrelRecHitCollection") ;
+  reducedEndcapRecHitCollection_ = iConfig.getParameter<edm::InputTag>("reducedEndcapRecHitCollection") ;
+  reducedBarrelRecHitCollectionToken_ = mayConsume<EcalRecHitCollection>(reducedBarrelRecHitCollection_) ;
+  reducedEndcapRecHitCollectionToken_ = mayConsume<EcalRecHitCollection>(reducedEndcapRecHitCollection_) ; 
   
   firstPrimaryVertex_ = new math::XYZPoint(0.0,0.0,0.0) ;
   beamspot_           = new math::XYZPoint(0.0,0.0,0.0) ;
