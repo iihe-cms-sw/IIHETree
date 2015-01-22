@@ -82,6 +82,7 @@ void IIHEModuleMuon::beginJob(){
   addBranch("muon_d0Error") ;
   addBranch("muon_dszError") ;
   addBranch("muon_dzError") ;
+  addBranch("muon_etaError") ;
   
   // Isolation variables
   setBranchType(kVectorFloat) ;
@@ -187,82 +188,84 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   
   store("muon_n", (unsigned int)(muons.size())) ;
   for(reco::MuonCollection::const_iterator muIt = muons.begin(); muIt != muons.end(); ++muIt) {
-    if (muIt->isGlobalMuon()) {
+    if(muIt->isGlobalMuon() || true){
       // get TeV optimized track
       reco::Muon::MuonTrackTypePair tevOptimizedTrk = muon::tevOptimized(*muIt, 200, 17., 40., 0.25) ;
       
-      store("muon_charge"                          , muIt->globalTrack()->charge()                                    ) ;
-      store("muon_qoverp"                          , muIt->globalTrack()->qoverp()                                    ) ;
-      store("muon_pt"                              , muIt->globalTrack()->pt()                                        ) ;
-      store("muon_eta"                             , muIt->globalTrack()->eta()                                       ) ;
-      store("muon_phi"                             , muIt->globalTrack()->phi()                                       ) ;
-      store("muon_p"                               , muIt->globalTrack()->p()                                         ) ;
-      store("muon_px"                              , muIt->globalTrack()->px()                                        ) ;
-      store("muon_py"                              , muIt->globalTrack()->py()                                        ) ;
-      store("muon_pz"                              , muIt->globalTrack()->pz()                                        ) ;
-      store("muon_theta"                           , muIt->globalTrack()->theta()                                     ) ;
-      store("muon_lambda"                          , muIt->globalTrack()->lambda()                                    ) ;
-      store("muon_d0"                              , muIt->globalTrack()->d0()                                        ) ;
-      store("muon_dz"                              , muIt->globalTrack()->dz()                                        ) ;
-      store("muon_dz_beamSpot"                     , muIt->globalTrack()->dz(beamspot)                                ) ;
-      store("muon_dz_firstPVtx"                    , muIt->globalTrack()->dz(*firstPrimaryVertex)                     ) ;
-      store("muon_dxy"                             , muIt->globalTrack()->dxy()                                       ) ;
-      store("muon_dxy_beamSpot"                    , muIt->globalTrack()->dxy(beamspot)                               ) ;
-      store("muon_dxy_firstPVtx"                   , muIt->globalTrack()->dxy(*firstPrimaryVertex)                    ) ;
-      store("muon_dxy"                             , muIt->globalTrack()->dxy(beamspot)                               ) ;
-      store("muon_dsz"                             , muIt->globalTrack()->dsz(beamspot)                               ) ;
-      store("muon_dz"                              , muIt->globalTrack()->dz(beamspot)                                ) ;
-      store("muon_vx"                              , muIt->globalTrack()->vx()                                        ) ;
-      store("muon_vy"                              , muIt->globalTrack()->vy()                                        ) ;
-      store("muon_vz"                              , muIt->globalTrack()->vz()                                        ) ;
-      store("muon_outerPt"                         , muIt->globalTrack()->outerPt()                                   ) ;
-      store("muon_outerEta"                        , muIt->globalTrack()->outerEta()                                  ) ;
-      store("muon_outerPhi"                        , muIt->globalTrack()->outerPhi()                                  ) ;
-      store("muon_outerTheta"                      , muIt->globalTrack()->outerTheta()                                ) ;
+      store("muon_charge"       , muIt->globalTrack()->charge()                ) ;
+      store("muon_qoverp"       , muIt->globalTrack()->qoverp()                ) ;
+      store("muon_pt"           , muIt->globalTrack()->pt()                    ) ;
+      store("muon_eta"          , muIt->globalTrack()->eta()                   ) ;
+      store("muon_phi"          , muIt->globalTrack()->phi()                   ) ;
+      store("muon_p"            , muIt->globalTrack()->p()                     ) ;
+      store("muon_px"           , muIt->globalTrack()->px()                    ) ;
+      store("muon_py"           , muIt->globalTrack()->py()                    ) ;
+      store("muon_pz"           , muIt->globalTrack()->pz()                    ) ;
+      store("muon_theta"        , muIt->globalTrack()->theta()                 ) ;
+      store("muon_lambda"       , muIt->globalTrack()->lambda()                ) ;
+      store("muon_d0"           , muIt->globalTrack()->d0()                    ) ;
+      store("muon_dz"           , muIt->globalTrack()->dz()                    ) ;
+      store("muon_dz_beamSpot"  , muIt->globalTrack()->dz(beamspot)            ) ;
+      store("muon_dz_firstPVtx" , muIt->globalTrack()->dz(*firstPrimaryVertex) ) ;
+      store("muon_dxy"          , muIt->globalTrack()->dxy()                   ) ;
+      store("muon_dxy_beamSpot" , muIt->globalTrack()->dxy(beamspot)           ) ;
+      store("muon_dxy_firstPVtx", muIt->globalTrack()->dxy(*firstPrimaryVertex)) ;
+      store("muon_dxy"          , muIt->globalTrack()->dxy(beamspot)           ) ;
+      store("muon_dsz"          , muIt->globalTrack()->dsz(beamspot)           ) ;
+      store("muon_dz"           , muIt->globalTrack()->dz(beamspot)            ) ;
+      store("muon_vx"           , muIt->globalTrack()->vx()                    ) ;
+      store("muon_vy"           , muIt->globalTrack()->vy()                    ) ;
+      store("muon_vz"           , muIt->globalTrack()->vz()                    ) ;
+      store("muon_outerPt"      , muIt->globalTrack()->outerPt()               ) ;
+      store("muon_outerEta"     , muIt->globalTrack()->outerEta()              ) ;
+      store("muon_outerPhi"     , muIt->globalTrack()->outerPhi()              ) ;
+      store("muon_outerTheta"   , muIt->globalTrack()->outerTheta()            ) ;
       
-      store("muon_qoverpError"                     , muIt->globalTrack()->qoverpError()                               ) ;
-      store("muon_ptError"                         , muIt->globalTrack()->ptError()                                   ) ;
-      store("muon_thetaError"                      , muIt->globalTrack()->thetaError()                                ) ;
-      store("muon_lambdaError"                     , muIt->globalTrack()->lambdaError()                               ) ;
-      store("muon_phiError"                        , muIt->globalTrack()->phiError()                                  ) ;
-      store("muon_dxyError"                        , muIt->globalTrack()->dxyError()                                  ) ;
-      store("muon_d0Error"                         , muIt->globalTrack()->d0Error()                                   ) ;
-      store("muon_dszError"                        , muIt->globalTrack()->dszError()                                  ) ;
-      store("muon_dzError"                         , muIt->globalTrack()->dzError()                                   ) ;
+      float etaError = muIt->globalTrack()->thetaError()/sin(muIt->globalTrack()->theta()) ;
+      store("muon_qoverpError", muIt->globalTrack()->qoverpError()) ;
+      store("muon_ptError"    , muIt->globalTrack()->ptError()    ) ;
+      store("muon_thetaError" , muIt->globalTrack()->thetaError() ) ;
+      store("muon_lambdaError", muIt->globalTrack()->lambdaError()) ;
+      store("muon_phiError"   , muIt->globalTrack()->phiError()   ) ;
+      store("muon_dxyError"   , muIt->globalTrack()->dxyError()   ) ;
+      store("muon_d0Error"    , muIt->globalTrack()->d0Error()    ) ;
+      store("muon_dszError"   , muIt->globalTrack()->dszError()   ) ;
+      store("muon_dzError"    , muIt->globalTrack()->dzError()    ) ;
+      store("muon_etaError"   , etaError                          ) ;
       
-      store("muon_numberOfValidPixelHits"          , muIt->innerTrack()->hitPattern().numberOfValidPixelHits()        ) ;
-      store("muon_numberOfValidTrackerHits"        , muIt->globalTrack()->hitPattern().numberOfValidTrackerHits()     ) ;                                  
-      store("muon_numberOfValidMuonHits"           , muIt->globalTrack()->hitPattern().numberOfValidMuonHits()        ) ;                            
-      store("muon_numberOfValidHits"               , muIt->globalTrack()->numberOfValidHits()                         ) ;        
-      store("muon_trackerLayersWithMeasurement"    , muIt->track()->hitPattern().trackerLayersWithMeasurement()       ) ;        
-      store("muon_numberOfLostHits"                , muIt->globalTrack()->numberOfLostHits()                          ) ;        
-      store("muon_numberOfMatchedStations"         , muIt->numberOfMatchedStations()                                  ) ; 
-      store("muon_validFraction"                   , muIt->globalTrack()->validFraction()                             ) ; 
+      store("muon_numberOfValidPixelHits"      , muIt->innerTrack()->hitPattern().numberOfValidPixelHits()   ) ;
+      store("muon_numberOfValidTrackerHits"    , muIt->globalTrack()->hitPattern().numberOfValidTrackerHits()) ;
+      store("muon_numberOfValidMuonHits"       , muIt->globalTrack()->hitPattern().numberOfValidMuonHits()   ) ;
+      store("muon_numberOfValidHits"           , muIt->globalTrack()->numberOfValidHits()                    ) ;
+      store("muon_trackerLayersWithMeasurement", muIt->track()->hitPattern().trackerLayersWithMeasurement()  ) ;
+      store("muon_numberOfLostHits"            , muIt->globalTrack()->numberOfLostHits()                     ) ;
+      store("muon_numberOfMatchedStations"     , muIt->numberOfMatchedStations()                             ) ;
+      store("muon_validFraction"               , muIt->globalTrack()->validFraction()                        ) ;
              
-      store("muon_isGlobalMuon"                    , muIt->isGlobalMuon()                                             ) ;        
-      store("muon_isTrackerMuon"                   , muIt->isTrackerMuon()                                            ) ;        
-      store("muon_isPFMuon"                        , muIt->isPFMuon()                                                 ) ;        
-      store("muon_isPFIsolationValid"              , muIt->isPFIsolationValid()                                       ) ;        
-      store("muon_chi2"                            , muIt->globalTrack()->chi2()                                      ) ;
-      store("muon_ndof"                            , muIt->globalTrack()->ndof()                                      ) ;
-      store("muon_normalizedChi2"                  , muIt->globalTrack()->normalizedChi2()                            ) ;
-      store("muon_innerPosition_x"                 , muIt->globalTrack()->innerPosition().X()                         ) ;
-      store("muon_innerPosition_y"                 , muIt->globalTrack()->innerPosition().Y()                         ) ;
-      store("muon_innerPosition_z"                 , muIt->globalTrack()->innerPosition().Z()                         ) ;
+      store("muon_isGlobalMuon"      , muIt->isGlobalMuon()                    ) ;        
+      store("muon_isTrackerMuon"     , muIt->isTrackerMuon()                   ) ;        
+      store("muon_isPFMuon"          , muIt->isPFMuon()                        ) ;        
+      store("muon_isPFIsolationValid", muIt->isPFIsolationValid()              ) ;        
+      store("muon_chi2"              , muIt->globalTrack()->chi2()             ) ;
+      store("muon_ndof"              , muIt->globalTrack()->ndof()             ) ;
+      store("muon_normalizedChi2"    , muIt->globalTrack()->normalizedChi2()   ) ;
+      store("muon_innerPosition_x"   , muIt->globalTrack()->innerPosition().X()) ;
+      store("muon_innerPosition_y"   , muIt->globalTrack()->innerPosition().Y()) ;
+      store("muon_innerPosition_z"   , muIt->globalTrack()->innerPosition().Z()) ;
       
-      store("muon_isolationR03_sumPt"              , muIt->isolationR03().sumPt                                       ) ;
-      store("muon_isolationR03_trackerVetoPt"      , muIt->isolationR03().trackerVetoPt                               ) ;
-      store("muon_isolationR03_emEt"               , muIt->isolationR03().emEt                                        ) ;
-      store("muon_isolationR03_emVetoEt"           , muIt->isolationR03().emVetoEt                                    ) ;
-      store("muon_isolationR03_hadEt"              , muIt->isolationR03().hadEt                                       ) ;
-      store("muon_isolationR03_hadVetoEt"          , muIt->isolationR03().hadVetoEt                                   ) ;
+      store("muon_isolationR03_sumPt"        , muIt->isolationR03().sumPt              ) ;
+      store("muon_isolationR03_trackerVetoPt", muIt->isolationR03().trackerVetoPt      ) ;
+      store("muon_isolationR03_emEt"         , muIt->isolationR03().emEt               ) ;
+      store("muon_isolationR03_emVetoEt"     , muIt->isolationR03().emVetoEt           ) ;
+      store("muon_isolationR03_hadEt"        , muIt->isolationR03().hadEt              ) ;
+      store("muon_isolationR03_hadVetoEt"    , muIt->isolationR03().hadVetoEt          ) ;
       
-      store("muon_isolationR05_sumPt"              , muIt->isolationR05().sumPt                                       ) ;
-      store("muon_isolationR05_trackerVetoPt"      , muIt->isolationR05().trackerVetoPt                               ) ;
-      store("muon_isolationR05_emEt"               , muIt->isolationR05().emEt                                        ) ;
-      store("muon_isolationR05_emVetoEt"           , muIt->isolationR05().emVetoEt                                    ) ;
-      store("muon_isolationR05_hadEt"              , muIt->isolationR05().hadEt                                       ) ;
-      store("muon_isolationR05_hadVetoEt"          , muIt->isolationR05().hadVetoEt                                   ) ;
+      store("muon_isolationR05_sumPt"        , muIt->isolationR05().sumPt              ) ;
+      store("muon_isolationR05_trackerVetoPt", muIt->isolationR05().trackerVetoPt      ) ;
+      store("muon_isolationR05_emEt"         , muIt->isolationR05().emEt               ) ;
+      store("muon_isolationR05_emVetoEt"     , muIt->isolationR05().emVetoEt           ) ;
+      store("muon_isolationR05_hadEt"        , muIt->isolationR05().hadEt              ) ;
+      store("muon_isolationR05_hadVetoEt"    , muIt->isolationR05().hadVetoEt          ) ;
       
       store("muon_pfIsolationR03_sumChargedHadronPt"             , muIt->pfIsolationR03().sumChargedHadronPt             ) ;
       store("muon_pfIsolationR03_sumChargedParticlePt"           , muIt->pfIsolationR03().sumChargedParticlePt           ) ;
@@ -292,29 +295,29 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       store("muon_pfMeanDRIsoProfileR04_sumPhotonEtHighThreshold"       , muIt->pfMeanDRIsoProfileR04().sumPhotonEtHighThreshold       ) ;
       store("muon_pfMeanDRIsoProfileR04_sumPUPt"                        , muIt->pfMeanDRIsoProfileR04().sumPUPt                        ) ;
       
-      store("muon_tevOptimized_charge"             , tevOptimizedTrk.first->charge()                                  ) ;
-      store("muon_tevOptimized_pt"                 , tevOptimizedTrk.first->pt()                                      ) ;
-      store("muon_tevOptimized_eta"                , tevOptimizedTrk.first->eta()                                     ) ;
-      store("muon_tevOptimized_phi"                , tevOptimizedTrk.first->phi()                                     ) ;
-      store("muon_tevOptimized_theta"              , tevOptimizedTrk.first->theta()                                   ) ;
-      store("muon_tevOptimized_px"                 , tevOptimizedTrk.first->px()                                      ) ;
-      store("muon_tevOptimized_py"                 , tevOptimizedTrk.first->py()                                      ) ;
-      store("muon_tevOptimized_pz"                 , tevOptimizedTrk.first->pz()                                      ) ;
-      store("muon_tevOptimized_d0"                 , tevOptimizedTrk.first->d0()                                      ) ;
-      store("muon_tevOptimized_dz"                 , tevOptimizedTrk.first->dz()                                      ) ;
-      store("muon_tevOptimized_dz_beamSpot"        , tevOptimizedTrk.first->dz(beamspot)                              ) ;
-      store("muon_tevOptimized_dz_firstPVtx"       , tevOptimizedTrk.first->dz(*firstPrimaryVertex)                   ) ;
-      store("muon_tevOptimized_dxy"                , tevOptimizedTrk.first->dxy()                                     ) ;
-      store("muon_tevOptimized_dxy_beamSpot"       , tevOptimizedTrk.first->dxy(beamspot)                             ) ;
-      store("muon_tevOptimized_dxy_firstPVtx"      , tevOptimizedTrk.first->dxy(*firstPrimaryVertex)                  ) ;
+      store("muon_tevOptimized_charge"       , tevOptimizedTrk.first->charge()                ) ;
+      store("muon_tevOptimized_pt"           , tevOptimizedTrk.first->pt()                    ) ;
+      store("muon_tevOptimized_eta"          , tevOptimizedTrk.first->eta()                   ) ;
+      store("muon_tevOptimized_phi"          , tevOptimizedTrk.first->phi()                   ) ;
+      store("muon_tevOptimized_theta"        , tevOptimizedTrk.first->theta()                 ) ;
+      store("muon_tevOptimized_px"           , tevOptimizedTrk.first->px()                    ) ;
+      store("muon_tevOptimized_py"           , tevOptimizedTrk.first->py()                    ) ;
+      store("muon_tevOptimized_pz"           , tevOptimizedTrk.first->pz()                    ) ;
+      store("muon_tevOptimized_d0"           , tevOptimizedTrk.first->d0()                    ) ;
+      store("muon_tevOptimized_dz"           , tevOptimizedTrk.first->dz()                    ) ;
+      store("muon_tevOptimized_dz_beamSpot"  , tevOptimizedTrk.first->dz(beamspot)            ) ;
+      store("muon_tevOptimized_dz_firstPVtx" , tevOptimizedTrk.first->dz(*firstPrimaryVertex) ) ;
+      store("muon_tevOptimized_dxy"          , tevOptimizedTrk.first->dxy()                   ) ;
+      store("muon_tevOptimized_dxy_beamSpot" , tevOptimizedTrk.first->dxy(beamspot)           ) ;
+      store("muon_tevOptimized_dxy_firstPVtx", tevOptimizedTrk.first->dxy(*firstPrimaryVertex)) ;
       
-      store("muon_tevOptimized_ptError"            , tevOptimizedTrk.first->ptError()                                 ) ;
-      store("muon_tevOptimized_etaError"           , tevOptimizedTrk.first->etaError()                                ) ;
-      store("muon_tevOptimized_phiError"           , tevOptimizedTrk.first->phiError()                                ) ;
-      store("muon_tevOptimized_thetaError"         , tevOptimizedTrk.first->thetaError()                              ) ;
-      store("muon_tevOptimized_d0Error"            , tevOptimizedTrk.first->d0Error()                                 ) ;
-      store("muon_tevOptimized_dzError"            , tevOptimizedTrk.first->dzError()                                 ) ;
-      store("muon_tevOptimized_dxyError"           , tevOptimizedTrk.first->dxyError()                                ) ;
+      store("muon_tevOptimized_ptError"   , tevOptimizedTrk.first->ptError()   ) ;
+      store("muon_tevOptimized_etaError"  , tevOptimizedTrk.first->etaError()  ) ;
+      store("muon_tevOptimized_phiError"  , tevOptimizedTrk.first->phiError()  ) ;
+      store("muon_tevOptimized_thetaError", tevOptimizedTrk.first->thetaError()) ;
+      store("muon_tevOptimized_d0Error"   , tevOptimizedTrk.first->d0Error()   ) ;
+      store("muon_tevOptimized_dzError"   , tevOptimizedTrk.first->dzError()   ) ;
+      store("muon_tevOptimized_dxyError"  , tevOptimizedTrk.first->dxyError()  ) ;
     }
   }
 }
