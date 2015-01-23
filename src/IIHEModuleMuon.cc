@@ -16,7 +16,6 @@ using namespace std ;
 using namespace reco;
 using namespace edm ;
 
-<<<<<<< HEAD
 //////////////////////////////////////////////////////////////////////////////////////////
 //                             IIHEMuonTrackVariable classes                            //
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -186,11 +185,7 @@ IIHEModuleMuon::IIHEModuleMuon(const edm::ParameterSet& iConfig):
   globalTrackWrapper_(new IIHEMuonTrackWrapper("mu_gt")),
   outerTrackWrapper_ (new IIHEMuonTrackWrapper("mu_ot")),
   innerTrackWrapper_ (new IIHEMuonTrackWrapper("mu_it")){
-  triggerDeltaRThreshold_ = iConfig.getUntrackedParameter<double>("mu_triggerDeltaRThreshold", 1.0) ;
-=======
-IIHEModuleMuon::IIHEModuleMuon(const edm::ParameterSet& iConfig): IIHEModule(iConfig){
   triggerDeltaRThreshold_ = iConfig.getUntrackedParameter<double>("muon_triggerDeltaRThreshold", 1.0) ;
->>>>>>> master
 }
 IIHEModuleMuon::~IIHEModuleMuon(){}
 
@@ -205,59 +200,59 @@ void IIHEModuleMuon::beginJob(){
   
   // Muon type block
   setBranchType(kVectorBool) ;
-  addBranch("mu_isGlobalMuon") ;
-  addBranch("mu_isStandAloneMuon") ;
-  addBranch("mu_isTrackerMuon") ;
-  addBranch("mu_isPFMuon") ;
+  addBranch("mu_isGlobalMuon"      ) ;
+  addBranch("mu_isStandAloneMuon"  ) ;
+  addBranch("mu_isTrackerMuon"     ) ;
+  addBranch("mu_isPFMuon"          ) ;
   addBranch("mu_isPFIsolationValid") ;
   
   // Hits block
   setBranchType(kVectorInt) ;
   addBranch("mu_numberOfMatchedStations") ;
   addBranch("mu_numberOfValidPixelHits") ;
-  addBranch("mu_trackerLayersWithMeasurement") ;
   
   // TeV optimized values
   addBranch("mu_tevOptimized_charge", kVectorInt) ;
   setBranchType(kVectorFloat) ;
-  addBranch("mu_tevOptimized_pt") ;
-  addBranch("mu_tevOptimized_eta") ;
-  addBranch("mu_tevOptimized_phi") ;
+  addBranch("mu_tevOptimized_pt"   ) ;
+  addBranch("mu_tevOptimized_eta"  ) ;
+  addBranch("mu_tevOptimized_phi"  ) ;
   addBranch("mu_tevOptimized_theta") ;
-  addBranch("mu_tevOptimized_px") ;
-  addBranch("mu_tevOptimized_py") ;
-  addBranch("mu_tevOptimized_pz") ;
-  addBranch("mu_tevOptimized_d0") ;
-  addBranch("mu_tevOptimized_dz") ;
-  addBranch("mu_tevOptimized_dz_beamSpot") ;
-  addBranch("mu_tevOptimized_dz_firstPVtx") ;
-  addBranch("mu_tevOptimized_dxy") ;
-  addBranch("mu_tevOptimized_dxy_beamSpot") ;
+  addBranch("mu_tevOptimized_px"   ) ;
+  addBranch("mu_tevOptimized_py"   ) ;
+  addBranch("mu_tevOptimized_pz"   ) ;
+  
+  addBranch("mu_tevOptimized_d0"           ) ;
+  addBranch("mu_tevOptimized_dz"           ) ;
+  addBranch("mu_tevOptimized_dz_beamSpot"  ) ;
+  addBranch("mu_tevOptimized_dz_firstPVtx" ) ;
+  addBranch("mu_tevOptimized_dxy"          ) ;
+  addBranch("mu_tevOptimized_dxy_beamSpot" ) ;
   addBranch("mu_tevOptimized_dxy_firstPVtx") ;
   
-  addBranch("mu_tevOptimized_ptError") ;
-  addBranch("mu_tevOptimized_etaError") ;
-  addBranch("mu_tevOptimized_phiError") ;
+  addBranch("mu_tevOptimized_ptError"   ) ;
+  addBranch("mu_tevOptimized_etaError"  ) ;
+  addBranch("mu_tevOptimized_phiError"  ) ;
   addBranch("mu_tevOptimized_thetaError") ;
-  addBranch("mu_tevOptimized_d0Error") ;
-  addBranch("mu_tevOptimized_dzError") ;
-  addBranch("mu_tevOptimized_dxyError") ;
+  addBranch("mu_tevOptimized_d0Error"   ) ;
+  addBranch("mu_tevOptimized_dzError"   ) ;
+  addBranch("mu_tevOptimized_dxyError"  ) ;
   
   // Isolation block
   setBranchType(kVectorFloat) ;
-  addBranch("mu_isolationR03_sumPt") ;
+  addBranch("mu_isolationR03_sumPt"        ) ;
   addBranch("mu_isolationR03_trackerVetoPt") ;
-  addBranch("mu_isolationR03_emEt") ;
-  addBranch("mu_isolationR03_emVetoEt") ;
-  addBranch("mu_isolationR03_hadEt") ;
-  addBranch("mu_isolationR03_hadVetoEt") ;
+  addBranch("mu_isolationR03_emEt"         ) ;
+  addBranch("mu_isolationR03_emVetoEt"     ) ;
+  addBranch("mu_isolationR03_hadEt"        ) ;
+  addBranch("mu_isolationR03_hadVetoEt"    ) ;
   
-  addBranch("mu_isolationR05_sumPt") ;
+  addBranch("mu_isolationR05_sumPt"        ) ;
   addBranch("mu_isolationR05_trackerVetoPt") ;
-  addBranch("mu_isolationR05_emEt") ;
-  addBranch("mu_isolationR05_emVetoEt") ;
-  addBranch("mu_isolationR05_hadEt") ;
-  addBranch("mu_isolationR05_hadVetoEt") ;
+  addBranch("mu_isolationR05_emEt"         ) ;
+  addBranch("mu_isolationR05_emVetoEt"     ) ;
+  addBranch("mu_isolationR05_hadEt"        ) ;
+  addBranch("mu_isolationR05_hadVetoEt"    ) ;
   
   addBranch("mu_pfIsolationR03_sumChargedHadronPt"             ) ;
   addBranch("mu_pfIsolationR03_sumChargedParticlePt"           ) ;
@@ -313,8 +308,6 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   edm::Handle<trigger::TriggerEvent> trigEvent; 
   iEvent.getByLabel(trigEventTag,trigEvent);
   
-  
-  
   // Muon collections
   reco::MuonCollection muons = parent_->getMuonCollection() ;
   store("mu_n", (unsigned int)(muons.size())) ;
@@ -326,15 +319,24 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   // So we need to be a little careful when we get the variables.
   
   for(reco::MuonCollection::const_iterator muIt = muons.begin(); muIt != muons.end(); ++muIt){
-    store("mu_isGlobalMuon"      , muIt->isGlobalMuon()      ) ;
-    store("mu_isStandAloneMuon"  , muIt->isStandAloneMuon()  ) ;
-    store("mu_isTrackerMuon"     , muIt->isTrackerMuon()     ) ;        
+    bool isGlobalMuon     = muIt->isGlobalMuon()     ;
+    bool isStandAloneMuon = muIt->isStandAloneMuon() ;
+    bool isTrackerMuon    = muIt->isTrackerMuon()    ;
+  
+    store("mu_isGlobalMuon"      , isGlobalMuon              ) ;
+    store("mu_isStandAloneMuon"  , isStandAloneMuon          ) ;
+    store("mu_isTrackerMuon"     , isTrackerMuon             ) ;        
     store("mu_isPFMuon"          , muIt->isPFMuon()          ) ;        
     store("mu_isPFIsolationValid", muIt->isPFIsolationValid()) ; 
     
-    //store("mu_numberOfMatchedStations"     , muIt->numberOfMatchedStations()                           ) ;
-    //store("mu_numberOfValidPixelHits"      , muIt->innerTrack()->hitPattern().numberOfValidPixelHits() ) ;
-    //store("mu_trackerLayersWithMeasurement", muIt->track()->hitPattern().trackerLayersWithMeasurement()) ;
+    int numberOfMatchStations        = 0 ;
+    int numberOfValidPixelHits       = 0 ;
+    
+    numberOfMatchStations = muIt->numberOfMatchedStations() ;
+    if(isTrackerMuon) numberOfValidPixelHits = muIt->innerTrack()->hitPattern().numberOfValidPixelHits() ;
+    
+    store("mu_numberOfMatchedStations", numberOfMatchStations ) ;
+    store("mu_numberOfValidPixelHits" , numberOfValidPixelHits) ;
     
     globalTrackWrapper_->reset() ;
     outerTrackWrapper_ ->reset() ;

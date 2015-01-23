@@ -40,33 +40,33 @@ IIHEModuleHEEP::IIHEModuleHEEP(const edm::ParameterSet& iConfig): IIHEModule(iCo
   triggerDeltaRThreshold_  = iConfig.getUntrackedParameter<double>("HEEP_triggerDeltaRThreshold", 1.0) ;
   rho_ = iConfig.getUntrackedParameter<double>("kt6PFJets:rho", 0.0) ;
   
-  barrelEtaUpper_41_ = iConfig.getUntrackedParameter<double>("barrelEtaUpper_41", 1.442) ;
-  endcapEtaLower_41_ = iConfig.getUntrackedParameter<double>("endcapEtaLower_41", 1.56) ;
-  endcapEtaUpper_41_ = iConfig.getUntrackedParameter<double>("endcapEtaUpper_41", 2.5) ;
+  barrelEtaUpper_41_ = iConfig.getUntrackedParameter<double>("barrelEtaUpper_41", 1.442 ) ;
+  endcapEtaLower_41_ = iConfig.getUntrackedParameter<double>("endcapEtaLower_41", 1.56  ) ;
+  endcapEtaUpper_41_ = iConfig.getUntrackedParameter<double>("endcapEtaUpper_41", 2.5   ) ;
   barrelEtaUpper_50_ = iConfig.getUntrackedParameter<double>("barrelEtaUpper_50", 1.4442) ;
-  endcapEtaLower_50_ = iConfig.getUntrackedParameter<double>("endcapEtaLower_50", 1.566) ;
-  endcapEtaUpper_50_ = iConfig.getUntrackedParameter<double>("endcapEtaUpper_50", 2.5) ;
+  endcapEtaLower_50_ = iConfig.getUntrackedParameter<double>("endcapEtaLower_50", 1.566 ) ;
+  endcapEtaUpper_50_ = iConfig.getUntrackedParameter<double>("endcapEtaUpper_50", 2.5   ) ;
   
-  isolEMHadDepth1ConstantTermBarrel_41_       = iConfig.getUntrackedParameter<double>("isolEMHadDepth1ConstantTermBarrel_41", 2.0) ;
-  isolEMHadDepth1ConstantTermEndcapLowEt_41_  = iConfig.getUntrackedParameter<double>("isolEMHadDepth1ConstantTermEndcapLowEt_41", 2.5) ;
-  isolEMHadDepth1ConstantTermEndcapHighEt_41_ = iConfig.getUntrackedParameter<double>("isolEMHadDepth1ConstantTermEndcapHighEt_41", 2.5) ;
-  isolEMHadDepth1LinearTermBarrel_41_         = iConfig.getUntrackedParameter<double>("isolEMHadDepth1LinearTermBarrel_41", 0.03) ;
-  isolEMHadDepth1LinearTermEndcap_41_         = iConfig.getUntrackedParameter<double>("isolEMHadDepth1LinearTermEndcap_41", 0.03) ;
-  isolEMHadDepth1OffsetTermEndcap_41_         = iConfig.getUntrackedParameter<double>("isolEMHadDepth1OffsetTermEndcap_41", 50.0) ;
+  isolEMHadDepth1ConstantTermBarrel_41_       = iConfig.getUntrackedParameter<double>("isolEMHadDepth1ConstantTermBarrel_41"      , 2.0 ) ;
+  isolEMHadDepth1ConstantTermEndcapLowEt_41_  = iConfig.getUntrackedParameter<double>("isolEMHadDepth1ConstantTermEndcapLowEt_41" , 2.5 ) ;
+  isolEMHadDepth1ConstantTermEndcapHighEt_41_ = iConfig.getUntrackedParameter<double>("isolEMHadDepth1ConstantTermEndcapHighEt_41", 2.5 ) ;
+  isolEMHadDepth1LinearTermBarrel_41_         = iConfig.getUntrackedParameter<double>("isolEMHadDepth1LinearTermBarrel_41"        , 0.03) ;
+  isolEMHadDepth1LinearTermEndcap_41_         = iConfig.getUntrackedParameter<double>("isolEMHadDepth1LinearTermEndcap_41"        , 0.03) ;
+  isolEMHadDepth1OffsetTermEndcap_41_         = iConfig.getUntrackedParameter<double>("isolEMHadDepth1OffsetTermEndcap_41"        , 50.0) ;
   
-  isolEMHadDepth1ConstantTermBarrel_50_50ns_       = iConfig.getUntrackedParameter<double>("isolEMHadDepth1ConstantTermBarrel_50_50ns", 2.0) ;
-  isolEMHadDepth1ConstantTermEndcapLowEt_50_50ns_  = iConfig.getUntrackedParameter<double>("isolEMHadDepth1ConstantTermEndcapLowEt_50_50ns", 2.5) ;
-  isolEMHadDepth1ConstantTermEndcapHighEt_50_50ns_ = iConfig.getUntrackedParameter<double>("isolEMHadDepth1ConstantTermEndcapHighEt_50_50ns", 2.5) ;
-  isolEMHadDepth1LinearTermBarrel_50_50ns_         = iConfig.getUntrackedParameter<double>("isolEMHadDepth1LinearTermBarrel_50_50ns", 0.03) ;
-  isolEMHadDepth1LinearTermEndcap_50_50ns_         = iConfig.getUntrackedParameter<double>("isolEMHadDepth1LinearTermEndcap_50_50ns", 0.03) ;
-  isolEMHadDepth1OffsetTermEndcap_50_50ns_         = iConfig.getUntrackedParameter<double>("isolEMHadDepth1OffsetTermEndcap_50_50ns", 50.0) ;
+  isolEMHadDepth1ConstantTermBarrel_50_50ns_       = iConfig.getUntrackedParameter<double>("isolEMHadDepth1ConstantTermBarrel_50_50ns"      , 2.0 ) ;
+  isolEMHadDepth1ConstantTermEndcapLowEt_50_50ns_  = iConfig.getUntrackedParameter<double>("isolEMHadDepth1ConstantTermEndcapLowEt_50_50ns" , 2.5 ) ;
+  isolEMHadDepth1ConstantTermEndcapHighEt_50_50ns_ = iConfig.getUntrackedParameter<double>("isolEMHadDepth1ConstantTermEndcapHighEt_50_50ns", 2.5 ) ;
+  isolEMHadDepth1LinearTermBarrel_50_50ns_         = iConfig.getUntrackedParameter<double>("isolEMHadDepth1LinearTermBarrel_50_50ns"        , 0.03) ;
+  isolEMHadDepth1LinearTermEndcap_50_50ns_         = iConfig.getUntrackedParameter<double>("isolEMHadDepth1LinearTermEndcap_50_50ns"        , 0.03) ;
+  isolEMHadDepth1OffsetTermEndcap_50_50ns_         = iConfig.getUntrackedParameter<double>("isolEMHadDepth1OffsetTermEndcap_50_50ns"        , 50.0) ;
   
-  isolEMHadDepth1ConstantTermBarrel_50_25ns_       = iConfig.getUntrackedParameter<double>("isolEMHadDepth1ConstantTermBarrel_50_25ns", 2.0) ;
-  isolEMHadDepth1ConstantTermEndcapLowEt_50_25ns_  = iConfig.getUntrackedParameter<double>("isolEMHadDepth1ConstantTermEndcapLowEt_50_25ns", 2.5) ;
-  isolEMHadDepth1ConstantTermEndcapHighEt_50_25ns_ = iConfig.getUntrackedParameter<double>("isolEMHadDepth1ConstantTermEndcapHighEt_50_25ns", 2.5) ;
-  isolEMHadDepth1LinearTermBarrel_50_25ns_         = iConfig.getUntrackedParameter<double>("isolEMHadDepth1LinearTermBarrel_50_25ns", 0.03) ;
-  isolEMHadDepth1LinearTermEndcap_50_25ns_         = iConfig.getUntrackedParameter<double>("isolEMHadDepth1LinearTermEndcap_50_25ns", 0.03) ;
-  isolEMHadDepth1OffsetTermEndcap_50_25ns_         = iConfig.getUntrackedParameter<double>("isolEMHadDepth1OffsetTermEndcap_50_25ns", 50.0) ;
+  isolEMHadDepth1ConstantTermBarrel_50_25ns_       = iConfig.getUntrackedParameter<double>("isolEMHadDepth1ConstantTermBarrel_50_25ns"      , 2.0 ) ;
+  isolEMHadDepth1ConstantTermEndcapLowEt_50_25ns_  = iConfig.getUntrackedParameter<double>("isolEMHadDepth1ConstantTermEndcapLowEt_50_25ns" , 2.5 ) ;
+  isolEMHadDepth1ConstantTermEndcapHighEt_50_25ns_ = iConfig.getUntrackedParameter<double>("isolEMHadDepth1ConstantTermEndcapHighEt_50_25ns", 2.5 ) ;
+  isolEMHadDepth1LinearTermBarrel_50_25ns_         = iConfig.getUntrackedParameter<double>("isolEMHadDepth1LinearTermBarrel_50_25ns"        , 0.03) ;
+  isolEMHadDepth1LinearTermEndcap_50_25ns_         = iConfig.getUntrackedParameter<double>("isolEMHadDepth1LinearTermEndcap_50_25ns"        , 0.03) ;
+  isolEMHadDepth1OffsetTermEndcap_50_25ns_         = iConfig.getUntrackedParameter<double>("isolEMHadDepth1OffsetTermEndcap_50_25ns"        , 50.0) ;
   
   EtThresholdBarrel_41_ = iConfig.getUntrackedParameter<double>("EtThresholdBarrel_41", 35.0) ;
   EtThresholdEndcap_41_ = iConfig.getUntrackedParameter<double>("EtThresholdEndcap_41", 35.0) ;
@@ -76,20 +76,20 @@ IIHEModuleHEEP::IIHEModuleHEEP(const edm::ParameterSet& iConfig): IIHEModule(iCo
   dEtaInThresholdBarrel_41_ = iConfig.getUntrackedParameter<double>("dEtaInThresholdBarrel_41", 0.005) ;
   dEtaInThresholdEndcap_41_ = iConfig.getUntrackedParameter<double>("dEtaInThresholdEndcap_41", 0.007) ;
   
-  dEtaInConstantTermBarrel_50_50ns_ = iConfig.getUntrackedParameter<double>("dEtaInConstantTermBarrel_50_50ns", 0.016) ;
-  dEtaInLinearTermBarrel_50_50ns_   = iConfig.getUntrackedParameter<double>("dEtaInLinearTermBarrel_50_50ns", 0.0001) ;
-  dEtaInCutoffTermBarrel_50_50ns_   = iConfig.getUntrackedParameter<double>("dEtaInCutoffTermBarrel_50_50ns", 0.004) ;
-  dEtaInThresholdEndcap_50_50ns_    = iConfig.getUntrackedParameter<double>("dEtaInThresholdEndcap_50_50ns", 0.02) ;
+  dEtaInConstantTermBarrel_50_50ns_ = iConfig.getUntrackedParameter<double>("dEtaInConstantTermBarrel_50_50ns", 0.016 ) ;
+  dEtaInLinearTermBarrel_50_50ns_   = iConfig.getUntrackedParameter<double>("dEtaInLinearTermBarrel_50_50ns"  , 0.0001) ;
+  dEtaInCutoffTermBarrel_50_50ns_   = iConfig.getUntrackedParameter<double>("dEtaInCutoffTermBarrel_50_50ns"  , 0.004 ) ;
+  dEtaInThresholdEndcap_50_50ns_    = iConfig.getUntrackedParameter<double>("dEtaInThresholdEndcap_50_50ns"   , 0.02  ) ;
   
-  dEtaInConstantTermBarrel_50_25ns_ = iConfig.getUntrackedParameter<double>("dEtaInConstantTermBarrel_50_25ns", 0.016) ;
-  dEtaInLinearTermBarrel_50_25ns_   = iConfig.getUntrackedParameter<double>("dEtaInLinearTermBarrel_50_25ns", 0.0001) ;
-  dEtaInCutoffTermBarrel_50_25ns_   = iConfig.getUntrackedParameter<double>("dEtaInCutoffTermBarrel_50_25ns", 0.004) ;
-  dEtaInConstantTermEndcap_50_25ns_ = iConfig.getUntrackedParameter<double>("dEtaInConstantTermEndcap_50_25ns", 0.016) ;
-  dEtaInLinearTermEndcap_50_25ns_   = iConfig.getUntrackedParameter<double>("dEtaInLinearTermEndcap_50_25ns", 0.0001) ;
-  dEtaInCutoffTermEndcap_50_25ns_   = iConfig.getUntrackedParameter<double>("dEtaInCutoffTermEndcap_50_25ns", 0.004) ;
+  dEtaInConstantTermBarrel_50_25ns_ = iConfig.getUntrackedParameter<double>("dEtaInConstantTermBarrel_50_25ns", 0.016 ) ;
+  dEtaInLinearTermBarrel_50_25ns_   = iConfig.getUntrackedParameter<double>("dEtaInLinearTermBarrel_50_25ns"  , 0.0001) ;
+  dEtaInCutoffTermBarrel_50_25ns_   = iConfig.getUntrackedParameter<double>("dEtaInCutoffTermBarrel_50_25ns"  , 0.004 ) ;
+  dEtaInConstantTermEndcap_50_25ns_ = iConfig.getUntrackedParameter<double>("dEtaInConstantTermEndcap_50_25ns", 0.016 ) ;
+  dEtaInLinearTermEndcap_50_25ns_   = iConfig.getUntrackedParameter<double>("dEtaInLinearTermEndcap_50_25ns"  , 0.0001) ;
+  dEtaInCutoffTermEndcap_50_25ns_   = iConfig.getUntrackedParameter<double>("dEtaInCutoffTermEndcap_50_25ns"  , 0.004 ) ;
   
-  dPhiInThresholdBarrel_41_      = iConfig.getUntrackedParameter<double>("dPhiInThresholdBarrel_41", 0.06) ;
-  dPhiInThresholdEndcap_41_      = iConfig.getUntrackedParameter<double>("dPhiInThresholdEndcap_41", 0.06) ;
+  dPhiInThresholdBarrel_41_      = iConfig.getUntrackedParameter<double>("dPhiInThresholdBarrel_41"     , 0.06) ;
+  dPhiInThresholdEndcap_41_      = iConfig.getUntrackedParameter<double>("dPhiInThresholdEndcap_41"     , 0.06) ;
   dPhiInThresholdBarrel_50_50ns_ = iConfig.getUntrackedParameter<double>("dPhiInThresholdBarrel_50_50ns", 0.06) ;
   dPhiInThresholdEndcap_50_50ns_ = iConfig.getUntrackedParameter<double>("dPhiInThresholdEndcap_50_50ns", 0.15) ;
   dPhiInThresholdBarrel_50_25ns_ = iConfig.getUntrackedParameter<double>("dPhiInThresholdBarrel_50_25ns", 0.06) ;
@@ -98,36 +98,36 @@ IIHEModuleHEEP::IIHEModuleHEEP(const edm::ParameterSet& iConfig): IIHEModule(iCo
   HOverEThresholdBarrel_41_      = iConfig.getUntrackedParameter<double>("HOverEThresholdBarrel_41", 0.05) ;
   HOverEThresholdEndcap_41_      = iConfig.getUntrackedParameter<double>("HOverEThresholdEndcap_41", 0.05) ;
   
-  HOverEReciprocalTermBarrel_50_50ns_ = iConfig.getUntrackedParameter<double>("HOverEReciprocalTermBarrel_50_50ns", 2.0) ;
-  HOverEConstantTermBarrel_50_50ns_   = iConfig.getUntrackedParameter<double>("HOverEConstantTermBarrel_50_50ns", 0.05) ;
+  HOverEReciprocalTermBarrel_50_50ns_ = iConfig.getUntrackedParameter<double>("HOverEReciprocalTermBarrel_50_50ns", 2.0 ) ;
+  HOverEConstantTermBarrel_50_50ns_   = iConfig.getUntrackedParameter<double>("HOverEConstantTermBarrel_50_50ns"  , 0.05) ;
   HOverEReciprocalTermEndcap_50_50ns_ = iConfig.getUntrackedParameter<double>("HOverEReciprocalTermEndcap_50_50ns", 12.5) ;
-  HOverEConstantTermEndcap_50_50ns_   = iConfig.getUntrackedParameter<double>("HOverEConstantTermEndcap_50_50ns", 0.05) ;
+  HOverEConstantTermEndcap_50_50ns_   = iConfig.getUntrackedParameter<double>("HOverEConstantTermEndcap_50_50ns"  , 0.05) ;
   
-  HOverEReciprocalTermBarrel_50_25ns_ = iConfig.getUntrackedParameter<double>("HOverEReciprocalTermBarrel_50_25ns", 2.0) ;
-  HOverEConstantTermBarrel_50_25ns_   = iConfig.getUntrackedParameter<double>("HOverEConstantTermBarrel_50_25ns", 0.05) ;
+  HOverEReciprocalTermBarrel_50_25ns_ = iConfig.getUntrackedParameter<double>("HOverEReciprocalTermBarrel_50_25ns", 2.0 ) ;
+  HOverEConstantTermBarrel_50_25ns_   = iConfig.getUntrackedParameter<double>("HOverEConstantTermBarrel_50_25ns"  , 0.05) ;
   HOverEReciprocalTermEndcap_50_25ns_ = iConfig.getUntrackedParameter<double>("HOverEReciprocalTermEndcap_50_25ns", 12.5) ;
-  HOverEConstantTermEndcap_50_25ns_   = iConfig.getUntrackedParameter<double>("HOverEConstantTermEndcap_50_25ns", 0.05) ;
+  HOverEConstantTermEndcap_50_25ns_   = iConfig.getUntrackedParameter<double>("HOverEConstantTermEndcap_50_25ns"  , 0.05) ;
   
-  SigmaIetaIetaThreshold_41_      = iConfig.getUntrackedParameter<double>("SigmaIetaIetaThreshold_41", 0.03) ;
+  SigmaIetaIetaThreshold_41_      = iConfig.getUntrackedParameter<double>("SigmaIetaIetaThreshold_41"     , 0.03) ;
   SigmaIetaIetaThreshold_50_50ns_ = iConfig.getUntrackedParameter<double>("SigmaIetaIetaThreshold_50_50ns", 0.03) ;
   SigmaIetaIetaThreshold_50_25ns_ = iConfig.getUntrackedParameter<double>("SigmaIetaIetaThreshold_50_25ns", 0.03) ;
   
-  E1x5threshold_41_      = iConfig.getUntrackedParameter<double>("E1x5threshold_41", 0.83) ;
-  E2x5threshold_41_      = iConfig.getUntrackedParameter<double>("E2x5threshold_41", 0.94) ;
+  E1x5threshold_41_      = iConfig.getUntrackedParameter<double>("E1x5threshold_41"     , 0.83) ;
+  E2x5threshold_41_      = iConfig.getUntrackedParameter<double>("E2x5threshold_41"     , 0.94) ;
   E1x5threshold_50_50ns_ = iConfig.getUntrackedParameter<double>("E1x5threshold_50_50ns", 0.83) ;
   E2x5threshold_50_50ns_ = iConfig.getUntrackedParameter<double>("E2x5threshold_50_50ns", 0.94) ;
   E1x5threshold_50_25ns_ = iConfig.getUntrackedParameter<double>("E1x5threshold_50_25ns", 0.83) ;
   E2x5threshold_50_25ns_ = iConfig.getUntrackedParameter<double>("E2x5threshold_50_25ns", 0.94) ;
   
-  IsolPtTrksThresholdBarrel_41_      = iConfig.getUntrackedParameter<double>("IsolPtTrksThresholdBarrel_41", 5.0) ;
-  IsolPtTrksThresholdEndcap_41_      = iConfig.getUntrackedParameter<double>("IsolPtTrksThresholdEndcap_41", 5.0) ;
+  IsolPtTrksThresholdBarrel_41_      = iConfig.getUntrackedParameter<double>("IsolPtTrksThresholdBarrel_41"     , 5.0) ;
+  IsolPtTrksThresholdEndcap_41_      = iConfig.getUntrackedParameter<double>("IsolPtTrksThresholdEndcap_41"     , 5.0) ;
   IsolPtTrksThresholdBarrel_50_50ns_ = iConfig.getUntrackedParameter<double>("IsolPtTrksThresholdBarrel_50_50ns", 5.0) ;
   IsolPtTrksThresholdEndcap_50_50ns_ = iConfig.getUntrackedParameter<double>("IsolPtTrksThresholdEndcap_50_50ns", 5.0) ;
   IsolPtTrksThresholdBarrel_50_25ns_ = iConfig.getUntrackedParameter<double>("IsolPtTrksThresholdBarrel_50_25ns", 5.0) ;
   IsolPtTrksThresholdEndcap_50_25ns_ = iConfig.getUntrackedParameter<double>("IsolPtTrksThresholdEndcap_50_25ns", 5.0) ;
   
-  dxyFirstPvThresholdBarrel_41_      = iConfig.getUntrackedParameter<double>("dxyFirstPvThresholdBarrel_41", 0.02) ;
-  dxyFirstPvThresholdEndcap_41_      = iConfig.getUntrackedParameter<double>("dxyFirstPvThresholdEndcap_41", 0.05) ;
+  dxyFirstPvThresholdBarrel_41_      = iConfig.getUntrackedParameter<double>("dxyFirstPvThresholdBarrel_41"     , 0.02) ;
+  dxyFirstPvThresholdEndcap_41_      = iConfig.getUntrackedParameter<double>("dxyFirstPvThresholdEndcap_41"     , 0.05) ;
   dxyFirstPvThresholdBarrel_50_50ns_ = iConfig.getUntrackedParameter<double>("dxyFirstPvThresholdBarrel_50_50ns", 0.02) ;
   dxyFirstPvThresholdEndcap_50_50ns_ = iConfig.getUntrackedParameter<double>("dxyFirstPvThresholdEndcap_50_50ns", 0.05) ;
   dxyFirstPvThresholdBarrel_50_25ns_ = iConfig.getUntrackedParameter<double>("dxyFirstPvThresholdBarrel_50_25ns", 0.02) ;

@@ -108,8 +108,8 @@ bool HEEPCut_dPhiIn::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess
   int region = detectorRegion(gsfiter) ;
   bool result = true ;
   switch(region){
-    case kBarrel: result = (fabs(value()) < 0.06) ; break ;
-    case kEndcap: result = (fabs(value()) < 0.06) ; break ;
+    case kBarrel: result = (fabs(value()) < thresholdBarrel_) ; break ;
+    case kEndcap: result = (fabs(value()) < thresholdEndcap_) ; break ;
     default : break ;
   }
   setStatus(result, cumulativeSuccess) ;
@@ -181,7 +181,7 @@ bool HEEPCut_isolEMHadDepth1::applyCut(reco::GsfElectron* gsfiter, bool cumulati
       result = (value()) < (constantTermBarrel_ + linearTermBarrel_*gsf_gsfet + rho_*EcalHcal1EffAreaBarrel_) ;
       break ;
     case kEndcap:
-      if(gsf_gsfet<offsetTermEndcap_){ result = value() <  constantTermEndcapLowEt_                                                   + rho_*EcalHcal1EffAreaEndcaps_   ; }
+      if(gsf_gsfet<offsetTermEndcap_){ result = value() <  constantTermEndcapLowEt_                                                    + rho_*EcalHcal1EffAreaEndcaps_   ; }
       else                           { result = value() < (constantTermEndcapHighEt_ + linearTermEndcap_*(gsf_gsfet-offsetTermEndcap_) + rho_*EcalHcal1EffAreaEndcaps_ ) ; }
       break ;
     default : break ;
@@ -193,7 +193,7 @@ void HEEPCut_isolEMHadDepth1::setRho(float rho){ rho_ = rho ; }
 void HEEPCut_isolEMHadDepth1::setEcalHcal1EffAreaBarrel (float EcalHcal1EffAreaBarrel ){ EcalHcal1EffAreaBarrel_  = EcalHcal1EffAreaBarrel  ; }
 void HEEPCut_isolEMHadDepth1::setEcalHcal1EffAreaEndcaps(float EcalHcal1EffAreaEndcaps){ EcalHcal1EffAreaEndcaps_ = EcalHcal1EffAreaEndcaps ; }
 
-HEEPCut_IsolPtTrks ::HEEPCut_IsolPtTrks(std::string name, IIHEModuleHEEP* mod, float thresholdBarrel, float thresholdEndcap):
+HEEPCut_IsolPtTrks::HEEPCut_IsolPtTrks(std::string name, IIHEModuleHEEP* mod, float thresholdBarrel, float thresholdEndcap):
   HEEPCutBase(name, mod){
   thresholdBarrel_ = thresholdBarrel ;
   thresholdEndcap_ = thresholdEndcap ;

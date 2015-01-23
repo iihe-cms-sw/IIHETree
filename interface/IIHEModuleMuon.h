@@ -118,14 +118,10 @@ public:
   virtual void endJob() ;
   virtual void beginRun(edm::Run const&, edm::EventSetup const&);
   
-<<<<<<< HEAD
+private:
   IIHEMuonTrackWrapper* globalTrackWrapper_ ;
   IIHEMuonTrackWrapper* outerTrackWrapper_  ;
   IIHEMuonTrackWrapper* innerTrackWrapper_  ;
-  
-=======
->>>>>>> master
-private:
   float triggerDeltaRThreshold_ ;
 };
 #endif
