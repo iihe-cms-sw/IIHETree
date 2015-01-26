@@ -21,7 +21,7 @@ readFiles.extend( [
 # Global tags:
 # PHYS14 25ns: PHYS14_25_V1
 
-globalTag = 'PHYS14_25_V1'
+globalTag = 'PHYS14_25_V1::All'
 process.GlobalTag.globaltag = globalTag
 print "Global Tag is ", process.GlobalTag.globaltag
 
