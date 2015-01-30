@@ -27,6 +27,8 @@
 #include "UserCode/IIHETree/interface/BranchWrapper.h"
 #include "UserCode/IIHETree/interface/IIHEAnalysis.h"
 
+#include "DataFormats/Math/interface/deltaR.h"
+
 #include "TFile.h"
 #include "TTree.h"
 #include "TLorentzVector.h"
