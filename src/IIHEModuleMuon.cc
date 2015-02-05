@@ -139,6 +139,7 @@ void IIHEMuonTrackWrapper::fill(TrackRef& track, math::XYZPoint beamspot, math::
   qoverp_        ->fill(track->qoverp()                ) ;
   pt_            ->fill(track->pt()                    ) ;
   eta_           ->fill(track->eta()                   ) ;
+  phi_           ->fill(track->phi()                   ) ;
   p_             ->fill(track->p()                     ) ;
   px_            ->fill(track->px()                    ) ;
   py_            ->fill(track->py()                    ) ;
