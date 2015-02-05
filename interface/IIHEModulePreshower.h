@@ -1,13 +1,13 @@
-#ifndef UserCode_IIHETree_IIHEModuleRyoExample_h
-#define UserCode_IIHETree_IIHEModuleRyoExample_h
+#ifndef UserCode_IIHETree_IIHEModulePreshower_h
+#define UserCode_IIHETree_IIHEModulePreshower_h
 
 #include "UserCode/IIHETree/interface/IIHEModule.h"
 
 // class decleration
-class IIHEModuleRyoExample : public IIHEModule {
+class IIHEModulePreshower : public IIHEModule {
 public:
-  explicit IIHEModuleRyoExample(const edm::ParameterSet& iConfig);
-  ~IIHEModuleRyoExample();
+  explicit IIHEModulePreshower(const edm::ParameterSet& iConfig);
+  ~IIHEModulePreshower();
   
   void   pubBeginJob(){   beginJob() ; } ;
   void pubBeginEvent(){ beginEvent() ; } ;
@@ -20,5 +20,11 @@ public:
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
   virtual void beginRun(edm::Run const&, edm::EventSetup const&);
+  
+private:
+  void printPreshowerCells(int);
+  
+  CaloSubdetectorGeometry* geometryPreshower_ ;
+  CaloSubdetectorTopology* topologyPreshower_ ;
 };
 #endif

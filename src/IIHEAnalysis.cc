@@ -3,6 +3,8 @@
 #include <TMath.h>
 #include <vector>
 
+#include <boost/algorithm/string.hpp>
+
 // CMSSW includes
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -19,6 +21,7 @@
 // IIHE includes
 #include "UserCode/IIHETree/interface/IIHEAnalysis.h"
 
+#include "UserCode/IIHETree/interface/EtSort.h"
 #include "UserCode/IIHETree/interface/BranchWrapper.h"
 #include "UserCode/IIHETree/interface/IIHEModule.h"
 #include "UserCode/IIHETree/interface/IIHEModuleEvent.h"
@@ -56,19 +59,28 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig){
   firstPrimaryVertex_ = new math::XYZPoint(0.0,0.0,0.0) ;
   beamspot_           = new math::XYZPoint(0.0,0.0,0.0) ;
   
-  IIHEModuleTrigger* mod_trigger = new IIHEModuleTrigger(iConfig) ;
+  includeEventModule_        = iConfig.getUntrackedParameter<bool>("includeEventModule"       , true ) ;
+  includeVertexModule_       = iConfig.getUntrackedParameter<bool>("includeVertexModuleModule", true ) ;
+  includeSuperClusterModule_ = iConfig.getUntrackedParameter<bool>("includeSuperClusterModule", true ) ;
+  includePhotonModule_       = iConfig.getUntrackedParameter<bool>("includePhotonModule"      , true ) ;
+  includeElectronModule_     = iConfig.getUntrackedParameter<bool>("includeElectronModule"    , true ) ;
+  includeMuonModule_         = iConfig.getUntrackedParameter<bool>("includeMuonModule"        , true ) ;
+  includeMETModule_          = iConfig.getUntrackedParameter<bool>("includeMETModule"         , true ) ;
+  includeHEEPModule_         = iConfig.getUntrackedParameter<bool>("includeHEEPModule"        , true ) ;
+  includeMCTruthModule_      = iConfig.getUntrackedParameter<bool>("includeMCTruthModule"     , true ) ;
+  includeTriggerModule_      = iConfig.getUntrackedParameter<bool>("includeTriggerModule"     , true ) ;
   
-  childModules_.push_back(new IIHEModuleEvent(iConfig)         ) ;
-  childModules_.push_back(new IIHEModuleVertex(iConfig)        ) ;
-  childModules_.push_back(new IIHEModuleSuperCluster(iConfig)  ) ;
-  childModules_.push_back(new IIHEModulePhoton(iConfig)        ) ;
-  childModules_.push_back(new IIHEModuleGedGsfElectron(iConfig)) ;
-  childModules_.push_back(new IIHEModuleMuon(iConfig)          ) ;
-  childModules_.push_back(new IIHEModuleMET(iConfig)           ) ;
-  childModules_.push_back(new IIHEModuleHEEP(iConfig)          ) ;
-  childModules_.push_back(new IIHEModuleMCTruth(iConfig)       ) ;
-  childModules_.push_back(mod_trigger                          ) ;
-  mod_trigger->config(this) ;
+  if(includeEventModule_       ) childModules_.push_back(new IIHEModuleEvent(iConfig)         ) ;
+  if(includeVertexModule_      ) childModules_.push_back(new IIHEModuleVertex(iConfig)        ) ;
+  if(includeSuperClusterModule_) childModules_.push_back(new IIHEModuleSuperCluster(iConfig)  ) ;
+  if(includePhotonModule_      ) childModules_.push_back(new IIHEModulePhoton(iConfig)        ) ;
+  if(includeElectronModule_    ) childModules_.push_back(new IIHEModuleGedGsfElectron(iConfig)) ;
+  if(includeMuonModule_        ) childModules_.push_back(new IIHEModuleMuon(iConfig)          ) ;
+  if(includeMETModule_         ) childModules_.push_back(new IIHEModuleMET(iConfig)           ) ;
+  if(includeHEEPModule_        ) childModules_.push_back(new IIHEModuleHEEP(iConfig)          ) ;
+  if(includeMCTruthModule_     ) childModules_.push_back(new IIHEModuleMCTruth(iConfig)       ) ;
+  if(includeTriggerModule_     ) childModules_.push_back(new IIHEModuleTrigger(iConfig)       ) ;
+  //mod_trigger->config(this) ;
 }
 
 IIHEAnalysis::~IIHEAnalysis(){}
@@ -87,6 +99,7 @@ int  IIHEAnalysis::getBranchType(){ return currentVarType_ ; }
 bool IIHEAnalysis::addBranch(std::string name, int type){
   // First check to see if this branch name has already been used
   bool success = !(branchExists(name)) ;
+  if(false) std::cout << "Adding a branch named " << name << " " << success << endl ;
   if(success==false){
     return false ;
   }
@@ -181,7 +194,9 @@ bool IIHEAnalysis::addBranch(std::string name, int type){
       allVars_.push_back((BranchWrapperBase*)bw) ;
       break ;
     }
-    default : return false ; // Bail out if we don't know the type of branch
+    default :
+      std::cout << "Failed to make a branch" << std::endl ;
+      return false ; // Bail out if we don't know the type of branch
   }
   return true ;
 }
@@ -194,12 +209,18 @@ void IIHEAnalysis::beginJob(){
   metaTree_ = new TTree("meta", "Information about globalTag etc") ;
   metaTree_->Branch("git_hash" , &git_hash_ ) ;
   metaTree_->Branch("globalTag", &globalTag_) ;
-  metaTree_->Fill() ;
+  
   for(unsigned int i=0 ; i<childModules_.size() ; i++){
     childModules_.at(i)->config(this) ;
     childModules_.at(i)->pubBeginJob() ;
   }
+  
+  metaTree_->Fill() ;
   configureBranches() ;
+}
+
+void IIHEAnalysis::listBranches(){
+  if(dataTree_) dataTree_->GetListOfLeaves()->ls() ;
 }
 
 int IIHEAnalysis::saveToFile(TObject* obj){
@@ -229,44 +250,25 @@ void IIHEAnalysis::addToMCTruthWhitelist(std::vector<int> pdgIds){
   }
 }
 
-bool IIHEAnalysis::addTriggerL1Electron(std::string name){
-  for(unsigned int i=0 ; i<triggerL1FilterNamesElectron_.size() ; ++i){
-    if(name==triggerL1FilterNamesElectron_.at(i)) return false ;
-  }
-  triggerL1FilterNamesElectron_.push_back(name) ;
-  return true ;
-}
-bool IIHEAnalysis::addTriggerHLTElectron(std::string name, float DeltaRCut){
-  for(unsigned int i=0 ; i<triggerHLTFilterNamesElectron_.size() ; ++i){
-    if(name==triggerHLTFilterNamesElectron_.at(i).first) return false ;
-  }
-  std::pair<std::string,float> values(name,DeltaRCut) ;
-  triggerHLTFilterNamesElectron_.push_back(values) ;
-  return true ;
-}
-
-bool IIHEAnalysis::addTriggerL1Muon(std::string name){
-  for(unsigned int i=0 ; i<triggerL1FilterNamesMuon_.size() ; ++i){
-    if(name==triggerL1FilterNamesMuon_.at(i)) return false ;
-  }
-  triggerL1FilterNamesMuon_.push_back(name) ;
-  return true ;
-}
-bool IIHEAnalysis::addTriggerHLTMuon(std::string name, float DeltaRCut){
-  for(unsigned int i=0 ; i<triggerHLTFilterNamesMuon_.size() ; ++i){
-    if(name==triggerHLTFilterNamesMuon_.at(i).first) return false ;
-  }
-  std::pair<std::string,float> values(name,DeltaRCut) ;
-  triggerHLTFilterNamesMuon_.push_back(values) ;
-  return true ;
-}
-
 // ------------ method called to for each event  -----------------------------------------
 
 void IIHEAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   beginEvent() ;
   // Get the default collections
   // These should be harmonised across submodules, where possible
+  
+  // Superclusters
+  edm::Handle<reco::SuperClusterCollection> pHybridSuperClusters;
+  edm::Handle<reco::SuperClusterCollection> pIslandSuperClusters;
+  iEvent.getByLabel("correctedHybridSuperClusters"               ,"",pHybridSuperClusters);
+  iEvent.getByLabel("correctedMulti5x5SuperClustersWithPreshower","",pIslandSuperClusters);
+  const reco::SuperClusterCollection *hybridSuperClusters = pHybridSuperClusters.product() ;
+  const reco::SuperClusterCollection *islandSuperClusters = pIslandSuperClusters.product() ;
+  for(reco::SuperClusterCollection::const_iterator hsc = hybridSuperClusters->begin() ; hsc!=hybridSuperClusters->end() ; hsc++ ){ superclusters_.push_back(&(*hsc)) ; }
+  for(reco::SuperClusterCollection::const_iterator isc = islandSuperClusters->begin() ; isc!=islandSuperClusters->end() ; isc++ ){ superclusters_.push_back(&(*isc)) ; }
+  // Sort superclusters by transverse energy
+  std::sort(superclusters_.begin(), superclusters_.end(), scEtGreater) ;
+  
   iEvent.getByLabel(  photonCollectionLabel_,   photonCollection_) ;
   iEvent.getByLabel(electronCollectionLabel_, electronCollection_) ;
   iEvent.getByLabel(    muonCollectionLabel_,     muonCollection_) ;
@@ -275,6 +277,7 @@ void IIHEAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   beamspot_->SetXYZ(beamspotHandle_->position().x(),beamspotHandle_->position().y(),beamspotHandle_->position().z()) ;
   
   // We take only the first primary vertex
+  firstPrimaryVertex_->SetXYZ(0,0,0);
   const reco::VertexCollection* primaryVertices = getPrimaryVertices() ;
   if(primaryVertices->size()>0){
     reco::VertexCollection::const_iterator firstpv = primaryVertices->begin();
@@ -288,7 +291,11 @@ void IIHEAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   dataTree_->Fill() ;
 }
 
-void IIHEAnalysis::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){}
+void IIHEAnalysis::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){
+  for(unsigned i=0 ; i<childModules_.size() ; i++){
+    childModules_.at(i)->pubBeginRun(iRun, iSetup) ;
+  }
+}
 
 void IIHEAnalysis::beginEvent(){
   for(unsigned int i=0 ; i<childModules_.size() ; i++){ childModules_.at(i)->pubBeginEvent() ; }
@@ -323,6 +330,7 @@ IIHEAnalysis::endJob(){
   }
 }
 
+// ------------ method for storing information into the TTree  ------------
 bool IIHEAnalysis::store(std::string name, bool value){
   for(unsigned int i=0 ; i<vars_B_.size() ; i++){
     if(vars_B_.at(i)->name()==name){
@@ -543,6 +551,13 @@ bool IIHEAnalysis::store(std::string name, std::vector<unsigned int> values){
   }
   if(debug_) std::cout << "Could not find a (vector uint) branch named " << name << std::endl ;
   return false ;
+}
+
+// Function to split strings.  Required for passing comma separated arguments via the pset
+std::vector<std::string> IIHEAnalysis::splitString(const string &text, const char* sep){
+  vector<string> results ;
+  boost::split(results, text, boost::is_any_of(","));
+  return results ;
 }
 
 DEFINE_FWK_MODULE(IIHEAnalysis);
