@@ -135,7 +135,6 @@ IIHEModuleHEEP::IIHEModuleHEEP(const edm::ParameterSet& iConfig): IIHEModule(iCo
   missingHitsThreshold_41_      = iConfig.getUntrackedParameter<double>("missingHitsThreshold_41"     , 1) ;
   missingHitsThreshold_50_50ns_ = iConfig.getUntrackedParameter<double>("missingHitsThreshold_50_50ns", 1) ;
   missingHitsThreshold_50_25ns_ = iConfig.getUntrackedParameter<double>("missingHitsThreshold_50_25ns", 1) ;
-
 }
 IIHEModuleHEEP::~IIHEModuleHEEP(){}
 
@@ -308,22 +307,6 @@ void IIHEModuleHEEP::beginJob(){
   HEEPCutflows_.push_back(HEEPCutflow_50_50ns_ID_       ) ;
   HEEPCutflows_.push_back(HEEPCutflow_50_50ns_isolation_) ;
   HEEPCutflows_.push_back(HEEPCutflow_50_50ns_total_    ) ;
-  
-  ////////////////////////////////////////////////////////////////////////////////////////
-  //                                      Triggers                                      //
-  ////////////////////////////////////////////////////////////////////////////////////////
-  addTriggerL1Electron("hltL1sL1SingleEG12") ;
-  addTriggerL1Electron("hltL1sL1Mu3p5EG12" ) ;
-  addTriggerL1Electron("hltL1sL1SingleEG22") ;
-  
-  float DeltaRCut = triggerDeltaRThreshold_ ;
-  addTriggerHLTElectron("hltEle33CaloIdLPixelMatchFilter"                               , DeltaRCut) ;
-  addTriggerHLTElectron("hltDiEle33CaloIdLGsfTrkIdVLDPhiDoubleFilter"                   , DeltaRCut) ;
-  addTriggerHLTElectron("hltEle17TightIdLooseIsoEle8TightIdLooseIsoTrackIsoFilter"      , DeltaRCut) ;
-  addTriggerHLTElectron("hltEle17TightIdLooseIsoEle8TightIdLooseIsoTrackIsoDoubleFilter", DeltaRCut) ;
-  addTriggerHLTElectron("hltEle32CaloIdTCaloIsoTTrkIdTTrkIsoTSC17TrackIsoFilter"        , DeltaRCut) ;
-  addTriggerHLTElectron("hltEle27WP80TrackIsoFilter"                                    , DeltaRCut) ;
-  addTriggerHLTElectron("hltMu22Photon22CaloIdLHEFilter"                                , DeltaRCut) ;
 }
 
 // ------------ method called to for each event  ------------

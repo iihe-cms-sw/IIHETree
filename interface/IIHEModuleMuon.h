@@ -122,6 +122,9 @@ private:
   IIHEMuonTrackWrapper* globalTrackWrapper_ ;
   IIHEMuonTrackWrapper* outerTrackWrapper_  ;
   IIHEMuonTrackWrapper* innerTrackWrapper_  ;
-  float triggerDeltaRThreshold_ ;
+  
+  bool storeGlobalTrackMuons_ ;
+  bool storeStandAloneMuons_  ;
+  bool storeInnerTrackMuons_  ;
 };
 #endif

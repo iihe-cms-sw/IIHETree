@@ -5,6 +5,8 @@
 
 // class decleration
 class IIHEModuleSuperCluster : public IIHEModule {
+private:
+  inline float etacorr(float eta, float pvz, float scz){ return asinh(sinh(eta)*(1.0-pvz/scz)) ; }
 public:
   explicit IIHEModuleSuperCluster(const edm::ParameterSet& iConfig);
   ~IIHEModuleSuperCluster();

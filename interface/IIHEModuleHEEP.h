@@ -132,6 +132,8 @@ private:
   HEEPCutCollection* HEEPCutflow_50_25ns_ID_        ;
   HEEPCutCollection* HEEPCutflow_50_25ns_isolation_ ;
   HEEPCutCollection* HEEPCutflow_50_25ns_total_     ;
+  
+  std::vector<std::string> triggersForMatching_ ;
 public:
   explicit IIHEModuleHEEP(const edm::ParameterSet& iConfig);
   ~IIHEModuleHEEP();

@@ -19,8 +19,10 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
+
 #include "UserCode/IIHETree/interface/BranchWrapper.h"
 #include "UserCode/IIHETree/interface/IIHEModule.h"
+#include "UserCode/IIHETree/interface/TriggerObject.h"
 
 #include "DataFormats/EgammaCandidates/interface/Photon.h"
 #include "DataFormats/EgammaCandidates/interface/PhotonFwd.h"
@@ -33,7 +35,7 @@
 #include "TTree.h"
 
 // Local includes
-#include "UserCode/IIHETree/interface/IIHEAnalysis.h"
+#include "UserCode/IIHETree/interface/Types.h"
 
 namespace edm {
   class ParameterSet;
@@ -41,26 +43,9 @@ namespace edm {
   class EventSetup;
 }
 
-enum variableTypes{
-  kBool,
-  kDouble,
-  kFloat,
-  kInt,
-  kUInt,
-  kVectorBool,
-  kVectorDouble,
-  kVectorFloat,
-  kVectorInt,
-  kVectorUInt,
-  kVectorVectorBool,
-  kVectorVectorDouble,
-  kVectorVectorFloat,
-  kVectorVectorInt,
-  kVectorVectorUInt
-};
-
-
-class IIHEModule ; // Forward declaration
+// Forward declarations
+class IIHEModule ;
+class TriggerMatchParameters ;
 
 // class decleration
 class IIHEAnalysis : public edm::EDAnalyzer {
@@ -87,19 +72,21 @@ public:
   bool store(std::string, std::vector<int         >);
   bool store(std::string, std::vector<unsigned int>);
   
-  bool addBranch(std::string);
-  bool addBranch(std::string,int);
-  bool branchExists(std::string);
+  bool addBranch(std::string) ;
+  bool addBranch(std::string,int) ;
+  bool branchExists(std::string) ;
   
-  void setBranchType(int);
-  int  getBranchType();
-  int saveToFile(TObject*);
+  void setBranchType(int) ;
+  int  getBranchType() ;
+  int  saveToFile(TObject*) ;
+  void listBranches() ;
   
   // MC truth
   void addToMCTruthWhitelist(std::vector<int>) ;
   std::vector<int> getMCTruthWhitelist(){ return MCTruthWhitelist_ ; }
   
   // Particle collections
+  std::vector<const reco::SuperCluster*> getSuperClusters(){ return superclusters_ ; }
   reco::PhotonCollection getPhotonCollection(){
     reco::PhotonCollection        photons(  photonCollection_->begin(),   photonCollection_->end()) ;
     return photons   ;
@@ -121,19 +108,11 @@ public:
   math::XYZPoint* getFirstPrimaryVertex(){ return firstPrimaryVertex_ ; }
   math::XYZPoint* getBeamspot(){ return beamspot_ ; }
   
-  // Triggers
-  bool addTriggerL1Electron(std::string) ;
-  bool addTriggerHLTElectron(std::string, float) ;
-  bool addTriggerL1Muon(std::string) ;
-  bool addTriggerHLTMuon(std::string, float) ;
-  
-  std::vector<std::string>                   getTriggerL1FilterNamesElectron (){ return triggerL1FilterNamesElectron_  ; }
-  std::vector<std::pair<std::string,float> > getTriggerHLTFilterNamesElectron(){ return triggerHLTFilterNamesElectron_ ; }
-  std::vector<std::string>                   getTriggerL1FilterNamesMuon     (){ return triggerL1FilterNamesMuon_      ; }
-  std::vector<std::pair<std::string,float> > getTriggerHLTFilterNamesMuon    (){ return triggerHLTFilterNamesMuon_     ; }
-  
   edm::EDGetTokenT<EcalRecHitCollection> getReducedBarrelRecHitCollectionToken(){ return reducedBarrelRecHitCollectionToken_ ; }
   edm::EDGetTokenT<EcalRecHitCollection> getReducedEndcapRecHitCollectionToken(){ return reducedEndcapRecHitCollectionToken_ ; }
+  
+  void configureBranches();
+  std::vector<std::string> splitString(const std::string&, const char*) ;
   
 private:
   virtual void beginJob() ;
@@ -143,8 +122,6 @@ private:
   
   void beginEvent() ;
   void endEvent() ;
-  
-  void configureBranches();
   
   // ----------member data ---------------------------
   std::vector<BranchWrapperBase*> allVars_ ;
@@ -168,7 +145,20 @@ private:
   std::vector< std::pair<std::string, int> > listOfBranches_  ;
   std::vector< std::pair<std::string, int> > missingBranches_ ;
   
+  // Bools for including each module so they can be turned on/off without recompilation
+  bool includeEventModule_        ;
+  bool includeVertexModule_       ;
+  bool includeSuperClusterModule_ ;
+  bool includePhotonModule_       ;
+  bool includeElectronModule_     ;
+  bool includeMuonModule_         ;
+  bool includeMETModule_          ;
+  bool includeHEEPModule_         ;
+  bool includeMCTruthModule_      ;
+  bool includeTriggerModule_      ;
+  
   // Collections of physics objects
+  std::vector<const reco::SuperCluster*  >      superclusters_ ;
   edm::Handle<reco::PhotonCollection     >   photonCollection_ ;
   edm::Handle<reco::GsfElectronCollection> electronCollection_ ;
   edm::Handle<reco::MuonCollection       >     muonCollection_ ;
@@ -188,12 +178,6 @@ private:
   bool debug_;
   std::string git_hash_  ;
   std::string globalTag_ ;
-  
-  // trigger module
-  std::vector<std::string>                   triggerL1FilterNamesElectron_  ;
-  std::vector<std::pair<std::string,float> > triggerHLTFilterNamesElectron_ ;
-  std::vector<std::string>                   triggerL1FilterNamesMuon_      ;
-  std::vector<std::pair<std::string,float> > triggerHLTFilterNamesMuon_     ;
   
   // MC truth module
   std::vector<int> MCTruthWhitelist_ ;

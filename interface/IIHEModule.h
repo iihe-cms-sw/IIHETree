@@ -27,6 +27,9 @@
 #include "UserCode/IIHETree/interface/BranchWrapper.h"
 #include "UserCode/IIHETree/interface/IIHEAnalysis.h"
 
+#include "DataFormats/Math/interface/deltaR.h"
+#include "DataFormats/Math/interface/deltaPhi.h"
+
 #include "TFile.h"
 #include "TTree.h"
 #include "TLorentzVector.h"
@@ -66,15 +69,14 @@ public:
   void setBranchType(int);
   
   void addToMCTruthWhitelist(std::vector<int>) ;
-  bool addTriggerL1Electron(std::string) ;
-  bool addTriggerHLTElectron(std::string, float) ;
-  bool addTriggerL1Muon(std::string) ;
-  bool addTriggerHLTMuon(std::string, float) ;
   
   void   pubBeginJob(){   beginJob() ; } ;
   void pubBeginEvent(){ beginEvent() ; } ;
   void   pubEndEvent(){   endEvent() ; } ;
-  virtual void pubAnalyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){ analyze(iEvent, iSetup) ; } ;
+  virtual void pubBeginRun(edm::Run   const& iRun  , edm::EventSetup const& iSetup){ beginRun(iRun  , iSetup) ; } ;
+  virtual void  pubAnalyze(edm::Event const& iEvent, edm::EventSetup const& iSetup){  analyze(iEvent, iSetup) ; } ;
+  
+  std::vector<std::string> splitString(const std::string&, const char*) ;
 
 protected:
   IIHEAnalysis* parent_;

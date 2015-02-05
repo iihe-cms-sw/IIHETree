@@ -185,7 +185,10 @@ IIHEModuleMuon::IIHEModuleMuon(const edm::ParameterSet& iConfig):
   globalTrackWrapper_(new IIHEMuonTrackWrapper("mu_gt")),
   outerTrackWrapper_ (new IIHEMuonTrackWrapper("mu_ot")),
   innerTrackWrapper_ (new IIHEMuonTrackWrapper("mu_it")){
-  triggerDeltaRThreshold_ = iConfig.getUntrackedParameter<double>("muon_triggerDeltaRThreshold", 1.0) ;
+  
+  storeGlobalTrackMuons_ = iConfig.getUntrackedParameter<bool>("storeGlobalTrackMuons", true ) ;
+  storeStandAloneMuons_  = iConfig.getUntrackedParameter<bool>("storeStandAloneMuons" , true ) ;
+  storeInnerTrackMuons_  = iConfig.getUntrackedParameter<bool>("storeInnerTrackMuons" , true ) ;
 }
 IIHEModuleMuon::~IIHEModuleMuon(){}
 
@@ -194,9 +197,9 @@ void IIHEModuleMuon::beginJob(){
   addBranch("mu_n", kUInt) ;
   
   IIHEAnalysis* analysis = parent_ ;
-  globalTrackWrapper_->addBranches(analysis) ;
-  outerTrackWrapper_ ->addBranches(analysis) ;
-  innerTrackWrapper_ ->addBranches(analysis) ;
+  if(storeGlobalTrackMuons_) globalTrackWrapper_->addBranches(analysis) ;
+  if(storeStandAloneMuons_ )  outerTrackWrapper_->addBranches(analysis) ;
+  if(storeInnerTrackMuons_ )  innerTrackWrapper_->addBranches(analysis) ;
   
   // Muon type block
   setBranchType(kVectorBool) ;
@@ -281,14 +284,6 @@ void IIHEModuleMuon::beginJob(){
   addBranch("mu_pfMeanDRIsoProfileR04_sumNeutralHadronEtHighThreshold") ;
   addBranch("mu_pfMeanDRIsoProfileR04_sumPhotonEtHighThreshold"       ) ;
   addBranch("mu_pfMeanDRIsoProfileR04_sumPUPt"                        ) ;
-  
-  ////////////////////////////////////////////////////////////////////////////////////////
-  //                                      Triggers                                      //
-  ////////////////////////////////////////////////////////////////////////////////////////
-  addTriggerHLTMuon("hltL1sMu16Eta2p1"                          , triggerDeltaRThreshold_) ;
-  addTriggerHLTMuon("hltL1sL1Mu3p5EG12"                         , triggerDeltaRThreshold_) ;
-  addTriggerHLTMuon("hltL1Mu3p5EG12L3Filtered22"                , triggerDeltaRThreshold_) ;
-  addTriggerHLTMuon("hltL3fL1sMu16Eta2p1L1f0L2f16QL3Filtered40Q", triggerDeltaRThreshold_) ;
 }
 
 // ------------ method called to for each event  ------------
@@ -346,14 +341,19 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     TrackRef  outerTrack = muIt->outerTrack() ;
     TrackRef  innerTrack = muIt->innerTrack() ;
     
-    if(globalTrack.isNonnull() && muIt->    isGlobalMuon()){ globalTrackWrapper_->fill(globalTrack, beamspot, firstPrimaryVertex) ; }
-    if( outerTrack.isNonnull() && muIt->isStandAloneMuon()){  outerTrackWrapper_->fill( outerTrack, beamspot, firstPrimaryVertex) ; }
-    if( innerTrack.isNonnull() && muIt->   isTrackerMuon()){  innerTrackWrapper_->fill( innerTrack, beamspot, firstPrimaryVertex) ; }
-    
-    globalTrackWrapper_->store(analysis) ;
-    outerTrackWrapper_ ->store(analysis) ;
-    innerTrackWrapper_ ->store(analysis) ;
-    
+    if(storeGlobalTrackMuons_){
+      if(globalTrack.isNonnull() && muIt->    isGlobalMuon()){ globalTrackWrapper_->fill(globalTrack, beamspot, firstPrimaryVertex) ; }
+      globalTrackWrapper_->store(analysis) ;
+    }
+    if(storeStandAloneMuons_){
+      if( outerTrack.isNonnull() && muIt->isStandAloneMuon()){  outerTrackWrapper_->fill( outerTrack, beamspot, firstPrimaryVertex) ; }
+      outerTrackWrapper_ ->store(analysis) ;
+    }
+    if(storeInnerTrackMuons_){
+      if( innerTrack.isNonnull() && muIt->   isTrackerMuon()){  innerTrackWrapper_->fill( innerTrack, beamspot, firstPrimaryVertex) ; }
+      innerTrackWrapper_ ->store(analysis) ;
+    }
+        
     // get TeV optimized track
     bool makeTevOptimizedTrack = muIt->isGlobalMuon() ;
     if(makeTevOptimizedTrack){

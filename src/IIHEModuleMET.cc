@@ -31,18 +31,18 @@ void IIHEModuleMET::beginJob(){
 
 // ------------ method called to for each event  ------------
 void IIHEModuleMET::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
-  edm::Handle<CaloMETCollection> pCaloMET;
-  bool caloMetIsValid = iEvent.getByLabel("caloMet", pCaloMET);
-  const CaloMETCollection *caloMET = pCaloMET.product();
+  //edm::Handle<CaloMETCollection> pCaloMET;
+  //bool caloMetIsValid = iEvent.getByLabel("caloMet", pCaloMET);
+  //const CaloMETCollection *caloMET = pCaloMET.product();
 
   edm::Handle<PFMETCollection> pPFMET;
   bool pfMetIsValid = iEvent.getByLabel("pfMet", pPFMET);
   const PFMETCollection *PFMET = pPFMET.product();
   
-  if(caloMetIsValid){
-    store("MET_caloMet_et" , caloMET->begin()->et()  ) ;
-    store("MET_caloMet_phi", caloMET->begin()->phi() ) ;
-  }
+  //if(caloMetIsValid){
+  //  store("MET_caloMet_et" , caloMET->begin()->et()  ) ;
+  //  store("MET_caloMet_phi", caloMET->begin()->phi() ) ;
+  //}
   if(pfMetIsValid){
     store("MET_pfMet_et"   , PFMET->begin()->et()    ) ;
     store("MET_pfMet_phi"  , PFMET->begin()->phi()   ) ;
