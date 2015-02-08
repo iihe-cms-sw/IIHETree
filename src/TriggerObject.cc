@@ -1,68 +1,49 @@
 #include "UserCode/IIHETree/interface/TriggerObject.h"
 
-TriggerMatchParameters::TriggerMatchParameters(int triggerLevel, int particleType, std::string triggerName, std::string filterName){
-  triggerLevel_ = triggerLevel ;
-  particleType_ = particleType ;
-  triggerName_  = triggerName ;
-  filterName_   = filterName ;
-  prefix_ = "" ;
-  switch(particleType_){
-    case kSuperCluster: prefix_ = "SC_"  ; break ;
-    case kPhoton      : prefix_ = "ph_"  ; break ;
-    case kElectron    : prefix_ = "el_"  ; break ;
-    case kMuon        : prefix_ = "mu_"  ; break ;
-    case kTau         : prefix_ = "tau_" ; break ;
-    case kJet         : prefix_ = "jet_" ; break ;
-  }
-  filterIndex_ = -1 ;
+TriggerFilter::TriggerFilter(std::string name, std::string triggerName){
+    name_ = name ;
+    triggerName_ = triggerName ;
+    etaBranchName_ = "trig_" + triggerName_ + "_" + name_ + "_eta" ;
+    phiBranchName_ = "trig_" + triggerName_ + "_" + name_ + "_phi" ;
 }
-TriggerMatchParameters::TriggerMatchParameters(TriggerMatchParameters* TMP, std::string filterName){
-  triggerLevel_ = TMP->triggerLevel() ;
-  particleType_ = TMP->particleType() ;
-  triggerName_  = TMP->triggerName()  ;
-  filterName_   = filterName ;
-  prefix_ = "" ;
-  switch(particleType_){
-    case kSuperCluster: prefix_ = "SC_"  ; break ;
-    case kPhoton      : prefix_ = "ph_"  ; break ;
-    case kElectron    : prefix_ = "el_"  ; break ;
-    case kMuon        : prefix_ = "mu_"  ; break ;
-    case kTau         : prefix_ = "tau_" ; break ;
-    case kJet         : prefix_ = "jet_" ; break ;
-  }
-  branchName_   = "trigMatch_" + prefix_ + triggerName_ + "_" + filterName_ + "_DeltaR" ;
-  std::cout << prefix_ << " " << particleType_ << " " << branchName_ << std::endl ;
-  filterIndex_ = -1 ;
+int TriggerFilter::createBranches(IIHEAnalysis* analysis){
+  int result = 0 ;
+  result += analysis->addBranch(etaBranchName_, kVectorFloat) ;
+  result += analysis->addBranch(phiBranchName_, kVectorFloat) ;
+  return result ;
 }
-
-TriggerMatchParameters* TriggerMatchParameters::Clone(){
-  TriggerMatchParameters* TMP = new TriggerMatchParameters(triggerLevel_, particleType_, triggerName_, filterName_) ;
-  return TMP ;
+int TriggerFilter::setIndex(edm::Handle<trigger::TriggerEvent> trigEvent, edm::InputTag trigEventTag){
+  index_ = trigEvent->filterIndex(edm::InputTag(name_,"",trigEventTag.process())) ;
+  return index_ ;
 }
-
-
-int TriggerMatchParameters::setFilterIndex(edm::Handle<trigger::TriggerEvent> trigEvent, edm::InputTag trigEventTag){
-  filterIndex_ = trigEvent->filterIndex(edm::InputTag(filterName_,"",trigEventTag.process())) ;
-  return filterIndex_ ;
-}
-float TriggerMatchParameters::matchObject(edm::Handle<trigger::TriggerEvent> trigEvent, float eta, float phi){
-  if(filterIndex_<0) return 20 ;
+int TriggerFilter::setValues(edm::Handle<trigger::TriggerEvent> trigEvent, IIHEAnalysis* analysis){
+  etaValues_.clear() ;
+  phiValues_.clear() ;
   
-  if(filterIndex_<trigEvent->sizeFilters()){ 
-    const trigger::Keys& trigKeys = trigEvent->filterKeys(filterIndex_) ; 
+  if(index_<0) return 2 ;
+  if(index_<trigEvent->sizeFilters()){
+    const trigger::Keys& trigKeys = trigEvent->filterKeys(index_) ; 
     const trigger::TriggerObjectCollection & trigObjColl(trigEvent->getObjects()) ;
     
     // Now loop over the trigger objects passing filter
-    float smallestDR = 999 ;
     for(trigger::Keys::const_iterator keyIt = trigKeys.begin(); keyIt!=trigKeys.end(); ++keyIt){ 
       const trigger::TriggerObject& obj = trigObjColl[*keyIt] ;
-      float DR = deltaR(eta,phi,obj.eta(),obj.phi()) ;
-      if(DR<smallestDR) smallestDR = DR ;
+      analysis->store(etaBranchName_, obj.eta()) ;
+      analysis->store(phiBranchName_, obj.phi()) ;
+      etaValues_.push_back(obj.eta()) ;
+      phiValues_.push_back(obj.phi()) ;
     }
-    return smallestDR ;
+    return 0 ;
   }
-  return 10 ;
+  return 1 ;
 }
+bool TriggerFilter::store(IIHEAnalysis* analysis){
+  bool etaSuccess = analysis->store(etaBranchName_, etaValues_) ;
+  bool phiSuccess = analysis->store(phiBranchName_, phiValues_) ;
+  return (etaSuccess && phiSuccess) ;
+}
+  
+  
 
 L1Trigger::L1Trigger(std::string name, std::string prefix){
   filterIndex_ = -1 ;
@@ -80,21 +61,9 @@ void L1Trigger::reset(){
   touched_ = false ;
   prescale_ = -999 ;
 }
-
 int L1Trigger::setFilterIndex(edm::Handle<trigger::TriggerEvent> trigEvent, edm::InputTag trigEventTag){
   filterIndex_ = trigEvent->filterIndex(edm::InputTag(name_,"",trigEventTag.process())) ;
   return filterIndex_ ;
-}
-
-bool L1Trigger::matchElectron(edm::Handle<trigger::TriggerEvent> trigEvent, reco::GsfElectron* gsf){
-  float eta = gsf->eta() ;
-  float phi = gsf->phi() ;
-  return matchObject(trigEvent, eta, phi) ;
-}
-bool L1Trigger::matchMuon(edm::Handle<trigger::TriggerEvent> trigEvent, reco::Muon* muon){
-  float eta = muon->eta() ;
-  float phi = muon->phi() ;
-  return matchObject(trigEvent, eta, phi) ;
 }
 bool L1Trigger::matchObject(edm::Handle<trigger::TriggerEvent> trigEvent, float eta, float phi){
   // Careful that L1 triggers only have discrete eta phi. Need to be extremely loose. 
@@ -138,7 +107,7 @@ bool L1Trigger::matchObject(edm::Handle<trigger::TriggerEvent> trigEvent, float 
   return false ;
 }
 
-HLTrigger::HLTrigger(std::string name){
+HLTrigger::HLTrigger(std::string name, HLTConfigProvider hltConfig){
   name_ = name ;
   index_ = -1 ;
   searchStatus_ = notSearchedFor ;
@@ -162,6 +131,19 @@ HLTrigger::HLTrigger(std::string name){
           +   nTau_*pow(10,(int)kTau)
           +   nJet_*pow(10,(int)kJet)
           + hasMET_*pow(10,(int)kMET) ;
+  
+  findIndex(hltConfig) ;
+  std::vector<std::string> moduleNames = hltConfig.moduleLabels(index_) ;
+  std::vector<std::string> moduleNamesWithTags ;
+  for(unsigned int j=0 ; j<moduleNames.size() ; ++j){
+    if(hltConfig.saveTags(moduleNames.at(j))){
+      moduleNamesWithTags.push_back(moduleNames.at(j)) ;
+    }
+  }
+  for(unsigned int i=0 ; i<moduleNamesWithTags.size() ; ++i){
+    filters_.push_back(new TriggerFilter(moduleNamesWithTags.at(i), name_)) ;
+  }
+  
 }
 HLTrigger::~HLTrigger(){}
 void HLTrigger::reset(){
@@ -175,22 +157,22 @@ int HLTrigger::nSuperclustersInTriggerName(){
   return scCount ;
 }
 int HLTrigger::nPhotonsInTriggerName(){
-  int scCount = nSubstringInString(name_, "Ph") ;
-  return scCount ;
+  int phCount = nSubstringInString(name_, "Ph") ;
+  return phCount ;
 }
 int HLTrigger::nElectronsInTriggerName(){
   int singleElectronCount = nSubstringInString(name_, "Ele"      ) ;
-  int doubleElectronCount = nSubstringInString(name_, "DoubleEle") ;
+  int doubleElectronCount = nSubstringInString(name_, "DoubleEle") + nSubstringInString(name_, "DiEle") ;
   int tripleElectronCount = nSubstringInString(name_, "TripleEle") ;
-  int totalElectronCount = 3*tripleElectronCount + 2*doubleElectronCount + singleElectronCount ;
+  int totalElectronCount = 2*tripleElectronCount + 1*doubleElectronCount + singleElectronCount ;
   return totalElectronCount ;
 }
 
 int HLTrigger::nMuonsInTriggerName(){
   int singleMuonCount = nSubstringInString(name_, "Mu"      ) ;
-  int doubleMuonCount = nSubstringInString(name_, "DoubleMu") ;
+  int doubleMuonCount = nSubstringInString(name_, "DoubleMu") + nSubstringInString(name_, "DiMu") ;
   int tripleMuonCount = nSubstringInString(name_, "TripleMu") ;
-  int totalMuonCount = 3*tripleMuonCount + 2*doubleMuonCount + singleMuonCount ;
+  int totalMuonCount = 2*tripleMuonCount + 1*doubleMuonCount + singleMuonCount ;
   return totalMuonCount ;
 }
 int HLTrigger::nTausInTriggerName(){
@@ -214,128 +196,55 @@ int HLTrigger::nSubstringInString(const std::string& str, const std::string& sub
   return count;
 }
 
-
-bool HLTrigger::status(const edm::Event& iEvent, edm::EventSetup const& iSetup, HLTConfigProvider const& hltConfig, Handle<TriggerResults> const& triggerResults, edm::Handle<trigger::TriggerEvent> const& trigEvent, edm::InputTag const& trigEventTag){
+int HLTrigger::status(const edm::Event& iEvent, edm::EventSetup const& iSetup, HLTConfigProvider const& hltConfig, Handle<TriggerResults> const& triggerResults, edm::Handle<trigger::TriggerEvent> trigEvent, IIHEAnalysis* analysis){
   if(searchStatus_==searchedForAndFound && index_>=0){
     touched_  = true ;
     accept_   = triggerResults->accept(index_) ;
     prescale_ = hltConfig.prescaleValue(iEvent, iSetup, name_) ;
-    return true ;
-  }
-  else{
-    return false ;
-  }
-}
-void HLTrigger::fill(IIHEAnalysis* analysis, edm::Handle<trigger::TriggerEvent> trigEvent, edm::InputTag trigEventTag){
-  analysis->store(acceptBranchName_  , accept_  ) ;
-  analysis->store(prescaleBranchName_, prescale_) ;
-  
-  for(unsigned int i=0 ; i<matchingParameters_.size() ; ++i){
-    TriggerMatchParameters* MP = matchingParameters_.at(i) ;
-    MP->setFilterIndex(trigEvent, trigEventTag) ;
-    std::string matchBranchName = MP->branchName() ;
-    
-    switch(MP->particleType()){
-      case kSuperCluster:{
-        std::vector<const reco::SuperCluster*> superclusters = analysis->getSuperClusters() ;
-        for(unsigned int i_sc=0 ; i_sc<superclusters.size() ; i_sc++){
-          reco::SuperCluster* sc = (reco::SuperCluster*)superclusters.at(i_sc) ;
-          float DeltaR = MP->matchObject(trigEvent, sc->eta(), sc->phi()) ;
-          analysis->store(matchBranchName, DeltaR) ;
-        }
-      }
-      case kPhoton:{
-        reco::PhotonCollection photons = analysis->getPhotonCollection() ;
-        for(reco::PhotonCollection::const_iterator phiter = photons.begin() ; phiter!=photons.end() ; ++phiter){
-          float DeltaR = MP->matchObject(trigEvent, phiter->eta(), phiter->phi()) ;
-          analysis->store(matchBranchName, DeltaR) ;
-        }
-      }
-      case kElectron:{
-        reco::GsfElectronCollection electrons = analysis->getElectronCollection() ;
-        for(reco::GsfElectronCollection::const_iterator gsfiter=electrons.begin() ; gsfiter!=electrons.end() ; ++gsfiter){
-          float DeltaR = MP->matchObject(trigEvent, gsfiter->eta(), gsfiter->phi()) ;
-          analysis->store(matchBranchName, DeltaR) ;
-        }
-      }
-      case kMuon:{
-        reco::MuonCollection muons = analysis->getMuonCollection() ;
-        for(reco::MuonCollection::const_iterator muIt = muons.begin(); muIt != muons.end(); ++muIt){
-          float DeltaR = MP->matchObject(trigEvent, muIt->eta(), muIt->phi()) ;
-          analysis->store(matchBranchName, DeltaR) ;
-        }
-      }
+    for(unsigned i=0 ; i<filters_.size() ; ++i){
+      filters_.at(i)->setValues(trigEvent, analysis) ;
     }
+    return 0 ;
   }
+  return 2 ;
+}
+void HLTrigger::store(IIHEAnalysis* analysis){
+  analysis->store(  acceptBranchName_, accept_  ) ;
+  analysis->store(prescaleBranchName_, prescale_) ;
 }
 
-int HLTrigger::createBranches(IIHEAnalysis* analysis, int nEvents){
+int HLTrigger::createBranches(IIHEAnalysis* analysis){
   int result = 0 ;
-  bool result_acceptBranch   = analysis->addBranch(  acceptBranchName_, kInt) ;
-  bool result_prescaleBranch = analysis->addBranch(prescaleBranchName_, kInt) ;
+  result += analysis->addBranch(  acceptBranchName_, kInt) ;
+  result += analysis->addBranch(prescaleBranchName_, kInt) ;
   
-  if(result_acceptBranch){
-    result++ ;
-    for(int i=0 ; i<nEvents ; ++i){
-      analysis->store(acceptBranchName_, -1) ;
-    }
-  }
-  if(result_prescaleBranch){
-    result++ ;
-    for(int i=0 ; i<nEvents ; ++i){
-      analysis->store(prescaleBranchName_, -1) ;
-    }
-  }
-  
-  for(unsigned int i=0 ; i<matchingParameters_.size() ; ++i){
-    TriggerMatchParameters* MP  = matchingParameters_.at(i) ;
-    std::string matchBranchName = MP->branchName() ;
-    std::cout << matchBranchName << std::endl ;
-    
-    bool result_matchBranch = analysis->addBranch(matchBranchName, kVectorFloat) ;
-    if(result_matchBranch){
-      result++ ;
-      for(int i=0 ; i<nEvents ; ++i){
-        analysis->store(matchBranchName, -1) ;
-      }
-    }
+  for(unsigned i=0 ; i<filters_.size() ; ++i){
+    result += filters_.at(i)->createBranches(analysis) ;
   }
   
   return result ;
 }
 
-bool HLTrigger::beginRun(std::vector<std::string> names){
-  bool success = findIndex(names) ;
+bool HLTrigger::beginRun(HLTConfigProvider const& hltConfig){
+  bool success = findIndex(hltConfig) ;
   return success ;
 }
-bool HLTrigger::findIndex(std::vector<std::string> names){
+int HLTrigger::findIndex(HLTConfigProvider const& hltConfig){
   searchStatus_ = notSearchedFor ;
+  std::vector<std::string> names = hltConfig.triggerNames() ;
   for(unsigned int i=0 ; i<names.size() ; ++i){
     if(names.at(i)==name_){
       index_ = i ;
       searchStatus_ = searchedForAndFound ;
-      return true ;
+      return 0 ;
     }
   }
   index_ = -1 ;
   searchStatus_ = searchedForAndNotFound ;
-  return false ;
+  return 1 ;
 }
-bool HLTrigger::addMatching(TriggerMatchParameters* TMP){
-  if(TMP->triggerName()!=name_) return false ;
-  for(unsigned int i=0 ; i<matchingParameters_.size() ; ++i){
-    TriggerMatchParameters* MP = matchingParameters_.at(i) ;
-    if(TMP->branchName()==MP->branchName()){
-      return false ;
-    }
-  }
-  matchingParameters_.push_back(TMP) ;
+bool HLTrigger::addFilter(std::string fileName){
   return true ;
-}
-void HLTrigger::printFilterNames(){
-  //for(unsigned int i=0 ; i<moduleNames.size() ; ++i){
-  //  std::cout << i << " " << moduleNames.at(i) << std::endl ;
-  //}
 }
 
 

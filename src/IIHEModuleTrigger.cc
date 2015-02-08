@@ -23,37 +23,10 @@ IIHEModuleTrigger::IIHEModuleTrigger(const edm::ParameterSet& iConfig): IIHEModu
   nAccept_ = 0 ;
   nErrors_ = 0 ;
   
-  std::string   photonTriggerMatchingsIn = iConfig.getUntrackedParameter<std::string>("triggerPhotonMatchings"   , "") ;
-  std::string electronTriggerMatchingsIn = iConfig.getUntrackedParameter<std::string>("triggerElectronMatchings" , "") ;
-  std::string     muonTriggerMatchingsIn = iConfig.getUntrackedParameter<std::string>("triggerMuonMatchings"     , "") ;
-  std::string      tauTriggerMatchingsIn = iConfig.getUntrackedParameter<std::string>("triggerTauMatchings"      , "") ;
-  std::string      jetTriggerMatchingsIn = iConfig.getUntrackedParameter<std::string>("triggerJetMatchings"      , "") ;
-  
-  std::vector<std::string>   photonTriggerMatchings = splitString(  photonTriggerMatchingsIn, ",") ;
-  std::vector<std::string> electronTriggerMatchings = splitString(electronTriggerMatchingsIn, ",") ;
-  std::vector<std::string>     muonTriggerMatchings = splitString(    muonTriggerMatchingsIn, ",") ;
-  std::vector<std::string>      tauTriggerMatchings = splitString(     tauTriggerMatchingsIn, ",") ;
-  std::vector<std::string>      jetTriggerMatchings = splitString(     jetTriggerMatchingsIn, ",") ;
-  
-  for(unsigned i=0 ; i<photonTriggerMatchings.size() ; ++i){
-    triggerMatchings_.push_back(new TriggerMatchParameters(kHighLevel, kPhoton  , photonTriggerMatchings.at(i), "")) ;
-  }
-  for(unsigned i=0 ; i<electronTriggerMatchings.size() ; ++i){
-    triggerMatchings_.push_back(new TriggerMatchParameters(kHighLevel, kElectron, electronTriggerMatchings.at(i), "")) ;
-  }
-  for(unsigned i=0 ; i<muonTriggerMatchings.size() ; ++i){
-    triggerMatchings_.push_back(new TriggerMatchParameters(kHighLevel, kMuon    ,     muonTriggerMatchings.at(i), "")) ;
-  }
-  for(unsigned i=0 ; i<tauTriggerMatchings.size() ; ++i){
-    triggerMatchings_.push_back(new TriggerMatchParameters(kHighLevel, kTau     ,      tauTriggerMatchings.at(i), "")) ;
-  }
-  for(unsigned i=0 ; i<jetTriggerMatchings.size() ; ++i){
-    triggerMatchings_.push_back(new TriggerMatchParameters(kHighLevel, kJet     ,      jetTriggerMatchings.at(i), "")) ;
-  }
-  
   std::string triggersIn = iConfig.getUntrackedParameter<std::string>("triggers" , "") ;
   triggerNamesFromPSet_ = splitString(triggersIn, ",") ;
   
+  std::cout << triggersIn << std::endl ;
   includeSingleElectronTriggers_ = (triggersIn.find("singleElectron")!=std::string::npos) ;
   includeDoubleElectronTriggers_ = (triggersIn.find("doubleElectron")!=std::string::npos) ;
   includeTripleElectronTriggers_ = (triggersIn.find("tripleElectron")!=std::string::npos) ;
@@ -62,6 +35,15 @@ IIHEModuleTrigger::IIHEModuleTrigger(const edm::ParameterSet& iConfig): IIHEModu
   includeSingleElectronSingleMuonTriggers_ = (triggersIn.find("singleElectronSingleMuon")!=std::string::npos) ;
   includeSingleElectronDoubleMuonTriggers_ = (triggersIn.find("singleElectronDoubleMuon")!=std::string::npos) ;
   includeDoubleElectronSingleMuonTriggers_ = (triggersIn.find("doubleElectronSingleMuon")!=std::string::npos) ;
+  
+  std::cout << "Including single electron triggers: " << includeSingleElectronTriggers_ << std::endl ;
+  std::cout << "Including double electron triggers: " << includeDoubleElectronTriggers_ << std::endl ;
+  std::cout << "Including triple electron triggers: " << includeTripleElectronTriggers_ << std::endl ;
+  std::cout << "Including single muon triggers:     " << includeSingleMuonTriggers_     << std::endl ;
+  std::cout << "Including double muon triggers:     " << includeSingleMuonTriggers_     << std::endl ;
+  std::cout << "Including single electron single muon triggers: " << includeSingleElectronSingleMuonTriggers_ << std::endl ;
+  std::cout << "Including single electron double muon triggers: " << includeSingleElectronDoubleMuonTriggers_ << std::endl ;
+  std::cout << "Including double electron single muon triggers: " << includeDoubleElectronSingleMuonTriggers_ << std::endl ;
 }
 IIHEModuleTrigger::~IIHEModuleTrigger(){}
 
@@ -79,29 +61,11 @@ bool IIHEModuleTrigger::addHLTrigger(HLTrigger* hlt){
   return true ;
 }
 
-bool IIHEModuleTrigger::addHLTrigger(HLTrigger* hlt, std::vector<std::string> filterNames, std::vector<TriggerMatchParameters*> TMPs){
-  for(unsigned int i=0 ; i<HLTriggers_.size() ; ++i){
-    if(HLTriggers_.at(i)->name()==hlt->name()){
-      return false ;
-    }
-  }
-  
-  for(unsigned i=0 ; i<filterNames.size() ; ++i){
-    for(unsigned j=0 ; j<TMPs.size() ; ++j){
-      TriggerMatchParameters* TMPtmp = new TriggerMatchParameters(TMPs.at(j), filterNames.at(i)) ;
-      hlt->addMatching(TMPtmp) ;
-    }
-  }
-  
-  HLTriggers_.push_back(hlt) ;
-  return true ;
-}
-
 int IIHEModuleTrigger::addBranches(){
   int result = 0 ;
   IIHEAnalysis* analysis = parent_ ;
   for(unsigned int i=0 ; i<HLTriggers_.size() ; i++){
-    result += HLTriggers_.at(i)->createBranches(analysis, nEvents_) ;
+    result += HLTriggers_.at(i)->createBranches(analysis) ;
   }
   return result ;
 }
@@ -114,17 +78,16 @@ void IIHEModuleTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup&
   iEvent.getByLabel(trigEventTag,trigEvent) ;
   
   // get hold of TriggerResults
-  edm::Handle<TriggerResults> HLTR;
+  edm::Handle<TriggerResults> HLTR ;
   iEvent.getByLabel(hlTriggerResultsTag_, HLTR) ;
   
   // Now fill the values
   IIHEAnalysis* analysis = parent_ ;
   for(unsigned int i=0 ; i<HLTriggers_.size() ; i++){
     HLTrigger* hlt = HLTriggers_.at(i) ;
-    hlt->status(iEvent, iSetup, hltConfig_, HLTR, trigEvent, trigEventTag) ;
-    hlt->fill(analysis, trigEvent, trigEventTag) ;
+    hlt->status(iEvent, iSetup, hltConfig_, HLTR, trigEvent, analysis) ;
+    hlt->store(analysis) ;
   }
-  
   nEvents_++ ;
 }
 
@@ -142,7 +105,7 @@ void IIHEModuleTrigger::beginRun(edm::Run const& iRun, edm::EventSetup const& iS
         // Attempt to add the trigger
         bool addThisTrigger = false ;
         
-        HLTrigger* hlt = new HLTrigger(name) ;
+        HLTrigger* hlt = new HLTrigger(name, hltConfig_) ;
         
         // First check to see if it's in the list of requested triggers
         if(hlt->isOnlySingleElectron()           && includeSingleElectronTriggers_          ) addThisTrigger = true ;
@@ -166,31 +129,12 @@ void IIHEModuleTrigger::beginRun(edm::Run const& iRun, edm::EventSetup const& iS
         }
         
         if(addThisTrigger==false) continue ;
-        
-        std::vector<TriggerMatchParameters*> matchParameters ;
-        for(unsigned int j=0 ; j<triggerMatchings_.size() ; ++j){
-          if(name==triggerMatchings_.at(j)->triggerName()){
-            matchParameters.push_back(triggerMatchings_.at(j)) ;
-          }
-        }
-        if(matchParameters.size()>0){
-          std::vector<std::string> moduleNames = hltConfig_.moduleLabels(i) ;
-          std::vector<std::string> moduleNamesWithTags ;
-          for(unsigned int j=0 ; j<moduleNames.size() ; ++j){
-            if(hltConfig_.saveTags(moduleNames.at(j))){
-              moduleNamesWithTags.push_back(moduleNames.at(j)) ;
-            }
-          }
-          addHLTrigger(hlt, moduleNamesWithTags, matchParameters) ;
-        }
-        else{
-          addHLTrigger(hlt) ;
-        }
+        addHLTrigger(hlt) ;
       }
       
       // Now we need to re-map the indices to the names, given that some new triggers may have been inserted to the menu
       for(unsigned int i=0 ; i<HLTriggers_.size() ; ++i){
-        HLTriggers_.at(i)->beginRun(HLTNamesFromConfig_) ;
+        HLTriggers_.at(i)->beginRun(hltConfig_) ;
       }
       
       // Attempt to add branches

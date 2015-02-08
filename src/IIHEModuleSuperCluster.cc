@@ -45,31 +45,30 @@ void IIHEModuleSuperCluster::beginJob(){
 
 // ------------ method called to for each event  ------------
 void IIHEModuleSuperCluster::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
-  std::vector<const reco::SuperCluster*> superclusters = parent_->getSuperClusters() ;
-  
   // Retrieve primary vertex collection
   math::XYZPoint* firstPV = parent_->getFirstPrimaryVertex() ;
   float pv_z = firstPV->z() ;
   
-  store("sc_n", (unsigned int) superclusters.size()) ;
-  for(unsigned int i_sc=0 ; i_sc<superclusters.size() ; i_sc++){
-    reco::SuperCluster* sc = (reco::SuperCluster*) superclusters.at(i_sc) ;
-    float sc_energy = sc->rawEnergy()+sc->preshowerEnergy() ;
-    float sc_et     = sc_energy/cosh(sc->eta()) ;
+  reco::SuperClusterCollection superClusters = parent_->getSuperClusters() ;
+  store("sc_n", (unsigned int) superClusters.size()) ;
+  for(reco::SuperClusterCollection::const_iterator scIt=superClusters.begin(); scIt!=superClusters.end(); ++scIt){
+    float sc_energy = scIt->rawEnergy()+scIt->preshowerEnergy() ;
+    float sc_et     = sc_energy/cosh(scIt->eta()) ;
+    float etaCorr = etacorr( scIt->eta(), pv_z, scIt->position().z()) ;
       
-    store("sc_eta"      , sc->eta()) ;
-    store("sc_etacorr"  , etacorr( sc->eta(), pv_z, sc->position().z() )) ;
-    store("sc_theta"    , 2.*atan(exp(-1.*sc->eta()))) ;
-    store("sc_thetacorr", 2.*atan(exp(-1.*etacorr( sc->eta(), pv_z, sc->position().z() ) ))) ;
-    store("sc_phi"      , sc->phi()) ;
+    store("sc_eta"      , scIt->eta()) ;
+    store("sc_etacorr"  , etaCorr) ;
+    store("sc_theta"    , 2.*atan(exp(-1.*scIt->eta()))) ;
+    store("sc_thetacorr", 2.*atan(exp(-1.*etaCorr))) ;
+    store("sc_phi"      , scIt->phi()) ;
     store("sc_energy"   , sc_energy) ;
     store("sc_et"       , sc_et    );
-    store("sc_px"       , sc_et*cos(sc->phi())) ;
-    store("sc_py"       , sc_et*sin(sc->phi()));
-    store("sc_pz"       , sc_energy*tanh(sc->eta())) ;
-    store("sc_x"        , sc->position().x()) ;
-    store("sc_y"        , sc->position().y()) ;
-    store("sc_z"        , sc->position().z()) ;
+    store("sc_px"       , sc_et*cos(scIt->phi())) ;
+    store("sc_py"       , sc_et*sin(scIt->phi()));
+    store("sc_pz"       , sc_energy*tanh(scIt->eta())) ;
+    store("sc_x"        , scIt->position().x()) ;
+    store("sc_y"        , scIt->position().y()) ;
+    store("sc_z"        , scIt->position().z()) ;
   }
 }
 

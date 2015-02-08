@@ -23,30 +23,26 @@ using namespace edm ;
 
 class IIHEAnalysis ;
 
-class TriggerMatchParameters{
-private:
-  int triggerLevel_ ;
-  int particleType_ ;
-  std::string triggerName_ ; // Name of the trigger
-  std::string prefix_      ; // Used to identify the analysis that wants this matching (eg HEEP_)
-  std::string filterName_  ; // Name of the EDAnalyzer etc that made the trigger decision
-  std::string branchName_  ; // Name of the branch, which must be unique
-  int filterIndex_         ; // Index of the filter used for DeltaR matching
+
+
+class TriggerFilter{
+  std::string name_ ;
+  std::string triggerName_ ;
+  std::vector<float> etaValues_ ;
+  std::vector<float> phiValues_ ;
+  std::string etaBranchName_ ;
+  std::string phiBranchName_ ;
+  int index_ ;
 public:
-  TriggerMatchParameters(int, int, std::string, std::string) ;
-  TriggerMatchParameters(TriggerMatchParameters*, std::string) ;
-  ~TriggerMatchParameters(){} ;
-  TriggerMatchParameters* Clone() ;
-  std::string      prefix(){ return prefix_      ; }
-  std::string triggerName(){ return triggerName_ ; }
-  std::string  filterName(){ return filterName_  ; }
-  std::string  branchName(){ return "trigMatch_" + prefix_ + triggerName_ + "_" + filterName_ + "_DeltaR" ; }
-  const int particleType(){ return particleType_ ; }
-  const int triggerLevel(){ return triggerLevel_ ; }
-  int setFilterIndex(edm::Handle<trigger::TriggerEvent>, edm::InputTag) ;
-  void setFilterName(std::string filterName){ filterName_ = filterName ; }
-  float matchObject(edm::Handle<trigger::TriggerEvent>, float, float) ;
+  TriggerFilter(std::string, std::string);
+  ~TriggerFilter(){} ;
+  int createBranches(IIHEAnalysis*) ;
+  int setIndex(edm::Handle<trigger::TriggerEvent>, edm::InputTag) ;
+  int setValues(edm::Handle<trigger::TriggerEvent>, IIHEAnalysis*) ;
+  bool store(IIHEAnalysis* analysis) ;
 };
+
+
 
 class L1Trigger{
 private:
@@ -87,6 +83,9 @@ private:
   int  index_ ;
   int  searchStatus_ ;
   
+  std::vector<float> etaValues_ ;
+  std::vector<float> phiValues_ ;
+  
   int nSC_    ;
   int nPh_    ;
   int nEl_    ;
@@ -98,11 +97,13 @@ private:
   int nSCPh_  ;
   int nTypes_ ;
   
-  std::string acceptBranchName_ ;
+  // Branch names for accept, prescale, eta and phi values.  They must be unique.
+  std::string acceptBranchName_   ;
   std::string prescaleBranchName_ ;
+  std::string etaBranchName_      ;
+  std::string phiBranchName_      ;
   
   enum searchStatuses{ notSearchedFor , searchedForAndFound , searchedForAndNotFound } ;
-  std::vector<TriggerMatchParameters*> matchingParameters_ ;
   
   int nSubstringInString(const std::string&, const std::string&) ;
   int nMuonsInTriggerName() ;
@@ -114,21 +115,20 @@ private:
   int METInTriggerName() ;
   
 public:
-  HLTrigger(std::string) ;
+  HLTrigger(std::string, HLTConfigProvider) ;
   ~HLTrigger() ;
   void reset() ;
-  int createBranches(IIHEAnalysis*, int) ;
-  bool findIndex(std::vector<std::string>) ;
-  bool  beginRun(std::vector<std::string>) ;
+  int createBranches(IIHEAnalysis*) ;
+  bool  beginRun(HLTConfigProvider const&) ;
   
-  bool status(const edm::Event&, edm::EventSetup const&, HLTConfigProvider const&, Handle<TriggerResults> const&, edm::Handle<trigger::TriggerEvent> const&, edm::InputTag const&) ;
-  void fill(IIHEAnalysis*, edm::Handle<trigger::TriggerEvent>, edm::InputTag) ;
-  bool addMatching(TriggerMatchParameters*) ;
+  int findIndex(HLTConfigProvider const&) ;
+  int status(const edm::Event&, edm::EventSetup const&, HLTConfigProvider const&, Handle<TriggerResults> const&, edm::Handle<trigger::TriggerEvent>, IIHEAnalysis*) ;
+  void store(IIHEAnalysis*) ;
   
+  bool addFilter(std::string) ;
   std::string name(){ return name_ ; }
   void setIndex(int index){ index_ = index ; }
   int index(){ return index_ ; }
-  void printFilterNames() ;
   
   bool isSingleElectron(){ return nEl_==1 ; }
   bool isDoubleElectron(){ return nEl_==2 ; }
@@ -140,15 +140,16 @@ public:
   bool isSingleElectronDoubleMuon(){ return (nEl_==1 && nMu_==2) ; }
   bool isDoubleElectronSingleMuon(){ return (nEl_==2 && nMu_==1) ; }
   bool isOnlySingleElectron(){ return (nTypes_==1*pow(10,(int)kElectron)) ; }
-  bool isOnlyDoubleElectron(){ return (nTypes_==1*pow(10,(int)kElectron)) ; }
-  bool isOnlyTripleElectron(){ return (nTypes_==1*pow(10,(int)kElectron)) ; }
+  bool isOnlyDoubleElectron(){ return (nTypes_==2*pow(10,(int)kElectron)) ; }
+  bool isOnlyTripleElectron(){ return (nTypes_==3*pow(10,(int)kElectron)) ; }
   bool isOnlySingleMuon(){ return (nTypes_==1*pow(10,(int)kMuon)) ; }
-  bool isOnlyDoubleMuon(){ return (nTypes_==1*pow(10,(int)kMuon)) ; }
-  bool isOnlyTripleMuon(){ return (nTypes_==1*pow(10,(int)kMuon)) ; }
+  bool isOnlyDoubleMuon(){ return (nTypes_==2*pow(10,(int)kMuon)) ; }
+  bool isOnlyTripleMuon(){ return (nTypes_==3*pow(10,(int)kMuon)) ; }
   bool isOnlySingleElectronSingleMuon(){ return (nTypes_ = 1*pow(10,(int)kElectron) + 1*pow(10,(int)kMuon)) ; }
   bool isOnlySingleElectronDoubleMuon(){ return (nTypes_ = 1*pow(10,(int)kElectron) + 2*pow(10,(int)kMuon)) ; }
   bool isOnlyDoubleElectronSingleMuon(){ return (nTypes_ = 2*pow(10,(int)kElectron) + 1*pow(10,(int)kMuon)) ; }
   
+  std::vector<TriggerFilter*> filters_ ;
 };
 
 #endif
