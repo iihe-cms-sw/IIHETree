@@ -28,8 +28,6 @@ private:
   int addBranches() ;
   
   bool addHLTrigger(HLTrigger*) ;
-  bool addHLTrigger(HLTrigger*, std::vector<std::string>, std::vector<TriggerMatchParameters*>) ;
-  
   std::vector<L1Trigger*> L1Triggers_ ;
   std::vector<HLTrigger*> HLTriggers_ ;
   
@@ -48,8 +46,6 @@ private:
   bool isSingleElectronSingleMuonTriggerName(std::string) ;
   bool isDoubleElectronSingleMuonTriggerName(std::string) ;
   bool isSingleElectronDoubleMuonTriggerName(std::string) ;
-  
-  std::vector<TriggerMatchParameters*> triggerMatchings_ ;
   
   int nEvents_ ;
   int nWasRun_ ;

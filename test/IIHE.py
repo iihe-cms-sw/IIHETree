@@ -14,8 +14,10 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.source = cms.Source("PoolSource",fileNames = readFiles, secondaryFileNames = secFiles)
 
 readFiles.extend( [
-    'file:/user/aidan/public/Spring14dr__ZPrimePSIToEEMuMu_M-3000_13TeV_pythia8__AODSIM__PU20bx25_POSTLS170_V5-v1__067C0233-6ED1-E311-8C07-0025902008EC.root'
+    #'file:/user/aidan/public/Spring14dr__ZPrimePSIToEEMuMu_M-3000_13TeV_pythia8__AODSIM__PU20bx25_POSTLS170_V5-v1__067C0233-6ED1-E311-8C07-0025902008EC.root'
     #'file:/user/gfasanel/public/0CCBF0FA-2289-E411-A5D4-003048F0E55A.root'
+    #'file:Run2012A.root'
+    'file:SingleElectron.root'
 ])
 
 # Global tags:
@@ -51,9 +53,11 @@ process.IIHEAnalysis.MCTruth_ptThreshold = cms.untracked.double(10.0)
 process.IIHEAnalysis.MCTruth_mThreshold  = cms.untracked.double(20.0)
 
 # Decide which collections to use
-process.IIHEAnalysis.photonCollection   = cms.InputTag('photons'        )
-process.IIHEAnalysis.electronCollection = cms.InputTag('gedGsfElectrons')
-process.IIHEAnalysis.muonCollection     = cms.InputTag('muons'          )
+process.IIHEAnalysis.photonCollection       = cms.InputTag('photons'        )
+#process.IIHEAnalysis.electronCollection     = cms.InputTag('gedGsfElectrons')
+process.IIHEAnalysis.electronCollection     = cms.InputTag('gsfElectrons')
+process.IIHEAnalysis.muonCollection         = cms.InputTag('muons'          )
+process.IIHEAnalysis.superClusterCollection = cms.InputTag('correctedHybridSuperClusters')
 
 process.IIHEAnalysis.TriggerResults = cms.InputTag('TriggerResults', '', 'HLT')
 
@@ -70,8 +74,10 @@ process.IIHEAnalysis.storeInnerTrackMuons  = cms.untracked.bool(True)
 # Triggers can appear more than once- the analyser is clever enough to only add them once
 # You can include wildcard characters to include groups of triggers
 HEEPTriggers = []
-HEEPTriggers.append('HLT_Ele27_WP80_v13')
-HEEPTriggers.append('HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW_v1')
+HEEPTriggers.append('HLT_Ele27_WP80_v8')
+HEEPTriggers.append('HLT_DoubleEle33_CaloIdL_v11')
+HEEPTriggers.append('HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v3')
+HEEPTriggers.append('HLT_DoubleEle33_CaloIdT_v7')
 
 # Triggers by topology
 singleElectronTriggers = ['singleElectron']
@@ -80,12 +86,11 @@ singleMuonTriggers     = ['singleMuon'    ]
 doubleMuonTriggers     = ['doubleMuon'    ]
 singleElectronSingleMuonTriggers   = ['singleElectronSingleMuon']
 singleElectronDoubleMuonTriggers   = ['singleElectronDoubleMuon']
-doubleElectronSingleMuonTriggers   = ['soubleElectronSingleMuon']
+doubleElectronSingleMuonTriggers   = ['doubleElectronSingleMuon']
 
 # Add things together
 triggers = HEEPTriggers + singleElectronTriggers + doubleElectronTriggers
-
-triggers = HEEPTriggers + doubleElectronTriggers
+#triggers = HEEPTriggers + doubleElectronTriggers
 
 # Now pass the comma separated list of triggers
 csvTriggers = ','.join(triggers)
@@ -97,18 +102,18 @@ csvElectronTriggerMatching = ','.join(HEEPTriggers)
 process.IIHEAnalysis.triggerPhotonMatchings   = cms.untracked.string(csvElectronTriggerMatching)
 process.IIHEAnalysis.triggerElectronMatchings = cms.untracked.string(csvElectronTriggerMatching)
 process.IIHEAnalysis.triggerMuonMatchings     = cms.untracked.string(csvElectronTriggerMatching)
-process.IIHEAnalysis.triggerTauMatchings      = cms.untracked.string(csvElectronTriggerMatching)
-process.IIHEAnalysis.triggerJetMatchings      = cms.untracked.string(csvElectronTriggerMatching)
+process.IIHEAnalysis.triggerTauMatchings      = cms.untracked.string('')
+process.IIHEAnalysis.triggerJetMatchings      = cms.untracked.string('')
 
 process.IIHEAnalysis.includeEventModule        = cms.untracked.bool(True)
 process.IIHEAnalysis.includeVertexModule       = cms.untracked.bool(True)
-process.IIHEAnalysis.includeSuperClusterModule = cms.untracked.bool(True)
+process.IIHEAnalysis.includeSuperClusterModule = cms.untracked.bool(False)
 process.IIHEAnalysis.includePhotonModule       = cms.untracked.bool(True)
 process.IIHEAnalysis.includeElectronModule     = cms.untracked.bool(True)
 process.IIHEAnalysis.includeMuonModule         = cms.untracked.bool(True)
 process.IIHEAnalysis.includeMETModule          = cms.untracked.bool(True)
 process.IIHEAnalysis.includeHEEPModule         = cms.untracked.bool(True)
-process.IIHEAnalysis.includeMCTruthModule      = cms.untracked.bool(True)
+process.IIHEAnalysis.includeMCTruthModule      = cms.untracked.bool(False)
 process.IIHEAnalysis.includeTriggerModule      = cms.untracked.bool(True)
 
 process.p1 = cms.Path(process.IIHEAnalysis)

@@ -45,7 +45,6 @@ namespace edm {
 
 // Forward declarations
 class IIHEModule ;
-class TriggerMatchParameters ;
 
 // class decleration
 class IIHEAnalysis : public edm::EDAnalyzer {
@@ -86,7 +85,10 @@ public:
   std::vector<int> getMCTruthWhitelist(){ return MCTruthWhitelist_ ; }
   
   // Particle collections
-  std::vector<const reco::SuperCluster*> getSuperClusters(){ return superclusters_ ; }
+  reco::SuperClusterCollection getSuperClusters(){
+    reco::SuperClusterCollection superClusters(superClusterCollection_->begin(), superClusterCollection_->end()) ;
+    return superClusters   ;
+  }
   reco::PhotonCollection getPhotonCollection(){
     reco::PhotonCollection        photons(  photonCollection_->begin(),   photonCollection_->end()) ;
     return photons   ;
@@ -158,12 +160,13 @@ private:
   bool includeTriggerModule_      ;
   
   // Collections of physics objects
-  std::vector<const reco::SuperCluster*  >      superclusters_ ;
-  edm::Handle<reco::PhotonCollection     >   photonCollection_ ;
-  edm::Handle<reco::GsfElectronCollection> electronCollection_ ;
-  edm::Handle<reco::MuonCollection       >     muonCollection_ ;
-  edm::Handle<reco::VertexCollection     >       pvCollection_ ;
+  edm::Handle<reco::SuperClusterCollection> superClusterCollection_ ;
+  edm::Handle<reco::PhotonCollection      >       photonCollection_ ;
+  edm::Handle<reco::GsfElectronCollection >     electronCollection_ ;
+  edm::Handle<reco::MuonCollection        >         muonCollection_ ;
+  edm::Handle<reco::VertexCollection      >           pvCollection_ ;
   
+  edm::InputTag  superClusterCollectionLabel_ ;
   edm::InputTag        photonCollectionLabel_ ;
   edm::InputTag      electronCollectionLabel_ ;
   edm::InputTag          muonCollectionLabel_ ;
