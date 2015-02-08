@@ -44,12 +44,14 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig){
   debug_     = iConfig.getParameter<bool  >("debug"    ) ;
   git_hash_  = iConfig.getParameter<string>("git_hash" ) ;
   globalTag_ = iConfig.getParameter<string>("globalTag") ;
+  
   beamSpotLabel_      = consumes<BeamSpot>(iConfig.getParameter<InputTag>("beamSpot")) ;
   primaryVertexLabel_ = iConfig.getParameter<edm::InputTag>("primaryVertex") ;
   
-  photonCollectionLabel_   = iConfig.getParameter<edm::InputTag>("photonCollection"  ) ;
-  electronCollectionLabel_ = iConfig.getParameter<edm::InputTag>("electronCollection") ;
-  muonCollectionLabel_     = iConfig.getParameter<edm::InputTag>("muonCollection"    ) ;
+  superClusterCollectionLabel_ = iConfig.getParameter<edm::InputTag>("superClusterCollection"  ) ;
+  photonCollectionLabel_       = iConfig.getParameter<edm::InputTag>("photonCollection"        ) ;
+  electronCollectionLabel_     = iConfig.getParameter<edm::InputTag>("electronCollection"      ) ;
+  muonCollectionLabel_         = iConfig.getParameter<edm::InputTag>("muonCollection"          ) ;
   
   reducedBarrelRecHitCollection_ = iConfig.getParameter<edm::InputTag>("reducedBarrelRecHitCollection") ;
   reducedEndcapRecHitCollection_ = iConfig.getParameter<edm::InputTag>("reducedEndcapRecHitCollection") ;
@@ -59,8 +61,9 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig){
   firstPrimaryVertex_ = new math::XYZPoint(0.0,0.0,0.0) ;
   beamspot_           = new math::XYZPoint(0.0,0.0,0.0) ;
   
+  includeTriggerModule_      = iConfig.getUntrackedParameter<bool>("includeTriggerModule"     , true ) ;
   includeEventModule_        = iConfig.getUntrackedParameter<bool>("includeEventModule"       , true ) ;
-  includeVertexModule_       = iConfig.getUntrackedParameter<bool>("includeVertexModuleModule", true ) ;
+  includeVertexModule_       = iConfig.getUntrackedParameter<bool>("includeVertexModule"      , true ) ;
   includeSuperClusterModule_ = iConfig.getUntrackedParameter<bool>("includeSuperClusterModule", true ) ;
   includePhotonModule_       = iConfig.getUntrackedParameter<bool>("includePhotonModule"      , true ) ;
   includeElectronModule_     = iConfig.getUntrackedParameter<bool>("includeElectronModule"    , true ) ;
@@ -68,8 +71,8 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig){
   includeMETModule_          = iConfig.getUntrackedParameter<bool>("includeMETModule"         , true ) ;
   includeHEEPModule_         = iConfig.getUntrackedParameter<bool>("includeHEEPModule"        , true ) ;
   includeMCTruthModule_      = iConfig.getUntrackedParameter<bool>("includeMCTruthModule"     , true ) ;
-  includeTriggerModule_      = iConfig.getUntrackedParameter<bool>("includeTriggerModule"     , true ) ;
   
+  if(includeTriggerModule_     ) childModules_.push_back(new IIHEModuleTrigger(iConfig)       ) ;
   if(includeEventModule_       ) childModules_.push_back(new IIHEModuleEvent(iConfig)         ) ;
   if(includeVertexModule_      ) childModules_.push_back(new IIHEModuleVertex(iConfig)        ) ;
   if(includeSuperClusterModule_) childModules_.push_back(new IIHEModuleSuperCluster(iConfig)  ) ;
@@ -78,24 +81,23 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig){
   if(includeMuonModule_        ) childModules_.push_back(new IIHEModuleMuon(iConfig)          ) ;
   if(includeMETModule_         ) childModules_.push_back(new IIHEModuleMET(iConfig)           ) ;
   if(includeHEEPModule_        ) childModules_.push_back(new IIHEModuleHEEP(iConfig)          ) ;
-  if(includeMCTruthModule_     ) childModules_.push_back(new IIHEModuleMCTruth(iConfig)       ) ;
-  if(includeTriggerModule_     ) childModules_.push_back(new IIHEModuleTrigger(iConfig)       ) ;
+  if(includeMCTruthModule_     ) childModules_.push_back(new IIHEModuleMCTruth(iConfig)       ) ;  
   //mod_trigger->config(this) ;
 }
 
 IIHEAnalysis::~IIHEAnalysis(){}
 
 bool IIHEAnalysis::branchExists(std::string name){
-  for(unsigned int i=0 ; i<allVars_.size() ; i++){
+  for(unsigned int i=0 ; i<allVars_.size() ; ++i){
     if(allVars_.at(i)->name()==name) return true ;
   }
   return false ;
 }
-bool IIHEAnalysis::addBranch(std::string name){ return addBranch(name, currentVarType_) ; }
 
 void IIHEAnalysis::setBranchType(int type){ currentVarType_ = type ; }
 int  IIHEAnalysis::getBranchType(){ return currentVarType_ ; }
 
+bool IIHEAnalysis::addBranch(std::string name){ return addBranch(name, currentVarType_) ; }
 bool IIHEAnalysis::addBranch(std::string name, int type){
   // First check to see if this branch name has already been used
   bool success = !(branchExists(name)) ;
@@ -210,7 +212,7 @@ void IIHEAnalysis::beginJob(){
   metaTree_->Branch("git_hash" , &git_hash_ ) ;
   metaTree_->Branch("globalTag", &globalTag_) ;
   
-  for(unsigned int i=0 ; i<childModules_.size() ; i++){
+  for(unsigned int i=0 ; i<childModules_.size() ; ++i){
     childModules_.at(i)->config(this) ;
     childModules_.at(i)->pubBeginJob() ;
   }
@@ -229,14 +231,14 @@ int IIHEAnalysis::saveToFile(TObject* obj){
 }
 
 void IIHEAnalysis::configureBranches(){
-  for(unsigned int i=0 ; i<allVars_.size() ; i++){
+  for(unsigned int i=0 ; i<allVars_.size() ; ++i){
     allVars_.at(i)->config(dataTree_) ;
   }
   return ;
 }
 
 void IIHEAnalysis::addToMCTruthWhitelist(std::vector<int> pdgIds){
-  for(unsigned int i=0 ; i<pdgIds.size() ; i++){
+  for(unsigned int i=0 ; i<pdgIds.size() ; ++i){
     bool add = true ;
     for(unsigned int j=0 ; j<MCTruthWhitelist_.size() ; j++){
       if(abs(MCTruthWhitelist_.at(j))==abs(pdgIds.at(i))){
@@ -256,24 +258,12 @@ void IIHEAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   beginEvent() ;
   // Get the default collections
   // These should be harmonised across submodules, where possible
-  
-  // Superclusters
-  edm::Handle<reco::SuperClusterCollection> pHybridSuperClusters;
-  edm::Handle<reco::SuperClusterCollection> pIslandSuperClusters;
-  iEvent.getByLabel("correctedHybridSuperClusters"               ,"",pHybridSuperClusters);
-  iEvent.getByLabel("correctedMulti5x5SuperClustersWithPreshower","",pIslandSuperClusters);
-  const reco::SuperClusterCollection *hybridSuperClusters = pHybridSuperClusters.product() ;
-  const reco::SuperClusterCollection *islandSuperClusters = pIslandSuperClusters.product() ;
-  for(reco::SuperClusterCollection::const_iterator hsc = hybridSuperClusters->begin() ; hsc!=hybridSuperClusters->end() ; hsc++ ){ superclusters_.push_back(&(*hsc)) ; }
-  for(reco::SuperClusterCollection::const_iterator isc = islandSuperClusters->begin() ; isc!=islandSuperClusters->end() ; isc++ ){ superclusters_.push_back(&(*isc)) ; }
-  // Sort superclusters by transverse energy
-  std::sort(superclusters_.begin(), superclusters_.end(), scEtGreater) ;
-  
-  iEvent.getByLabel(  photonCollectionLabel_,   photonCollection_) ;
-  iEvent.getByLabel(electronCollectionLabel_, electronCollection_) ;
-  iEvent.getByLabel(    muonCollectionLabel_,     muonCollection_) ;
-  iEvent.getByLabel(     primaryVertexLabel_,       pvCollection_) ;
-  iEvent.getByToken(          beamSpotLabel_,     beamspotHandle_) ;
+  iEvent.getByLabel(superClusterCollectionLabel_, superClusterCollection_) ;
+  iEvent.getByLabel(      photonCollectionLabel_,       photonCollection_) ;
+  iEvent.getByLabel(    electronCollectionLabel_,     electronCollection_) ;
+  iEvent.getByLabel(        muonCollectionLabel_,         muonCollection_) ;
+  iEvent.getByLabel(         primaryVertexLabel_,           pvCollection_) ;
+  iEvent.getByToken(              beamSpotLabel_,         beamspotHandle_) ;
   beamspot_->SetXYZ(beamspotHandle_->position().x(),beamspotHandle_->position().y(),beamspotHandle_->position().z()) ;
   
   // We take only the first primary vertex
@@ -284,7 +274,7 @@ void IIHEAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     firstPrimaryVertex_->SetXYZ(firstpv->x(),firstpv->y(),firstpv->z());
   }
   
-  for(unsigned i=0 ; i<childModules_.size() ; i++){
+  for(unsigned i=0 ; i<childModules_.size() ; ++i){
     childModules_.at(i)->pubAnalyze(iEvent, iSetup) ;
   }
   endEvent() ;
@@ -292,33 +282,29 @@ void IIHEAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 }
 
 void IIHEAnalysis::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){
-  for(unsigned i=0 ; i<childModules_.size() ; i++){
+  for(unsigned i=0 ; i<childModules_.size() ; ++i){
     childModules_.at(i)->pubBeginRun(iRun, iSetup) ;
   }
 }
-
 void IIHEAnalysis::beginEvent(){
-  for(unsigned int i=0 ; i<childModules_.size() ; i++){ childModules_.at(i)->pubBeginEvent() ; }
-  for(unsigned int i=0 ; i<allVars_.size()      ; i++){ allVars_.at(i)->beginEvent()         ; }
+  for(unsigned int i=0 ; i<childModules_.size() ; ++i){ childModules_.at(i)->pubBeginEvent() ; }
+  for(unsigned int i=0 ; i<allVars_.size()      ; ++i){ allVars_.at(i)->beginEvent()         ; }
 }
-
 void IIHEAnalysis::endEvent(){
-  for(unsigned int i=0 ; i<childModules_.size() ; i++){ childModules_.at(i)->pubEndEvent() ; }
-  for(unsigned int i=0 ; i<allVars_.size()      ; i++){      allVars_.at(i)->endEvent()    ; }
+  for(unsigned int i=0 ; i<childModules_.size() ; ++i){ childModules_.at(i)->pubEndEvent() ; }
+  for(unsigned int i=0 ; i<allVars_.size()      ; ++i){      allVars_.at(i)->endEvent()    ; }
 }
-
 
 // ------------ method called once each job just after ending the event loop  ------------
-void 
-IIHEAnalysis::endJob(){
+void IIHEAnalysis::endJob(){
   std::vector<std::string> untouchedBranchNames ;
-  for(unsigned int i=0 ; i<allVars_.size() ; i++){
+  for(unsigned int i=0 ; i<allVars_.size() ; ++i){
     if(allVars_.at(i)->is_touched()==false) untouchedBranchNames.push_back(allVars_.at(i)->name()) ;
   }
   if(debug_==true){
     if(untouchedBranchNames.size()>0){
       std::cout << "The following branches were never touched:" << std::endl ;
-      for(unsigned int i=0 ; i<untouchedBranchNames.size() ; i++){
+      for(unsigned int i=0 ; i<untouchedBranchNames.size() ; ++i){
         std::cout << "  " << untouchedBranchNames.at(i) << std::endl ;
       }
     }
@@ -332,13 +318,13 @@ IIHEAnalysis::endJob(){
 
 // ------------ method for storing information into the TTree  ------------
 bool IIHEAnalysis::store(std::string name, bool value){
-  for(unsigned int i=0 ; i<vars_B_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_B_.size() ; ++i){
     if(vars_B_.at(i)->name()==name){
       vars_B_ .at(i)->set(value) ;
       return true ;
     }
   }
-  for(unsigned int i=0 ; i<vars_BV_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_BV_.size() ; ++i){
     if(vars_BV_.at(i)->name()==name){
       vars_BV_ .at(i)->push(value) ;
       return true ;
@@ -349,25 +335,25 @@ bool IIHEAnalysis::store(std::string name, bool value){
 }
 bool IIHEAnalysis::store(std::string name, double value){
   // Try to fill doubles, then floats
-  for(unsigned int i=0 ; i<vars_D_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_D_.size() ; ++i){
     if(vars_D_.at(i)->name()==name){
       vars_D_ .at(i)->set(value) ;
       return true ;
     }
   }
-  for(unsigned int i=0 ; i<vars_DV_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_DV_.size() ; ++i){
     if(vars_DV_.at(i)->name()==name){
       vars_DV_ .at(i)->push(value) ;
       return true ;
     }
   }
-  for(unsigned int i=0 ; i<vars_F_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_F_.size() ; ++i){
     if(vars_F_.at(i)->name()==name){
       vars_F_ .at(i)->set(value) ;
       return true ;
     }
   }
-  for(unsigned int i=0 ; i<vars_FV_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_FV_.size() ; ++i){
     if(vars_FV_.at(i)->name()==name){
       vars_FV_ .at(i)->push(value) ;
       return true ;
@@ -378,25 +364,25 @@ bool IIHEAnalysis::store(std::string name, double value){
 }
 bool IIHEAnalysis::store(std::string name, float value){
   // Try to fill floats, then doubles
-  for(unsigned int i=0 ; i<vars_F_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_F_.size() ; ++i){
     if(vars_F_.at(i)->name()==name){
       vars_F_ .at(i)->set(value) ;
       return true ;
     }
   }
-  for(unsigned int i=0 ; i<vars_FV_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_FV_.size() ; ++i){
     if(vars_FV_.at(i)->name()==name){
       vars_FV_ .at(i)->push(value) ;
       return true ;
     }
   }
-  for(unsigned int i=0 ; i<vars_D_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_D_.size() ; ++i){
     if(vars_D_.at(i)->name()==name){
       vars_D_ .at(i)->set(value) ;
       return true ;
     }
   }
-  for(unsigned int i=0 ; i<vars_DV_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_DV_.size() ; ++i){
     if(vars_DV_.at(i)->name()==name){
       vars_DV_ .at(i)->push(value) ;
       return true ;
@@ -406,25 +392,25 @@ bool IIHEAnalysis::store(std::string name, float value){
   return false ;
 }
 bool IIHEAnalysis::store(std::string name, int value){
-  for(unsigned int i=0 ; i<vars_I_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_I_.size() ; ++i){
     if(vars_I_.at(i)->name()==name){
       vars_I_ .at(i)->set(value) ;
       return true ;
     }
   }
-  for(unsigned int i=0 ; i<vars_IV_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_IV_.size() ; ++i){
     if(vars_IV_.at(i)->name()==name){
       vars_IV_ .at(i)->push(value) ;
       return true ;
     }
   }
-  for(unsigned int i=0 ; i<vars_U_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_U_.size() ; ++i){
     if(vars_U_.at(i)->name()==name){
       vars_U_ .at(i)->set(value) ;
       return true ;
     }
   }
-  for(unsigned int i=0 ; i<vars_UV_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_UV_.size() ; ++i){
     if(vars_UV_.at(i)->name()==name){
       vars_UV_ .at(i)->push(value) ;
       return true ;
@@ -434,25 +420,25 @@ bool IIHEAnalysis::store(std::string name, int value){
   return false ;
 }
 bool IIHEAnalysis::store(std::string name, unsigned int value){
-  for(unsigned int i=0 ; i<vars_U_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_U_.size() ; ++i){
     if(vars_U_.at(i)->name()==name){
       vars_U_ .at(i)->set(value) ;
       return true ;
     }
   }
-  for(unsigned int i=0 ; i<vars_UV_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_UV_.size() ; ++i){
     if(vars_UV_.at(i)->name()==name){
       vars_UV_ .at(i)->push(value) ;
       return true ;
     }
   }
-  for(unsigned int i=0 ; i<vars_I_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_I_.size() ; ++i){
     if(vars_I_.at(i)->name()==name){
       vars_I_ .at(i)->set(value) ;
       return true ;
     }
   }
-  for(unsigned int i=0 ; i<vars_IV_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_IV_.size() ; ++i){
     if(vars_IV_.at(i)->name()==name){
       vars_IV_ .at(i)->push(value) ;
       return true ;
@@ -463,15 +449,15 @@ bool IIHEAnalysis::store(std::string name, unsigned int value){
 }
 
 bool IIHEAnalysis::store(std::string name, std::vector<bool> values){
-  for(unsigned int i=0 ; i<vars_BVV_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_BVV_.size() ; ++i){
     if(vars_BVV_.at(i)->name()==name){
       vars_BVV_ .at(i)->push(values) ;
       return true ;
     }
   }
-  for(unsigned int i=0 ; i<vars_BV_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_BV_.size() ; ++i){
     if(vars_BV_.at(i)->name()==name){
-      for(unsigned j=0 ; j<values.size() ; j++){
+      for(unsigned j=0 ; j<values.size() ; ++j){
         vars_BV_ .at(i)->push(values.at(j)) ;
       }
       return true ;
@@ -481,15 +467,15 @@ bool IIHEAnalysis::store(std::string name, std::vector<bool> values){
   return false ;
 }
 bool IIHEAnalysis::store(std::string name, std::vector<float> values){
-  for(unsigned int i=0 ; i<vars_FVV_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_FVV_.size() ; ++i){
     if(vars_FVV_.at(i)->name()==name){
       vars_FVV_ .at(i)->push(values) ;
       return true ;
     }
   }
-  for(unsigned int i=0 ; i<vars_FV_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_FV_.size() ; ++i){
     if(vars_FV_.at(i)->name()==name){
-      for(unsigned j=0 ; j<values.size() ; j++){
+      for(unsigned j=0 ; j<values.size() ; ++j){
         vars_FV_ .at(i)->push(values.at(j)) ;
       }
       return true ;
@@ -499,15 +485,15 @@ bool IIHEAnalysis::store(std::string name, std::vector<float> values){
   return false ;
 }
 bool IIHEAnalysis::store(std::string name, std::vector<double> values){
-  for(unsigned int i=0 ; i<vars_DVV_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_DVV_.size() ; ++i){
     if(vars_DVV_.at(i)->name()==name){
       vars_DVV_ .at(i)->push(values) ;
       return true ;
     }
   }
-  for(unsigned int i=0 ; i<vars_DV_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_DV_.size() ; ++i){
     if(vars_DV_.at(i)->name()==name){
-      for(unsigned j=0 ; j<values.size() ; j++){
+      for(unsigned j=0 ; j<values.size() ; ++j){
         vars_DV_ .at(i)->push(values.at(j)) ;
       }
       return true ;
@@ -517,15 +503,15 @@ bool IIHEAnalysis::store(std::string name, std::vector<double> values){
   return false ;
 }
 bool IIHEAnalysis::store(std::string name, std::vector<int> values){
-  for(unsigned int i=0 ; i<vars_IVV_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_IVV_.size() ; ++i){
     if(vars_IVV_.at(i)->name()==name){
       vars_IVV_ .at(i)->push(values) ;
       return true ;
     }
   }
-  for(unsigned int i=0 ; i<vars_IV_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_IV_.size() ; ++i){
     if(vars_IV_.at(i)->name()==name){
-      for(unsigned j=0 ; j<values.size() ; j++){
+      for(unsigned j=0 ; j<values.size() ; ++j){
         vars_IV_ .at(i)->push(values.at(j)) ;
       }
       return true ;
@@ -535,15 +521,15 @@ bool IIHEAnalysis::store(std::string name, std::vector<int> values){
   return false ;
 }
 bool IIHEAnalysis::store(std::string name, std::vector<unsigned int> values){
-  for(unsigned int i=0 ; i<vars_UVV_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_UVV_.size() ; ++i){
     if(vars_UVV_.at(i)->name()==name){
       vars_UVV_ .at(i)->push(values) ;
       return true ;
     }
   }
-  for(unsigned int i=0 ; i<vars_UV_.size() ; i++){
+  for(unsigned int i=0 ; i<vars_UV_.size() ; ++i){
     if(vars_UV_.at(i)->name()==name){
-      for(unsigned j=0 ; j<values.size() ; j++){
+      for(unsigned j=0 ; j<values.size() ; ++j){
         vars_UV_ .at(i)->push(values.at(j)) ;
       }
       return true ;
