@@ -52,8 +52,4 @@ std::vector<std::string> IIHEModule::splitString(const string &text, const char*
   return parent_->splitString(text, sep) ;
 }
 
-
-
-
-
 DEFINE_FWK_MODULE(IIHEModule);

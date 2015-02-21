@@ -46,13 +46,13 @@ void IIHEModuleMET::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   //bool metisvalid = iEvent.getByLabel("htMetKT4", pMET);
   //const METCollection *MET  = pMET.product();
 
-  edm::Handle<PFMETCollection> pPFMET;
-  bool pfmetisvalid = iEvent.getByLabel("pfMet", pPFMET);
-  const PFMETCollection *PFMET  = pPFMET.product();
+  //edm::Handle<PFMETCollection> pPFMET;
+  //bool pfmetisvalid = iEvent.getByLabel("pfMet", pPFMET);
+  //const PFMETCollection *PFMET  = pPFMET.product();
 
-  edm::Handle<PFMETCollection> pPFMETcor;
-  bool pfmetcorisvalid = iEvent.getByLabel("pfType1CorrectedMet", pPFMETcor);
-  const PFMETCollection *PFMETcor  = pPFMETcor.product();
+  //edm::Handle<PFMETCollection> pPFMETcor;
+  //bool pfmetcorisvalid = iEvent.getByLabel("pfType1CorrectedMet", pPFMETcor);
+  //const PFMETCollection *PFMETcor  = pPFMETcor.product();
   
   if(calometisvalid){
     store("MET_met_et"                 , caloMET->begin()->et()  ) ;
@@ -62,14 +62,14 @@ void IIHEModuleMET::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   //  store("MET_htMetKT4_et"            , MET->begin()->et()      ) ;
   //  store("MET_htMetKT4_phi"           , MET->begin()->phi()     ) ;
   //}
-  if(pfmetisvalid){
-    store("MET_pfMet_et"               , PFMET->begin()->et()    ) ;
-    store("MET_pfMet_phi"              , PFMET->begin()->phi()   ) ;
-  }
-  if(pfmetcorisvalid){
-    store("pfType1CorrectedMet_met_et" , PFMETcor->begin()->et() ) ;
-    store("pfType1CorrectedMet_met_phi", PFMETcor->begin()->phi()) ;
-  }
+  //if(pfmetisvalid){
+  //  store("MET_pfMet_et"               , PFMET->begin()->et()    ) ;
+  //  store("MET_pfMet_phi"              , PFMET->begin()->phi()   ) ;
+  //}
+  //if(pfmetcorisvalid){
+  //  store("pfType1CorrectedMet_met_et" , PFMETcor->begin()->et() ) ;
+  //  store("pfType1CorrectedMet_met_phi", PFMETcor->begin()->phi()) ;
+  //}
 }
 
 void IIHEModuleMET::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){}
