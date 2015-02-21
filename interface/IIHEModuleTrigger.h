@@ -2,7 +2,9 @@
 #define UserCode_IIHETree_IIHEModuleTrigger_h
 
 #include "UserCode/IIHETree/interface/IIHEModule.h"
+
 #include "UserCode/IIHETree/interface/TriggerObject.h"
+#include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
 
 // class decleration
 class IIHEModuleTrigger : public IIHEModule {
@@ -23,27 +25,41 @@ public:
   virtual void beginRun(edm::Run const&, edm::EventSetup const&);
   
 private:
-  void addBranches() ;
+  int addBranches() ;
   
-  bool addL1TriggerElectron(std::string) ;
-  bool addHLTriggerElectron(std::string, float) ;
-  bool addL1TriggerMuon(std::string) ;
-  bool addHLTriggerMuon(std::string, float) ;
+  bool addHLTrigger(HLTrigger*) ;
+  std::vector<L1Trigger*> L1Triggers_ ;
+  std::vector<HLTrigger*> HLTriggers_ ;
   
-  std::vector<L1Trigger*> L1TriggersElectron_ ;
-  std::vector<HLTrigger*> HLTriggersElectron_ ;
-  std::vector<L1Trigger*> L1TriggersMuon_ ;
-  std::vector<HLTrigger*> HLTriggersMuon_ ;
+  HLTConfigProvider hltConfig_ ;
+  edm::InputTag hlTriggerResultsTag_ ;
+  std::vector<std::string> HLTNamesFromConfig_ ;
+  std::vector<std::string> triggerNamesFromPSet_ ;
   
-  std::string branchPrefixElectronMatch_ ;
-  std::string branchPrefixMuonMatch_ ;
+  bool isSingleElectonTriggerName(std::string) ;
+  bool isDoubleElectonTriggerName(std::string) ;
+  bool isTripleElectonTriggerName(std::string) ;
+  bool    isSingleMuonTriggerName(std::string) ;
+  bool    isDoubleMuonTriggerName(std::string) ;
+  bool    isTripleMuonTriggerName(std::string) ;
+
+  bool isSingleElectronSingleMuonTriggerName(std::string) ;
+  bool isDoubleElectronSingleMuonTriggerName(std::string) ;
+  bool isSingleElectronDoubleMuonTriggerName(std::string) ;
   
-  std::vector<std::string>  L1FilterNamesPhoton_   ;
-  std::vector<std::string>  L1FilterNamesElectron_ ;
-  std::vector<std::string>  L1FilterNamesMuon_     ;
+  int nEvents_ ;
+  int nWasRun_ ;
+  int nAccept_ ;
+  int nErrors_ ;
   
-  std::vector<std::string> HLTFilterNamesPhoton_   ;
-  std::vector<std::string> HLTFilterNamesElectron_ ;
-  std::vector<std::string> HLTFilterNamesMuon_     ;
+  bool includeSingleElectronTriggers_ ;
+  bool includeDoubleElectronTriggers_ ;
+  bool includeTripleElectronTriggers_ ;
+  bool includeSingleMuonTriggers_   ;
+  bool includeDoubleMuonTriggers_   ;
+  bool includeTripleMuonTriggers_   ;
+  bool includeSingleElectronSingleMuonTriggers_ ;
+  bool includeSingleElectronDoubleMuonTriggers_ ;
+  bool includeDoubleElectronSingleMuonTriggers_ ;
 };
 #endif
