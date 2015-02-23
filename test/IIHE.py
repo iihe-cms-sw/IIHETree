@@ -1,43 +1,27 @@
 import FWCore.ParameterSet.Config as cms
 
-process = cms.Process("gsfcheckertree")
+process = cms.Process("IIHEAnalysis")
 
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.Geometry.GeometryIdeal_cff")
 process.load("Configuration.EventContent.EventContent_cff")
-process.load("RecoTracker.Configuration.RecoTracker_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.load("CommonTools.ParticleFlow.pfParticleSelection_cff")
-process.load("CommonTools.ParticleFlow.Isolation.pfElectronIsolation_cff")
 
 readFiles = cms.untracked.vstring()
 secFiles = cms.untracked.vstring()
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
-#process.MessageLogger.cerr.INFO.limit = 100000
 process.source = cms.Source("PoolSource",fileNames = readFiles, secondaryFileNames = secFiles)
 
 readFiles.extend( [
-    #'file:/user/aidan/public/Spring14dr__ZPrimePSIToEEMuMu_M-3000_13TeV_pythia8__AODSIM__PU20bx25_POSTLS170_V5-v1__067C0233-6ED1-E311-8C07-0025902008EC.root'
-    'file:dcap://maite.iihe.ac.be/pnfs/iihe/cms/ph/sc4/store/mc/Fall13dr/ZprimeToMuMu_M-5000_Tune4C_13TeV-pythia8/AODSIM/tsg_PU40bx25_POSTLS162_V2-v1/00000/543A5CE4-AF78-E311-9689-0026189438A9.root'
+'/store/mc/TP2023SHCALDR/ZprimeSSMToEE_M-1000_TuneZ2star_14TeV-pythia6/GEN-SIM-RECO/SHCALJan23_PU140BX25_PH2_1K_FB_V6-v1/20000/06E0FFCC-C1A4-E411-8821-008CFA000BB8.root'
 ])
 
-# PFMET Type 1 (JEC) correction
-process.load("JetMETCorrections.Type1MET.pfMETCorrections_cff")
+# Global tags:
+# PHYS14 25ns: PHYS14_25_V1
 
-# select global tag and pfJetMET correction automatically from datasetpath when using multicrab
-noDataset = True
-import sys
-for arg in sys.argv:
-    if arg.startswith("-CMSSW.datasetpath"):
-        dataset = arg[19:]
-        noDataset =  False
-        break
-if noDataset:
-    dataset = 'none'
-
-globalTag = 'GR_R_70_V1::All'
-process.GlobalTag.globaltag = 'GR_R_70_V1::All'
+globalTag = 'PH2_1K_FB_V6::All'
+process.GlobalTag.globaltag = globalTag
 print "Global Tag is ", process.GlobalTag.globaltag
 
 process.out = cms.OutputModule("PoolOutputModule",
@@ -46,73 +30,79 @@ process.out = cms.OutputModule("PoolOutputModule",
 )
 
 process.options = cms.untracked.PSet(
-    #fileMode = cms.untracked.string('NOMERGE')
-    SkipEvent = cms.untracked.vstring('ProductNotFound'),
-    #wantSummary = cms.untracked.bool(True)
+    SkipEvent = cms.untracked.vstring('ProductNotFound')
 )
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100)
-    #input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(100000)
 )
 
 process.TFileService = cms.Service("TFileService",
     fileName = cms.string('outfile.root')
 )
 
-process.hltPhysicsDeclared = cms.EDFilter('HLTPhysicsDeclared',
-                                  invert = cms.bool(False),
-                                  L1GtReadoutRecordTag = cms.InputTag('gtDigis')
-                                  )
-
-## # Primary vertex filter and no scraping events
-## # https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookCollisionsDataAnalysis
-process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
-                                           vertexCollection = cms.InputTag('offlinePrimaryVertices'),
-                                           minimumNDOF = cms.uint32 (4),
-                                           maxAbsZ = cms.double (24),
-                                           maxd0 = cms.double (2)
-                                           )
-process.primaryVertexPath = cms.Path(process.primaryVertexFilter)
-
-process.noscraping = cms.EDFilter("FilterOutScraping",
-                                applyfilter = cms.untracked.bool(True),
-                                debugOn = cms.untracked.bool(False),
-                                numtrack = cms.untracked.uint32(10),
-                                thresh = cms.untracked.double(0.25)
-                                )
-
-process.load("Geometry.CMSCommonData.cmsIdealGeometryXML_cfi")
-process.CaloTowerConstituentsMapBuilder = cms.ESProducer("CaloTowerConstituentsMapBuilder",
-  MapFile = cms.untracked.string('Geometry/CaloTopology/data/CaloTowerEEGeometric.map.gz')
-)
-
-## The next three lines are for rho computation (energy density, highly correlated to PU), see here :
-## https://twiki.cern.ch/twiki/bin/view/CMS/EgammaRecipesFor2011#FastJet_based_pile_up_isolation
-process.load("RecoJets.JetProducers.kt4PFJets_cfi")
-process.kt6PFJets = process.kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True )
-process.kt6PFJets.Rho_EtaMax = cms.double(2.5)
-
-from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso, setupPFPhotonIso
-process.eleIsoSequence = cms.Sequence(setupPFElectronIso(process, 'gedGsfElectrons'))
-#process.muIsoSequence  = cms.Sequence(    setupPFMuonIso(process, 'muons'          ))
-#process.phoIsoSequence = cms.Sequence(  setupPFPhotonIso(process, 'photons'        ))
-
-
 process.load("UserCode.IIHETree.IIHETree_cfi")
 process.IIHEAnalysis.globalTag = cms.string(globalTag)
+
+# Set pt or mass thresholds for the truth module here
+# Setting thresholds reduces the size of the output files significantly 
 process.IIHEAnalysis.MCTruth_ptThreshold = cms.untracked.double(10.0)
 process.IIHEAnalysis.MCTruth_mThreshold  = cms.untracked.double(20.0)
-process.IIHEAnalysis.photonCollection    = cms.InputTag('photons'        )
-process.IIHEAnalysis.electronCollection  = cms.InputTag('gedGsfElectrons')
-process.IIHEAnalysis.muonCollection      = cms.InputTag('muons'          )
 
-process.otherStuff = cms.Sequence( process.kt6PFJets )
+# Decide which collections to use
+process.IIHEAnalysis.photonCollection       = cms.InputTag('photons'        )
+process.IIHEAnalysis.electronCollection     = cms.InputTag('gedGsfElectrons')
+#process.IIHEAnalysis.electronCollection     = cms.InputTag('gsfElectrons')
+process.IIHEAnalysis.muonCollection         = cms.InputTag('muons'          )
+process.IIHEAnalysis.superClusterCollection = cms.InputTag('correctedHybridSuperClusters')
 
-process.load("RecoMET.METFilters.ecalLaserCorrFilter_cfi")
-process.load('RecoMET.METFilters.eeBadScFilter_cfi')
-process.MessageLogger.suppressError = cms.untracked.vstring ('ecalLaserCorrFilter')
+process.IIHEAnalysis.TriggerResults = cms.InputTag('TriggerResults', '', 'HLT')
 
-process.p1 = cms.Path(process.otherStuff * process.hltPhysicsDeclared * process.eeBadScFilter * process.ecalLaserCorrFilter * process.noscraping * process.primaryVertexFilter * process.pfParticleSelectionSequence * process.eleIsoSequence * process.producePFMETCorrections * process.IIHEAnalysis)
+# Used for the crystal reconstruction in the HEEP module
+process.IIHEAnalysis.reducedBarrelRecHitCollection = cms.InputTag('reducedEcalRecHitsEB')
+process.IIHEAnalysis.reducedEndcapRecHitCollection = cms.InputTag('reducedEcalRecHitsEE')
 
+process.IIHEAnalysis.storeGlobalTrackMuons = cms.untracked.bool(True)
+process.IIHEAnalysis.storeStandAloneMuons  = cms.untracked.bool(True)
+process.IIHEAnalysis.storeInnerTrackMuons  = cms.untracked.bool(True)
+
+# Triggers:
+# Declare whatever lists you like
+# Triggers can appear more than once- the analyser is clever enough to only add them once
+# You can include wildcard characters to include groups of triggers
+HEEPTriggers = []
+HEEPTriggers.append('HLT_Ele27_WP80_v8')
+HEEPTriggers.append('HLT_DoubleEle33_CaloIdL_v11')
+HEEPTriggers.append('HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v3')
+HEEPTriggers.append('HLT_DoubleEle33_CaloIdT_v7')
+
+# Triggers by topology
+singleElectronTriggers = ['singleElectron']
+doubleElectronTriggers = ['doubleElectron']
+singleMuonTriggers     = ['singleMuon'    ]
+doubleMuonTriggers     = ['doubleMuon'    ]
+singleElectronSingleMuonTriggers   = ['singleElectronSingleMuon']
+singleElectronDoubleMuonTriggers   = ['singleElectronDoubleMuon']
+doubleElectronSingleMuonTriggers   = ['doubleElectronSingleMuon']
+
+# Add things together
+triggers = singleElectronTriggers + doubleElectronTriggers
+#triggers = HEEPTriggers + doubleElectronTriggers
+
+# Now pass the comma separated list of triggers
+csvTriggers = ','.join(triggers)
+process.IIHEAnalysis.triggers = cms.untracked.string(csvTriggers)
+
+process.IIHEAnalysis.includeEventModule        = cms.untracked.bool(True)
+process.IIHEAnalysis.includeVertexModule       = cms.untracked.bool(True)
+process.IIHEAnalysis.includeSuperClusterModule = cms.untracked.bool(True)
+process.IIHEAnalysis.includePhotonModule       = cms.untracked.bool(True)
+process.IIHEAnalysis.includeElectronModule     = cms.untracked.bool(True)
+process.IIHEAnalysis.includeMuonModule         = cms.untracked.bool(True)
+process.IIHEAnalysis.includeMETModule          = cms.untracked.bool(True)
+process.IIHEAnalysis.includeHEEPModule         = cms.untracked.bool(True)
+process.IIHEAnalysis.includeMCTruthModule      = cms.untracked.bool(True)
+process.IIHEAnalysis.includeTriggerModule      = cms.untracked.bool(False)
+
+process.p1 = cms.Path(process.IIHEAnalysis)
 

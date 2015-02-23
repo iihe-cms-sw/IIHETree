@@ -31,19 +31,6 @@ void IIHEModule::setBranchType(int type){ parent_->setBranchType(type) ; }
 
 void IIHEModule::addToMCTruthWhitelist(std::vector<int> pdgIds){ parent_->addToMCTruthWhitelist(pdgIds) ; }
 
-// Trigger matching
-bool IIHEModule::addTriggerL1Electron(std::string name){
-  return parent_->addTriggerL1Electron(name) ;
-}
-bool IIHEModule::addTriggerHLTElectron(std::string name, float DeltaRCut){
-  return parent_->addTriggerHLTElectron(name, DeltaRCut) ;
-}
-
-bool IIHEModule::addTriggerHLTMuon(std::string name, float DeltaRCut){
-  return parent_->addTriggerHLTMuon(name, DeltaRCut) ;
-}
-
-
 // ------------ method called once each job just before starting event loop  ------------
 void IIHEModule::beginJob(){}
 
@@ -58,5 +45,11 @@ void IIHEModule::endEvent(){}
 
 // ------------ method called once each job just after ending the event loop  ------------
 void IIHEModule::endJob(){}
+
+
+// Function to split strings.  Required for passing comma separated arguments via the pset
+std::vector<std::string> IIHEModule::splitString(const string &text, const char* sep){
+  return parent_->splitString(text, sep) ;
+}
 
 DEFINE_FWK_MODULE(IIHEModule);

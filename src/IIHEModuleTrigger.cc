@@ -17,136 +17,141 @@ using namespace reco;
 using namespace edm ;
 
 IIHEModuleTrigger::IIHEModuleTrigger(const edm::ParameterSet& iConfig): IIHEModule(iConfig){
-  branchPrefixElectronMatch_ = "gsf_triggerMatch_" ;
+  hlTriggerResultsTag_ = iConfig.getParameter<edm::InputTag>("TriggerResults") ;
+  nEvents_ = 0 ;
+  nWasRun_ = 0 ;
+  nAccept_ = 0 ;
+  nErrors_ = 0 ;
+  
+  std::string triggersIn = iConfig.getUntrackedParameter<std::string>("triggers" , "") ;
+  triggerNamesFromPSet_ = splitString(triggersIn, ",") ;
+  
+  std::cout << triggersIn << std::endl ;
+  includeSingleElectronTriggers_ = (triggersIn.find("singleElectron")!=std::string::npos) ;
+  includeDoubleElectronTriggers_ = (triggersIn.find("doubleElectron")!=std::string::npos) ;
+  includeTripleElectronTriggers_ = (triggersIn.find("tripleElectron")!=std::string::npos) ;
+  includeSingleMuonTriggers_     = (triggersIn.find("singleMuon"    )!=std::string::npos) ;
+  includeSingleMuonTriggers_     = (triggersIn.find("doubleMuon"    )!=std::string::npos) ;
+  includeSingleElectronSingleMuonTriggers_ = (triggersIn.find("singleElectronSingleMuon")!=std::string::npos) ;
+  includeSingleElectronDoubleMuonTriggers_ = (triggersIn.find("singleElectronDoubleMuon")!=std::string::npos) ;
+  includeDoubleElectronSingleMuonTriggers_ = (triggersIn.find("doubleElectronSingleMuon")!=std::string::npos) ;
+  
+  std::cout << "Including single electron triggers: " << includeSingleElectronTriggers_ << std::endl ;
+  std::cout << "Including double electron triggers: " << includeDoubleElectronTriggers_ << std::endl ;
+  std::cout << "Including triple electron triggers: " << includeTripleElectronTriggers_ << std::endl ;
+  std::cout << "Including single muon triggers:     " << includeSingleMuonTriggers_     << std::endl ;
+  std::cout << "Including double muon triggers:     " << includeSingleMuonTriggers_     << std::endl ;
+  std::cout << "Including single electron single muon triggers: " << includeSingleElectronSingleMuonTriggers_ << std::endl ;
+  std::cout << "Including single electron double muon triggers: " << includeSingleElectronDoubleMuonTriggers_ << std::endl ;
+  std::cout << "Including double electron single muon triggers: " << includeDoubleElectronSingleMuonTriggers_ << std::endl ;
 }
 IIHEModuleTrigger::~IIHEModuleTrigger(){}
 
 // ------------ method called once each job just before starting event loop  ------------
 void IIHEModuleTrigger::beginJob(){
-  std::vector<std::string>                   L1TriggerNamesElectronIn = parent_->getTriggerL1FilterNamesElectron () ;
-  std::vector<std::pair<std::string,float> > HLTriggerNamesElectronIn = parent_->getTriggerHLTFilterNamesElectron() ;
-  std::vector<std::string>                   L1TriggerNamesMuonIn     = parent_->getTriggerL1FilterNamesMuon     () ;
-  std::vector<std::pair<std::string,float> > HLTriggerNamesMuonIn     = parent_->getTriggerHLTFilterNamesMuon    () ;
-  for(unsigned int i=0 ; i<L1TriggerNamesElectronIn.size() ; ++i){
-    addL1TriggerElectron(L1TriggerNamesElectronIn.at(i)) ;
-  }
-  for(unsigned int i=0 ; i<HLTriggerNamesElectronIn.size() ; ++i){
-    addHLTriggerElectron(HLTriggerNamesElectronIn.at(i).first, HLTriggerNamesElectronIn.at(i).second) ;
-  }
-  for(unsigned int i=0 ; i<L1TriggerNamesMuonIn.size() ; ++i){
-    addL1TriggerMuon(L1TriggerNamesMuonIn.at(i)) ;
-  }
-  for(unsigned int i=0 ; i<HLTriggerNamesMuonIn.size() ; ++i){
-    addHLTriggerMuon(HLTriggerNamesMuonIn.at(i).first, HLTriggerNamesMuonIn.at(i).second) ;
-  }
-  addBranches() ;
 }
 
-bool IIHEModuleTrigger::addL1TriggerElectron(std::string name){
-  for(unsigned int i=0 ; i<L1TriggersElectron_.size() ; i++){
-    if(name==L1TriggersElectron_.at(i)->name()){
+bool IIHEModuleTrigger::addHLTrigger(HLTrigger* hlt){
+  for(unsigned int i=0 ; i<HLTriggers_.size() ; ++i){
+    if(HLTriggers_.at(i)->name()==hlt->name()){
       return false ;
     }
   }
-  L1TriggersElectron_.push_back(new L1Trigger(name, branchPrefixElectronMatch_)) ;
-  return true ;
-}
-bool IIHEModuleTrigger::addHLTriggerElectron(std::string name, float DeltaRCut){
-  for(unsigned int i=0 ; i<HLTriggersElectron_ .size(); i++){
-    if(name==HLTriggersElectron_.at(i)->name()){
-      return false ;
-    }
-  }
-  HLTriggersElectron_.push_back(new HLTrigger(name, branchPrefixElectronMatch_, DeltaRCut)) ;
+  HLTriggers_.push_back(hlt) ;
   return true ;
 }
 
-bool IIHEModuleTrigger::addL1TriggerMuon(std::string name){
-  for(unsigned int i=0 ; i<L1TriggersMuon_.size() ; i++){
-    if(name==L1TriggersMuon_.at(i)->name()){
-      return false ;
-    }
+int IIHEModuleTrigger::addBranches(){
+  int result = 0 ;
+  IIHEAnalysis* analysis = parent_ ;
+  for(unsigned int i=0 ; i<HLTriggers_.size() ; i++){
+    result += HLTriggers_.at(i)->createBranches(analysis) ;
   }
-  L1TriggersMuon_.push_back(new L1Trigger(name, branchPrefixMuonMatch_)) ;
-  return true ;
-}
-bool IIHEModuleTrigger::addHLTriggerMuon(std::string name, float DeltaRCut){
-  for(unsigned int i=0 ; i<HLTriggersMuon_ .size(); i++){
-    if(name==HLTriggersMuon_.at(i)->name()){
-      return false ;
-    }
-  }
-  HLTriggersMuon_.push_back(new HLTrigger(name, branchPrefixMuonMatch_, DeltaRCut)) ;
-  return true ;
-}
-
-void IIHEModuleTrigger::addBranches(){
-  setBranchType(kVectorBool) ;
-  for(unsigned int i=0 ; i<L1TriggersElectron_.size() ; i++){
-    addBranch(L1TriggersElectron_.at(i)->branchName()) ;
-  }
-  for(unsigned int i=0 ; i<HLTriggersElectron_.size() ; i++){
-    addBranch(HLTriggersElectron_.at(i)->branchName()) ;
-  }
-  for(unsigned int i=0 ; i<L1TriggersMuon_.size()     ; i++){
-    addBranch(L1TriggersMuon_.at(i)->branchName()) ;
-  }
-  for(unsigned int i=0 ; i<HLTriggersMuon_.size()     ; i++){
-    addBranch(HLTriggersMuon_.at(i)->branchName()) ;
-  }
+  return result ;
 }
 
 // ------------ method called to for each event  ------------
 void IIHEModuleTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
-  reco::GsfElectronCollection electrons = parent_->getElectronCollection() ;
-  reco::MuonCollection        muons     = parent_->getMuonCollection()     ;
-  
   // Trigger information
-  edm::InputTag trigEventTag("hltTriggerSummaryAOD","","HLT");
+  edm::InputTag trigEventTag("hltTriggerSummaryAOD","","HLT") ;
   edm::Handle<trigger::TriggerEvent> trigEvent ; 
   iEvent.getByLabel(trigEventTag,trigEvent) ;
   
-  ////////////////////////////////////////////////////////////////////////////////////////
-  //                                  Trigger matching                                  //
-  ////////////////////////////////////////////////////////////////////////////////////////
-  // Electrons
-  for(unsigned int i=0 ; i<L1TriggersElectron_.size() ; i++){
-    L1TriggersElectron_.at(i)->setFilterIndex(trigEvent, trigEventTag) ;
-  }
-  for(unsigned int i=0 ; i<HLTriggersElectron_.size() ; i++){
-    HLTriggersElectron_.at(i)->setFilterIndex(trigEvent, trigEventTag) ;
-  }
+  // get hold of TriggerResults
+  edm::Handle<TriggerResults> HLTR ;
+  iEvent.getByLabel(hlTriggerResultsTag_, HLTR) ;
   
-  for(reco::GsfElectronCollection::const_iterator gsfiter=electrons.begin() ; gsfiter!=electrons.end() ; ++gsfiter){
-    reco::GsfElectron* gsf = (reco::GsfElectron*) &*gsfiter ;
-    for(unsigned int i=0 ; i<L1TriggersElectron_.size() ; i++){
-      store(L1TriggersElectron_.at(i)->branchName(), L1TriggersElectron_.at(i)->matchElectron(trigEvent, gsf)) ;
-    }
-    for(unsigned int i=0 ; i<HLTriggersElectron_.size() ; i++){
-      store(HLTriggersElectron_.at(i)->branchName(), HLTriggersElectron_.at(i)->matchElectron(trigEvent, gsf)) ;
-    }
+  // Now fill the values
+  IIHEAnalysis* analysis = parent_ ;
+  for(unsigned int i=0 ; i<HLTriggers_.size() ; i++){
+    HLTrigger* hlt = HLTriggers_.at(i) ;
+    hlt->status(iEvent, iSetup, hltConfig_, HLTR, trigEvent, analysis) ;
+    hlt->store(analysis) ;
   }
-  
-  // Muons
-  for(unsigned int i=0 ; i<L1TriggersMuon_.size() ; i++){
-    L1TriggersMuon_.at(i)->setFilterIndex(trigEvent, trigEventTag) ;
-  }
-  for(unsigned int i=0 ; i<HLTriggersMuon_.size() ; i++){
-    HLTriggersMuon_.at(i)->setFilterIndex(trigEvent, trigEventTag) ;
-  }
-  
-  for(reco::MuonCollection::const_iterator muiter=muons.begin() ; muiter!=muons.end() ; ++muiter){
-    reco::Muon* muon = (reco::Muon*) &*muiter ;
-    for(unsigned int i=0 ; i<L1TriggersMuon_.size() ; i++){
-      store(L1TriggersMuon_.at(i)->branchName(), L1TriggersMuon_.at(i)->matchMuon(trigEvent, muon)) ;
-    }
-    for(unsigned int i=0 ; i<HLTriggersMuon_.size() ; i++){
-      store(HLTriggersMuon_.at(i)->branchName(), HLTriggersMuon_.at(i)->matchMuon(trigEvent, muon)) ;
-    }
-  }
+  nEvents_++ ;
 }
 
-void IIHEModuleTrigger::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){}
+void IIHEModuleTrigger::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){
+  bool changed = true ;
+  
+  if(hltConfig_.init(iRun, iSetup, hlTriggerResultsTag_.process(), changed)){
+    if(changed){
+      if(false) hltConfig_.dump("Modules") ;
+      
+      // Get the updated list of trigger names
+      HLTNamesFromConfig_ = hltConfig_.triggerNames() ;
+      for(unsigned int i=0 ; i<HLTNamesFromConfig_.size() ; ++i){
+        std::string name = HLTNamesFromConfig_.at(i) ;
+        // Attempt to add the trigger
+        bool addThisTrigger = false ;
+        
+        HLTrigger* hlt = new HLTrigger(name, hltConfig_) ;
+        
+        // First check to see if it's in the list of requested triggers
+        if(hlt->isOnlySingleElectron()           && includeSingleElectronTriggers_          ) addThisTrigger = true ;
+        if(hlt->isOnlyDoubleElectron()           && includeDoubleElectronTriggers_          ) addThisTrigger = true ;
+        if(hlt->isOnlyTripleElectron()           && includeTripleElectronTriggers_          ) addThisTrigger = true ;
+        if(hlt->isOnlySingleMuon()               && includeSingleMuonTriggers_              ) addThisTrigger = true ;
+        if(hlt->isOnlyDoubleMuon()               && includeSingleMuonTriggers_              ) addThisTrigger = true ;
+        if(hlt->isOnlyTripleMuon()               && includeSingleMuonTriggers_              ) addThisTrigger = true ;
+        if(hlt->isOnlySingleElectronSingleMuon() && includeSingleElectronSingleMuonTriggers_) addThisTrigger = true ;
+        if(hlt->isOnlySingleElectronDoubleMuon() && includeSingleElectronDoubleMuonTriggers_) addThisTrigger = true ;
+        if(hlt->isOnlyDoubleElectronSingleMuon() && includeDoubleElectronSingleMuonTriggers_) addThisTrigger = true ;
+        
+        // Only loop over trigger names if we have to
+        if(addThisTrigger==false){
+          for(unsigned int j=0 ; j<triggerNamesFromPSet_.size() ; ++j){
+            if(triggerNamesFromPSet_.at(j)==name){
+              addThisTrigger = true ;
+              break ;
+            }
+          }
+        }
+        
+        if(addThisTrigger==false) continue ;
+        addHLTrigger(hlt) ;
+      }
+      
+      // Now we need to re-map the indices to the names, given that some new triggers may have been inserted to the menu
+      for(unsigned int i=0 ; i<HLTriggers_.size() ; ++i){
+        HLTriggers_.at(i)->beginRun(hltConfig_) ;
+      }
+      
+      // Attempt to add branches
+      addBranches() ;
+      parent_->configureBranches() ;
+    
+      // Now reset things to 0
+      nEvents_ = 0 ;
+      nWasRun_ = 0 ;
+      nAccept_ = 0 ;
+      nErrors_ = 0 ;
+    }
+  }
+  else{
+    std::cout << "Failed to init hltConfig" << std::endl ;
+  }
+}
 
 void IIHEModuleTrigger::beginEvent(){}
 void IIHEModuleTrigger::endEvent(){}

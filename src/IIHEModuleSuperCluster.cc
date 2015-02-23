@@ -8,11 +8,6 @@
 #include "DataFormats/EgammaReco/interface/BasicCluster.h"
 #include "DataFormats/EgammaReco/interface/BasicClusterFwd.h"
 #include "DataFormats/EgammaReco/interface/SuperCluster.h"
-#include "DataFormats/Common/interface/TriggerResults.h"
-#include "DataFormats/HLTReco/interface/TriggerEvent.h"
-#include "DataFormats/HLTReco/interface/TriggerObject.h"
-#include "DataFormats/HLTReco/interface/TriggerTypeDefs.h"
-#include "FWCore/Common/interface/TriggerNames.h"
 
 #include <iostream>
 #include <TMath.h>
@@ -42,16 +37,10 @@ void IIHEModuleSuperCluster::beginJob(){
   addBranch("sc_x") ;
   addBranch("sc_y") ;
   addBranch("sc_z") ;
-  addBranch("scmatch_hltEle32CaloIdTCaloIsoTTrkIdTTrkIsoTSC17PMMassFilter", kVectorBool) ;
 }
 
 // ------------ method called to for each event  ------------
 void IIHEModuleSuperCluster::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
-  // Trigger information
-  edm::InputTag trigEventTag("hltTriggerSummaryAOD","","HLT");
-  edm::Handle<trigger::TriggerEvent> trigEvent; 
-  iEvent.getByLabel(trigEventTag,trigEvent);
-
   edm::Handle<reco::SuperClusterCollection> pHybridSuperClusters;
   edm::Handle<reco::SuperClusterCollection> pIslandSuperClusters;
   iEvent.getByLabel("correctedHybridSuperClusters"               ,"",pHybridSuperClusters);
@@ -105,29 +94,6 @@ void IIHEModuleSuperCluster::analyze(const edm::Event& iEvent, const edm::EventS
     store("sc_x"        , sc->position().x()) ;
     store("sc_y"        , sc->position().y()) ;
     store("sc_z"        , sc->position().z()) ;
-    
-    // Trigger matching 
-    // HLT_Ele32_CaloIdT_CaloIsoT_TrkIdT_TrkIsoT_SC17_Mass50 2nd leg 
-    // The second leg is a sc, not a gsf (T&P trigger)
-    std::string filterName = "hltEle32CaloIdTCaloIsoTTrkIdTTrkIsoTSC17PMMassFilter";
-    // It is important to specify the right HLT process for the filter, not doing this is a common bug
-    bool scmatch_hltEle32CaloIdTCaloIsoTTrkIdTTrkIsoTSC17PMMassFilter = false;
-    trigger::size_type filterIndex = trigEvent->filterIndex(edm::InputTag(filterName,"",trigEventTag.process()));
-    if(filterIndex<trigEvent->sizeFilters()){
-      const trigger::Keys& trigKeys = trigEvent->filterKeys(filterIndex); 
-      const trigger::TriggerObjectCollection & trigObjColl(trigEvent->getObjects());
-      // Now loop over the trigger objects passing filter
-      for(trigger::Keys::const_iterator keyIt=trigKeys.begin();keyIt!=trigKeys.end();++keyIt){
-        const trigger::TriggerObject& obj = trigObjColl[*keyIt];
-        // Do what you want with the trigger objects, you have
-        // eta,phi,pt,mass,p,px,py,pz,et,energy accessors
-        if(deltaR(sc->eta(),sc->phi(),obj.eta(), obj.phi())<0.3){
-          scmatch_hltEle32CaloIdTCaloIsoTTrkIdTTrkIsoTSC17PMMassFilter = true ;
-          break ;
-        }
-      }
-    } // end filter size check
-    store("scmatch_hltEle32CaloIdTCaloIsoTTrkIdTTrkIsoTSC17PMMassFilter", scmatch_hltEle32CaloIdTCaloIsoTTrkIdTTrkIsoTSC17PMMassFilter) ;
   }
 }
 
