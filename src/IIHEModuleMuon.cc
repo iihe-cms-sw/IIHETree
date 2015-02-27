@@ -327,6 +327,9 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       numberOfValidPixelHits = muIt->innerTrack()->hitPattern().numberOfValidPixelHits() ;
       numberOfValidTrackerHits = muIt->innerTrack()->hitPattern().trackerLayersWithMeasurement() ;
     }
+    if (isGlobalMuon) {
+      numberOfValidMuonHits = muIt->globalTrack()->hitPattern().numberOfValidMuonHits() ;
+    }
     
     store("mu_numberOfMatchedStations", numberOfMatchStations ) ;
     store("mu_numberOfValidPixelHits" , numberOfValidPixelHits) ;
