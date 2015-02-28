@@ -330,8 +330,8 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     store("mu_isPFMuon"          , muIt->isPFMuon()          ) ;        
     store("mu_isPFIsolationValid", muIt->isPFIsolationValid()) ; 
     
-    int numberOfMatchStations        = 0 ;
-    int numberOfValidPixelHits       = 0 ;
+    int numberOfMatchStations  = 0 ;
+    int numberOfValidPixelHits = 0 ;
     
     numberOfMatchStations = muIt->numberOfMatchedStations() ;
     if(isTrackerMuon) numberOfValidPixelHits = muIt->innerTrack()->hitPattern().numberOfValidPixelHits() ;
@@ -385,8 +385,8 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       store("mu_tevOptimized_dz"           , tevOptimizedTrack.first->dz()                    ) ;
       store("mu_tevOptimized_dz_beamSpot"  , tevOptimizedTrack.first->dz(*beamspot)           ) ;
       store("mu_tevOptimized_dz_firstPVtx" , tevOptimizedTrack.first->dz(*firstPrimaryVertex) ) ;
-      store("mu_tevOptimized_dxy"          , tevOptimizedTrack.first->dxy()                  ) ;
-      store("mu_tevOptimized_dxy_beamSpot" , tevOptimizedTrack.first->dxy(*beamspot)           ) ;
+      store("mu_tevOptimized_dxy"          , tevOptimizedTrack.first->dxy()                   ) ;
+      store("mu_tevOptimized_dxy_beamSpot" , tevOptimizedTrack.first->dxy(*beamspot)          ) ;
       store("mu_tevOptimized_dxy_firstPVtx", tevOptimizedTrack.first->dxy(*firstPrimaryVertex)) ;
       store("mu_tevOptimized_ptError"      , tevOptimizedTrack.first->ptError()               ) ;
       store("mu_tevOptimized_etaError"     , tevOptimizedTrack.first->etaError()              ) ;

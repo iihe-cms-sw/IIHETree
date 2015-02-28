@@ -5,19 +5,6 @@
 
 #include <boost/algorithm/string.hpp>
 
-// CMSSW includes
-#include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/MakerMacros.h"
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "DataFormats/VertexReco/interface/Vertex.h"
-#include "DataFormats/VertexReco/interface/VertexFwd.h"
-
-#include "DataFormats/Common/interface/TriggerResults.h"
-#include "DataFormats/HLTReco/interface/TriggerEvent.h"
-#include "DataFormats/HLTReco/interface/TriggerObject.h"
-#include "DataFormats/HLTReco/interface/TriggerTypeDefs.h"
-#include "FWCore/Common/interface/TriggerNames.h"
-
 // IIHE includes
 #include "UserCode/IIHETree/interface/IIHEAnalysis.h"
 
