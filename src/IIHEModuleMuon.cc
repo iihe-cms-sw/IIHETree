@@ -344,8 +344,8 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     innerTrackWrapper_ ->reset() ;
     
     TrackRef globalTrack = muIt->globalTrack() ;
-    TrackRef  outerTrack = muIt->outerTrack() ;
-    TrackRef  innerTrack = muIt->innerTrack() ;
+    TrackRef  outerTrack = muIt->outerTrack()  ;
+    TrackRef  innerTrack = muIt->innerTrack()  ;
     
     if(storeInnerTrackMuons_){
       if( innerTrack.isNonnull() && muIt->   isTrackerMuon()){
