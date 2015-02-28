@@ -323,7 +323,7 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     if(isStandAloneMuon && storeStandAloneMuons_ ) storeThisMuon = true ;
     if(isTrackerMuon    && storeInnerTrackMuons_ ) storeThisMuon = true ;
     if(storeThisMuon==false) continue ;
-  
+    
     store("mu_isGlobalMuon"      , isGlobalMuon              ) ;
     store("mu_isStandAloneMuon"  , isStandAloneMuon          ) ;
     store("mu_isTrackerMuon"     , isTrackerMuon             ) ;        
@@ -368,7 +368,7 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       globalTrackWrapper_->store(analysis) ;
       mu_gt_n++ ;
     }
-        
+    
     // get TeV optimized track
     bool makeTevOptimizedTrack = muIt->isGlobalMuon() ;
     if(makeTevOptimizedTrack){
