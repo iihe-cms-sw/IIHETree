@@ -11,11 +11,16 @@
 // user include files
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
+
+#include "DataFormats/EgammaCandidates/interface/Photon.h"
+#include "DataFormats/EgammaCandidates/interface/PhotonFwd.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/EgammaReco/interface/BasicCluster.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/MuonReco/interface/MuonFwd.h"
 #include "DataFormats/MuonReco/interface/MuonCocktails.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
 
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -24,8 +29,12 @@
 
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
 #include "RecoEgamma/EgammaElectronAlgos/interface/ElectronHcalHelper.h"
+
 #include "UserCode/IIHETree/interface/BranchWrapper.h"
 #include "UserCode/IIHETree/interface/IIHEAnalysis.h"
+
+#include "DataFormats/Math/interface/deltaR.h"
+#include "DataFormats/Math/interface/deltaPhi.h"
 
 #include "TFile.h"
 #include "TTree.h"
@@ -65,16 +74,19 @@ public:
   void store(std::string, std::vector<unsigned int>);
   void setBranchType(int);
   
+  void   vetoEvent() ;
+  void acceptEvent() ;
+  
   void addToMCTruthWhitelist(std::vector<int>) ;
-  bool addTriggerL1Electron(std::string) ;
-  bool addTriggerHLTElectron(std::string, float) ;
-  bool addTriggerL1Muon(std::string) ;
-  bool addTriggerHLTMuon(std::string, float) ;
   
   void   pubBeginJob(){   beginJob() ; } ;
   void pubBeginEvent(){ beginEvent() ; } ;
   void   pubEndEvent(){   endEvent() ; } ;
-  virtual void pubAnalyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){ analyze(iEvent, iSetup) ; } ;
+  void     pubEndJob(){     endJob() ; } ;
+  virtual void pubBeginRun(edm::Run   const& iRun  , edm::EventSetup const& iSetup){ beginRun(iRun  , iSetup) ; } ;
+  virtual void  pubAnalyze(edm::Event const& iEvent, edm::EventSetup const& iSetup){  analyze(iEvent, iSetup) ; } ;
+  
+  std::vector<std::string> splitString(const std::string&, const char*) ;
 
 protected:
   IIHEAnalysis* parent_;
