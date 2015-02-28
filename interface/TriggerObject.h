@@ -4,14 +4,8 @@
 #include "UserCode/IIHETree/interface/Types.h"
 #include "UserCode/IIHETree/interface/IIHEAnalysis.h"
 
-#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
-#include "DataFormats/EgammaCandidates/interface/Photon.h"
-#include "DataFormats/MuonReco/interface/Muon.h"
-#include "DataFormats/MuonReco/interface/MuonFwd.h"
-#include "DataFormats/MuonReco/interface/MuonCocktails.h"
 #include "DataFormats/HLTReco/interface/TriggerEvent.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
-#include "FWCore/Framework/interface/Event.h"
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
 
 #include "DataFormats/Math/interface/deltaPhi.h"
@@ -22,8 +16,6 @@ using namespace reco;
 using namespace edm ;
 
 class IIHEAnalysis ;
-
-
 
 class TriggerFilter{
   std::string name_ ;
@@ -41,8 +33,6 @@ public:
   int setValues(edm::Handle<trigger::TriggerEvent>, IIHEAnalysis*) ;
   bool store(IIHEAnalysis* analysis) ;
 };
-
-
 
 class L1Trigger{
 private:
@@ -72,7 +62,6 @@ public:
   bool matchMuon    (edm::Handle<trigger::TriggerEvent>, reco::Muon*       ) ;
 };
 
-
 class HLTrigger{
 private:
   std::string name_ ;
@@ -86,16 +75,19 @@ private:
   std::vector<float> etaValues_ ;
   std::vector<float> phiValues_ ;
   
-  int nSC_    ;
-  int nPh_    ;
-  int nEl_    ;
-  int nMu_    ;
-  int nTau_   ;
-  int nJet_   ;
-  int hasMET_ ;
-  int nSCEl_  ;
-  int nSCPh_  ;
-  int nTypes_ ;
+  int nSC_     ;
+  int nPh_     ;
+  int nEl_     ;
+  int nMu_     ;
+  int nTau_    ;
+  int nJet_    ;
+  int nBJet_   ;
+  int hasMET_  ;
+  int hasHT_   ;
+  int hasALCa_ ;
+  int nSCEl_   ;
+  int nSCPh_   ;
+  long nTypes_ ;
   
   // Branch names for accept, prescale, eta and phi values.  They must be unique.
   std::string acceptBranchName_   ;
@@ -112,7 +104,10 @@ private:
   int nElectronsInTriggerName() ;
   int nTausInTriggerName() ;
   int nJetsInTriggerName() ;
+  int nBJetsInTriggerName() ;
   int METInTriggerName() ;
+  int HTInTriggerName() ;
+  int ALCaInTriggerName() ;
   
 public:
   HLTrigger(std::string, HLTConfigProvider) ;
@@ -145,9 +140,9 @@ public:
   bool isOnlySingleMuon(){ return (nTypes_==1*pow(10,(int)kMuon)) ; }
   bool isOnlyDoubleMuon(){ return (nTypes_==2*pow(10,(int)kMuon)) ; }
   bool isOnlyTripleMuon(){ return (nTypes_==3*pow(10,(int)kMuon)) ; }
-  bool isOnlySingleElectronSingleMuon(){ return (nTypes_ = 1*pow(10,(int)kElectron) + 1*pow(10,(int)kMuon)) ; }
-  bool isOnlySingleElectronDoubleMuon(){ return (nTypes_ = 1*pow(10,(int)kElectron) + 2*pow(10,(int)kMuon)) ; }
-  bool isOnlyDoubleElectronSingleMuon(){ return (nTypes_ = 2*pow(10,(int)kElectron) + 1*pow(10,(int)kMuon)) ; }
+  bool isOnlySingleElectronSingleMuon(){ return (nTypes_==1*pow(10,(int)kElectron)+1*pow(10,(int)kMuon)) ; }
+  bool isOnlySingleElectronDoubleMuon(){ return (nTypes_==1*pow(10,(int)kElectron)+2*pow(10,(int)kMuon)) ; }
+  bool isOnlyDoubleElectronSingleMuon(){ return (nTypes_==2*pow(10,(int)kElectron)+1*pow(10,(int)kMuon)) ; }
   
   std::vector<TriggerFilter*> filters_ ;
 };

@@ -116,6 +116,10 @@ public:
   void configureBranches();
   std::vector<std::string> splitString(const std::string&, const char*) ;
   
+  bool getAcceptStatus(){ return acceptEvent_ ; }
+  void   vetoEvent(){ acceptEvent_ = false ; }
+  void acceptEvent(){ acceptEvent_ =  true ; }
+  
 private:
   virtual void beginJob() ;
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
@@ -148,16 +152,18 @@ private:
   std::vector< std::pair<std::string, int> > missingBranches_ ;
   
   // Bools for including each module so they can be turned on/off without recompilation
-  bool includeEventModule_        ;
-  bool includeVertexModule_       ;
-  bool includeSuperClusterModule_ ;
-  bool includePhotonModule_       ;
-  bool includeElectronModule_     ;
-  bool includeMuonModule_         ;
-  bool includeMETModule_          ;
-  bool includeHEEPModule_         ;
-  bool includeMCTruthModule_      ;
-  bool includeTriggerModule_      ;
+  bool includeEventModule_           ;
+  bool includeVertexModule_          ;
+  bool includeSuperClusterModule_    ;
+  bool includePhotonModule_          ;
+  bool includeElectronModule_        ;
+  bool includeMuonModule_            ;
+  bool includeMETModule_             ;
+  bool includeHEEPModule_            ;
+  bool includeMCTruthModule_         ;
+  bool includeTriggerModule_         ;
+  bool includeZBosonModule_          ;
+  bool includeAutoAcceptEventModule_ ;
   
   // Collections of physics objects
   edm::Handle<reco::SuperClusterCollection> superClusterCollection_ ;
@@ -172,6 +178,11 @@ private:
   edm::InputTag          muonCollectionLabel_ ;
   edm::InputTag           primaryVertexLabel_ ;
   edm::Handle<reco::BeamSpot> beamspotHandle_ ;
+  
+  bool acceptEvent_ ;
+  int nEvents_ ;
+  int nEventsStored_ ;
+
   
   edm::InputTag reducedBarrelRecHitCollection_ ;
   edm::InputTag reducedEndcapRecHitCollection_ ;
