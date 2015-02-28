@@ -81,7 +81,7 @@ bool HEEPCut_Et::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   return getStatus() ;
 }
 
-HEEPCut_eta::HEEPCut_eta(std::string name, IIHEModuleHEEP* mod): HEEPCutBase(name, mod){} ;
+HEEPCut_eta::HEEPCut_eta(std::string name, IIHEModuleHEEP* mod): HEEPCutBase(name, mod){}
 bool HEEPCut_eta::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   setValue(gsfiter->superCluster()->eta()) ;
   int region = detectorRegion(gsfiter) ;
@@ -90,7 +90,7 @@ bool HEEPCut_eta::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   return getStatus() ;
 }
 
-HEEPCut_EcalDriven::HEEPCut_EcalDriven(std::string name, IIHEModuleHEEP* mod): HEEPCutBase(name, mod){} ;
+HEEPCut_EcalDriven::HEEPCut_EcalDriven(std::string name, IIHEModuleHEEP* mod): HEEPCutBase(name, mod){}
 bool HEEPCut_EcalDriven::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   bool result = gsfiter->ecalDrivenSeed() ;
   setStatus(result, cumulativeSuccess) ;
@@ -134,7 +134,7 @@ bool HEEPCut_SigmaIetaIeta::applyCut(reco::GsfElectron* gsfiter, bool cumulative
 }
 
 // These cuts go together
-HEEPCut_E1x5OverE5x5::HEEPCut_E1x5OverE5x5(std::string name, IIHEModuleHEEP* mod): HEEPCutBase(name, mod){} ;
+HEEPCut_E1x5OverE5x5::HEEPCut_E1x5OverE5x5(std::string name, IIHEModuleHEEP* mod): HEEPCutBase(name, mod){}
 HEEPCut_E2x5OverE5x5::HEEPCut_E2x5OverE5x5(std::string name, IIHEModuleHEEP* mod, float thresholdE1x5, float thresholdE2x5):
   HEEPCutBase(name, mod){
   thresholdE1x5_ = thresholdE1x5 ;
