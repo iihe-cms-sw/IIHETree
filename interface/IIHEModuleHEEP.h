@@ -11,11 +11,13 @@ class HEEPCutCollection ;
 // class decleration
 class IIHEModuleHEEP : public IIHEModule {
 private:
+  bool storeHEEP41_    ;
+  bool storeHEEP50_50_ ;
+  bool storeHEEP50_25_ ;
+
   double EcalHcal1EffAreaBarrel_  ;
   double EcalHcal1EffAreaEndcaps_ ;
   double rho_ ;
-  
-  float triggerDeltaRThreshold_ ;
   
   float barrelEtaUpper_41_ ;
   float endcapEtaLower_41_ ;
@@ -117,21 +119,24 @@ private:
   
   HEEPCut_isolEMHadDepth1* cut_41_isolEMHadDepth1_ ;
   HEEPCut_dxyFirstPV*      cut_41_dxyFirstPV_      ;
-  HEEPCutCollection* HEEPCutflow_41_ID_        ;
-  HEEPCutCollection* HEEPCutflow_41_isolation_ ;
-  HEEPCutCollection* HEEPCutflow_41_total_     ;
+  HEEPCutCollection* HEEPCutflow_41_acceptance_ ;
+  HEEPCutCollection* HEEPCutflow_41_ID_         ;
+  HEEPCutCollection* HEEPCutflow_41_isolation_  ;
+  HEEPCutCollection* HEEPCutflow_41_total_      ;
   
   HEEPCut_isolEMHadDepth1* cut_50_50ns_isolEMHadDepth1_ ;
   HEEPCut_dxyFirstPV*      cut_50_50ns_dxyFirstPV_      ;
-  HEEPCutCollection* HEEPCutflow_50_50ns_ID_        ;
-  HEEPCutCollection* HEEPCutflow_50_50ns_isolation_ ;
-  HEEPCutCollection* HEEPCutflow_50_50ns_total_     ;
+  HEEPCutCollection* HEEPCutflow_50_50ns_acceptance_ ;
+  HEEPCutCollection* HEEPCutflow_50_50ns_ID_         ;
+  HEEPCutCollection* HEEPCutflow_50_50ns_isolation_  ;
+  HEEPCutCollection* HEEPCutflow_50_50ns_total_      ;
   
   HEEPCut_isolEMHadDepth1* cut_50_25ns_isolEMHadDepth1_ ;
   HEEPCut_dxyFirstPV*      cut_50_25ns_dxyFirstPV_      ;
-  HEEPCutCollection* HEEPCutflow_50_25ns_ID_        ;
-  HEEPCutCollection* HEEPCutflow_50_25ns_isolation_ ;
-  HEEPCutCollection* HEEPCutflow_50_25ns_total_     ;
+  HEEPCutCollection* HEEPCutflow_50_25ns_acceptance_ ;
+  HEEPCutCollection* HEEPCutflow_50_25ns_ID_         ;
+  HEEPCutCollection* HEEPCutflow_50_25ns_isolation_  ;
+  HEEPCutCollection* HEEPCutflow_50_25ns_total_      ;
   
   std::vector<std::string> triggersForMatching_ ;
 public:

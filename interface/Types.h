@@ -19,6 +19,7 @@ enum variableTypes{
   kVectorVectorUInt
 };
 
+// These are used in triggers
 enum particleTypes{
   kSuperCluster,
   kPhoton,
@@ -26,7 +27,10 @@ enum particleTypes{
   kMuon,
   kTau,
   kJet,
-  kMET
+  kBJet,
+  kMET,
+  kHT,
+  kALCa
 };
 
 enum triggerLevels{
