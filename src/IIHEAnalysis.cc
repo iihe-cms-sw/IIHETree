@@ -24,6 +24,7 @@
 #include "UserCode/IIHETree/interface/EtSort.h"
 #include "UserCode/IIHETree/interface/BranchWrapper.h"
 #include "UserCode/IIHETree/interface/IIHEModule.h"
+#include "UserCode/IIHETree/interface/IIHEModuleAutoAcceptEvent.h"
 #include "UserCode/IIHETree/interface/IIHEModuleEvent.h"
 #include "UserCode/IIHETree/interface/IIHEModuleVertex.h"
 #include "UserCode/IIHETree/interface/IIHEModuleSuperCluster.h"
@@ -34,6 +35,7 @@
 #include "UserCode/IIHETree/interface/IIHEModuleMET.h"
 #include "UserCode/IIHETree/interface/IIHEModuleMCTruth.h"
 #include "UserCode/IIHETree/interface/IIHEModuleTrigger.h"
+#include "UserCode/IIHETree/interface/IIHEModuleZBoson.h"
 
 using namespace std ;
 using namespace reco;
