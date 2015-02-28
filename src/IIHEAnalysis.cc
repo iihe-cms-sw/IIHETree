@@ -11,7 +11,6 @@
 #include "UserCode/IIHETree/interface/EtSort.h"
 #include "UserCode/IIHETree/interface/BranchWrapper.h"
 #include "UserCode/IIHETree/interface/IIHEModule.h"
-#include "UserCode/IIHETree/interface/IIHEModuleAutoAcceptEvent.h"
 #include "UserCode/IIHETree/interface/IIHEModuleEvent.h"
 #include "UserCode/IIHETree/interface/IIHEModuleVertex.h"
 #include "UserCode/IIHETree/interface/IIHEModuleSuperCluster.h"
@@ -23,6 +22,7 @@
 #include "UserCode/IIHETree/interface/IIHEModuleMCTruth.h"
 #include "UserCode/IIHETree/interface/IIHEModuleTrigger.h"
 #include "UserCode/IIHETree/interface/IIHEModuleZBoson.h"
+#include "UserCode/IIHETree/interface/IIHEModuleAutoAcceptEvent.h"
 
 using namespace std ;
 using namespace reco;
@@ -315,6 +315,7 @@ void IIHEAnalysis::endJob(){
     mainFile_->Write() ;
     delete mainFile_ ;
   }
+  std::cout << "There were " << nEvents_ << " total events of which " << nEventsStored_ << " were stored to file." << std::endl ;
 }
 
 // ------------ method for storing information into the TTree  ------------
