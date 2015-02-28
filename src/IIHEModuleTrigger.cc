@@ -31,7 +31,8 @@ IIHEModuleTrigger::IIHEModuleTrigger(const edm::ParameterSet& iConfig): IIHEModu
   includeDoubleElectronTriggers_ = (triggersIn.find("doubleElectron")!=std::string::npos) ;
   includeTripleElectronTriggers_ = (triggersIn.find("tripleElectron")!=std::string::npos) ;
   includeSingleMuonTriggers_     = (triggersIn.find("singleMuon"    )!=std::string::npos) ;
-  includeSingleMuonTriggers_     = (triggersIn.find("doubleMuon"    )!=std::string::npos) ;
+  includeDoubleMuonTriggers_     = (triggersIn.find("doubleMuon"    )!=std::string::npos) ;
+  includeTripleMuonTriggers_     = (triggersIn.find("tripleMuon"    )!=std::string::npos) ;
   includeSingleElectronSingleMuonTriggers_ = (triggersIn.find("singleElectronSingleMuon")!=std::string::npos) ;
   includeSingleElectronDoubleMuonTriggers_ = (triggersIn.find("singleElectronDoubleMuon")!=std::string::npos) ;
   includeDoubleElectronSingleMuonTriggers_ = (triggersIn.find("doubleElectronSingleMuon")!=std::string::npos) ;
@@ -40,7 +41,8 @@ IIHEModuleTrigger::IIHEModuleTrigger(const edm::ParameterSet& iConfig): IIHEModu
   std::cout << "Including double electron triggers: " << includeDoubleElectronTriggers_ << std::endl ;
   std::cout << "Including triple electron triggers: " << includeTripleElectronTriggers_ << std::endl ;
   std::cout << "Including single muon triggers:     " << includeSingleMuonTriggers_     << std::endl ;
-  std::cout << "Including double muon triggers:     " << includeSingleMuonTriggers_     << std::endl ;
+  std::cout << "Including double muon triggers:     " << includeDoubleMuonTriggers_     << std::endl ;
+  std::cout << "Including triple muon triggers:     " << includeTripleMuonTriggers_     << std::endl ;
   std::cout << "Including single electron single muon triggers: " << includeSingleElectronSingleMuonTriggers_ << std::endl ;
   std::cout << "Including single electron double muon triggers: " << includeSingleElectronDoubleMuonTriggers_ << std::endl ;
   std::cout << "Including double electron single muon triggers: " << includeDoubleElectronSingleMuonTriggers_ << std::endl ;
@@ -112,8 +114,8 @@ void IIHEModuleTrigger::beginRun(edm::Run const& iRun, edm::EventSetup const& iS
         if(hlt->isOnlyDoubleElectron()           && includeDoubleElectronTriggers_          ) addThisTrigger = true ;
         if(hlt->isOnlyTripleElectron()           && includeTripleElectronTriggers_          ) addThisTrigger = true ;
         if(hlt->isOnlySingleMuon()               && includeSingleMuonTriggers_              ) addThisTrigger = true ;
-        if(hlt->isOnlyDoubleMuon()               && includeSingleMuonTriggers_              ) addThisTrigger = true ;
-        if(hlt->isOnlyTripleMuon()               && includeSingleMuonTriggers_              ) addThisTrigger = true ;
+        if(hlt->isOnlyDoubleMuon()               && includeDoubleMuonTriggers_              ) addThisTrigger = true ;
+        if(hlt->isOnlyTripleMuon()               && includeTripleMuonTriggers_              ) addThisTrigger = true ;
         if(hlt->isOnlySingleElectronSingleMuon() && includeSingleElectronSingleMuonTriggers_) addThisTrigger = true ;
         if(hlt->isOnlySingleElectronDoubleMuon() && includeSingleElectronDoubleMuonTriggers_) addThisTrigger = true ;
         if(hlt->isOnlyDoubleElectronSingleMuon() && includeDoubleElectronSingleMuonTriggers_) addThisTrigger = true ;
