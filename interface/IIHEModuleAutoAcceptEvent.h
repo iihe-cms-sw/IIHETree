@@ -1,15 +1,13 @@
-#ifndef UserCode_IIHETree_IIHEModuleSuperCluster_h
-#define UserCode_IIHETree_IIHEModuleSuperCluster_h
+#ifndef UserCode_IIHETree_IIHEModuleAutoAcceptEvent_h
+#define UserCode_IIHETree_IIHEModuleAutoAcceptEvent_h
 
 #include "UserCode/IIHETree/interface/IIHEModule.h"
 
 // class decleration
-class IIHEModuleSuperCluster : public IIHEModule {
-private:
-  inline float etacorr(float eta, float pvz, float scz){ return asinh(sinh(eta)*(1.0-pvz/scz)) ; }
+class IIHEModuleAutoAcceptEvent : public IIHEModule {
 public:
-  explicit IIHEModuleSuperCluster(const edm::ParameterSet& iConfig);
-  ~IIHEModuleSuperCluster();
+  explicit IIHEModuleAutoAcceptEvent(const edm::ParameterSet& iConfig);
+  ~IIHEModuleAutoAcceptEvent();
   
   void   pubBeginJob(){   beginJob() ; } ;
   void pubBeginEvent(){ beginEvent() ; } ;
