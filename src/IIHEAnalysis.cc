@@ -294,6 +294,7 @@ void IIHEAnalysis::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup)
   }
 }
 void IIHEAnalysis::beginEvent(){
+  acceptEvent_ = false ;
   for(unsigned int i=0 ; i<childModules_.size() ; ++i){ childModules_.at(i)->pubBeginEvent() ; }
   for(unsigned int i=0 ; i<allVars_.size()      ; ++i){ allVars_.at(i)->beginEvent()         ; }
 }
