@@ -17,7 +17,7 @@ add_job('PHYS14_DYToMM_Flat20To50BX50', '/DYToMuMu_Tune4C_13TeV-pythia8/Phys14DR
 # Electroweak (incomplete)
 add_job('PHYS14_TT_AVE30BX50'         , '/TT_Tune4C_13TeV-pythia8-tauola/Phys14DR-AVE30BX50_tsg_PHYS14_ST_V1-v1/AODSIM')
 add_job('PHYS14_TT_20bx25'            , '/TT_Tune4C_13TeV-pythia8-tauola/Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v1/AODSIM')
-add_job('PHYS14_WEnu_20bx25'          , 'WToENu_Tune4C_13TeV-pythia8/Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v1/AODSIM')
+add_job('PHYS14_WEnu_20bx25'          , '/WToENu_Tune4C_13TeV-pythia8/Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v1/AODSIM')
 
 add_job('PHYS14_DYToEEMM_120_200_20bx25__120_200'    , '/DYJetsToEEMuMu_M-120To200_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1-v2/AODSIM'  )
 add_job('PHYS14_DYToEEMM_400_800_20bx25__200_400'    , '/DYJetsToEEMuMu_M-400To800_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1-v1/AODSIM'  )
