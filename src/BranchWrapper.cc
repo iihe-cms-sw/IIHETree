@@ -57,7 +57,6 @@ void BranchWrapperD::beginEvent(){
 }
 void BranchWrapperD::endEvent(){}
 
-
 // float
 BranchWrapperF::BranchWrapperF(std::string name): BranchWrapperBase(name){
   value_ = -999 ;
@@ -154,7 +153,7 @@ void BranchWrapperDV::push(double value){
   fill();
 }
 void BranchWrapperDV::beginEvent(){
-  unfill();
+  unfill() ;
   values_.clear() ;
 }
 void BranchWrapperDV::endEvent(){}
@@ -173,7 +172,7 @@ void BranchWrapperFV::push(float value){
   fill() ;
 }
 void BranchWrapperFV::beginEvent(){
-  unfill();
+  unfill() ;
   values_.clear() ;
 }
 void BranchWrapperFV::endEvent(){}
@@ -192,7 +191,7 @@ void BranchWrapperIV::push(int value){
   fill() ;
 }
 void BranchWrapperIV::beginEvent(){
-  unfill();
+  unfill() ;
   values_.clear() ;
 }
 void BranchWrapperIV::endEvent(){}
@@ -211,7 +210,7 @@ void BranchWrapperUV::push(unsigned int value){
   fill() ;
 }
 void BranchWrapperUV::beginEvent(){
-  unfill();
+  unfill() ;
   values_.clear() ;
 }
 void BranchWrapperUV::endEvent(){}
@@ -234,11 +233,10 @@ void BranchWrapperBVV::push(std::vector<bool> value){
   fill();
 }
 void BranchWrapperBVV::beginEvent(){
-  unfill();
+  unfill() ;
   values_.clear() ;
 }
 void BranchWrapperBVV::endEvent(){}
-
 
 // Vector of vector of doubles
 BranchWrapperDVV::BranchWrapperDVV(std::string name): BranchWrapperBase(name){}
@@ -254,7 +252,7 @@ void BranchWrapperDVV::push(std::vector<double> value){
   fill();
 }
 void BranchWrapperDVV::beginEvent(){
-  unfill();
+  unfill() ;
   values_.clear() ;
 }
 void BranchWrapperDVV::endEvent(){}
@@ -273,7 +271,7 @@ void BranchWrapperFVV::push(std::vector<float> value){
   fill() ;
 }
 void BranchWrapperFVV::beginEvent(){
-  unfill();
+  unfill() ;
   values_.clear() ;
 }
 void BranchWrapperFVV::endEvent(){}
