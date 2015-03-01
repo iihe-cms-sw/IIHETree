@@ -76,17 +76,7 @@ void IIHEModuleMCTruth::analyze(const edm::Event& iEvent, const edm::EventSetup&
     // Ignore particles with exactly one daughter (X => X => X etc)
     bool daughters_accept = (mc_iter->numberOfDaughters()!=1) ;
     
-    if(mc_iter->numberOfDaughters()==2 && abs(mc_iter->pdgId())==11 && false){
-      // Just debugging to see how often a photon gets radiated
-      const reco::Candidate* d1 = mc_iter->daughter(0) ;
-      const reco::Candidate* d2 = mc_iter->daughter(1) ;
-      std::cout << mc_iter->pdgId() << " " << mc_iter->px() << " " << mc_iter->py() << " " << mc_iter->pz() << " " << mc_iter->energy() << " " << mc_iter->mass() << std::endl ;
-      std::cout << d1->pdgId() << " " << d1->px() << " " << d1->py() << " " << d1->pz() << " " << d1->energy() << " " << d1->mass() << std::endl ;
-      std::cout << d2->pdgId() << " " << d2->px() << " " << d2->py() << " " << d2->pz() << " " << d2->energy() << " " << d2->mass() << std::endl ;
-      std::cout << std::endl ;
-    }
-    
-    // Remove unphysical objects
+    // Remove objects with zero pT
     bool nonZeroPt_accept = (pt>1e-3) ;
     
     // Now check the thresholds
