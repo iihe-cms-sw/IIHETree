@@ -216,8 +216,10 @@ void IIHEModuleMuon::beginJob(){
   
   // Hits block
   setBranchType(kVectorInt) ;
-  addBranch("mu_numberOfMatchedStations") ;
-  addBranch("mu_numberOfValidPixelHits") ;
+  addBranch("mu_numberOfMatchedStations" ) ;
+  addBranch("mu_numberOfValidPixelHits"  ) ;
+  addBranch("mu_numberOfValidTrackerHits") ;
+  addBranch("mu_numberOfValidMuonHits"   ) ;
   
   // TeV optimized values
   addBranch("mu_tevOptimized_charge", kVectorInt) ;
@@ -330,14 +332,24 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     store("mu_isPFMuon"          , muIt->isPFMuon()          ) ;        
     store("mu_isPFIsolationValid", muIt->isPFIsolationValid()) ; 
     
-    int numberOfMatchStations  = 0 ;
-    int numberOfValidPixelHits = 0 ;
+    int numberOfMatchStations    = 0 ;
+    int numberOfValidPixelHits   = 0 ;
+    int numberOfValidTrackerHits = 0 ;
+    int numberOfValidMuonHits    = 0 ;
     
     numberOfMatchStations = muIt->numberOfMatchedStations() ;
-    if(isTrackerMuon) numberOfValidPixelHits = muIt->innerTrack()->hitPattern().numberOfValidPixelHits() ;
+    if(isTrackerMuon) {
+      numberOfValidPixelHits = muIt->innerTrack()->hitPattern().numberOfValidPixelHits() ;
+      numberOfValidTrackerHits = muIt->innerTrack()->hitPattern().trackerLayersWithMeasurement() ;
+    }
+    if (isGlobalMuon) {
+      numberOfValidMuonHits = muIt->globalTrack()->hitPattern().numberOfValidMuonHits() ;
+    }
     
-    store("mu_numberOfMatchedStations", numberOfMatchStations ) ;
-    store("mu_numberOfValidPixelHits" , numberOfValidPixelHits) ;
+    store("mu_numberOfMatchedStations" , numberOfMatchStations   ) ;
+    store("mu_numberOfValidPixelHits"  , numberOfValidPixelHits  ) ;
+    store("mu_numberOfValidTrackerHits", numberOfValidTrackerHits) ;
+    store("mu_numberOfValidMuonHits"   , numberOfValidMuonHits   ) ;
     
     globalTrackWrapper_->reset() ;
     outerTrackWrapper_ ->reset() ;
