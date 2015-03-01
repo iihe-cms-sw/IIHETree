@@ -64,6 +64,7 @@ BranchWrapperF::BranchWrapperF(std::string name): BranchWrapperBase(name){
 int BranchWrapperF::config(TTree* tree){
   if(!tree) return 1 ;
   if(tree->GetBranch(name().c_str())) return 2 ;
+  tree->Branch(name().c_str(), &value_, Form("%s/F", name().c_str())) ;
   return 0 ;
 }
 void BranchWrapperF::set(float value){
