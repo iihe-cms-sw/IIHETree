@@ -17,6 +17,9 @@ bool IIHEModule::addBranch(std::string name){
   return result ;
 }
 
+void IIHEModule::  vetoEvent(){ parent_->  vetoEvent() ; }
+void IIHEModule::acceptEvent(){ parent_->acceptEvent() ; }
+
 void IIHEModule::store(std::string name, bool         value){ parent_->store(name, value) ; }
 void IIHEModule::store(std::string name, double       value){ parent_->store(name, value) ; }
 void IIHEModule::store(std::string name, float        value){ parent_->store(name, value) ; }

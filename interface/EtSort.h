@@ -18,11 +18,5 @@ inline bool refScEtGreater(reco::SuperClusterRef sc1,reco::SuperClusterRef sc2) 
   return (((sc1->energy() + sc1->preshowerEnergy()) )/cosh((sc1)->eta()) >((sc2->energy() + sc2->preshowerEnergy()) )/cosh((sc2)->eta()));
 }
 
-// bool MuonEtGreater(const reco::Muon *sc1,const reco::SuperCluster*sc2){
-//   return (((sc1->energy() + sc1->preshowerEnergy()) )/cosh((*sc1)->eta()) >((sc2->energy() + sc2->preshowerEnergy()) )/cosh((*sc2)->eta()) );
-// }
-
-inline float etacorr(float eta, float pvz, float scz){ return asinh(sinh(eta)*(1.0-pvz/scz)) ; }
-
 #endif
 
