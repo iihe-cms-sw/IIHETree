@@ -133,7 +133,7 @@ void IIHEMuonTrackWrapper::reset(){
     variables_.at(i)->reset() ;
   }
 }
-void IIHEMuonTrackWrapper::fill(TrackRef& track, math::XYZPoint beamspot, math::XYZPoint* firstPrimaryVertex){
+void IIHEMuonTrackWrapper::fill(TrackRef& track, math::XYZPoint* beamspot, math::XYZPoint* firstPrimaryVertex){
   float etaError = track->thetaError()/sin(track->theta()) ;
   charge_        ->fill(track->charge()                ) ;
   qoverp_        ->fill(track->qoverp()                ) ;
@@ -148,12 +148,12 @@ void IIHEMuonTrackWrapper::fill(TrackRef& track, math::XYZPoint beamspot, math::
   lambda_        ->fill(track->lambda()                ) ;
   d0_            ->fill(track->d0()                    ) ;
   dz_            ->fill(track->dz()                    ) ;
-  dz_beamspot_   ->fill(track->dz(beamspot)            ) ;
+  dz_beamspot_   ->fill(track->dz(*beamspot)           ) ;
   dz_firstPVtx_  ->fill(track->dz(*firstPrimaryVertex) ) ;
   dxy_           ->fill(track->dxy()                   ) ;
-  dxy_beamspot_  ->fill(track->dxy(beamspot)           ) ;
+  dxy_beamspot_  ->fill(track->dxy(*beamspot)          ) ;
   dxy_firstPVtx_ ->fill(track->dxy(*firstPrimaryVertex)) ;
-  dsz_           ->fill(track->dsz(beamspot)           ) ;
+  dsz_           ->fill(track->dsz(*beamspot)          ) ;
   vx_            ->fill(track->vx()                    ) ;
   vy_            ->fill(track->vy()                    ) ;
   vz_            ->fill(track->vz()                    ) ;
@@ -195,7 +195,11 @@ IIHEModuleMuon::~IIHEModuleMuon(){}
 
 // ------------ method called once each job just before starting event loop  ------------
 void IIHEModuleMuon::beginJob(){
-  addBranch("mu_n", kUInt) ;
+  setBranchType(kUInt) ;
+  addBranch("mu_n"   ) ;
+  addBranch("mu_gt_n") ;
+  addBranch("mu_ot_n") ;
+  addBranch("mu_it_n") ;
   
   IIHEAnalysis* analysis = parent_ ;
   if(storeGlobalTrackMuons_) globalTrackWrapper_->addBranches(analysis) ;
@@ -271,41 +275,15 @@ void IIHEModuleMuon::beginJob(){
   addBranch("mu_pfIsolationR04_sumNeutralHadronEtHighThreshold") ;
   addBranch("mu_pfIsolationR04_sumPhotonEtHighThreshold"       ) ;
   addBranch("mu_pfIsolationR04_sumPUPt"                        ) ;
-  
-  addBranch("mu_pfMeanDRIsoProfileR03_sumChargedHadronPt"             ) ;
-  addBranch("mu_pfMeanDRIsoProfileR03_sumChargedParticlePt"           ) ;
-  addBranch("mu_pfMeanDRIsoProfileR03_sumPhotonEt"                    ) ;
-  addBranch("mu_pfMeanDRIsoProfileR03_sumNeutralHadronEtHighThreshold") ;
-  addBranch("mu_pfMeanDRIsoProfileR03_sumPhotonEtHighThreshold"       ) ;
-  addBranch("mu_pfMeanDRIsoProfileR03_sumPUPt"                        ) ;
-  
-  addBranch("mu_pfMeanDRIsoProfileR04_sumChargedHadronPt"             ) ;
-  addBranch("mu_pfMeanDRIsoProfileR04_sumChargedParticlePt"           ) ;
-  addBranch("mu_pfMeanDRIsoProfileR04_sumPhotonEt"                    ) ;
-  addBranch("mu_pfMeanDRIsoProfileR04_sumNeutralHadronEtHighThreshold") ;
-  addBranch("mu_pfMeanDRIsoProfileR04_sumPhotonEtHighThreshold"       ) ;
-  addBranch("mu_pfMeanDRIsoProfileR04_sumPUPt"                        ) ;
 }
 
 // ------------ method called to for each event  ------------
 void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
-  // Get the beamspot from the Event:
-  // The beamspot is passed to the IIHEAnalysis class, so we call it from parent_
-  // Don't forget to declare IIHEModuleVertex as a friend of IIHEAnalysis!
-  edm::Handle<reco::BeamSpot> theBeamSpot;
-  iEvent.getByToken(parent_->beamSpotLabel_, theBeamSpot);
-  
-  IIHEAnalysis* analysis = parent_ ;
-  math::XYZPoint beamspot(theBeamSpot->position().x(),theBeamSpot->position().y(),theBeamSpot->position().z());
-  math::XYZPoint* firstPrimaryVertex = parent_->getFirstPrimaryVertex() ;
-
-  // Trigger information
-  edm::InputTag trigEventTag("hltTriggerSummaryAOD","","HLT");
-  edm::Handle<trigger::TriggerEvent> trigEvent; 
-  iEvent.getByLabel(trigEventTag,trigEvent);
-  
-  // Muon collections
   reco::MuonCollection muons = parent_->getMuonCollection() ;
+  
+  math::XYZPoint* beamspot = parent_->getBeamspot() ;
+  math::XYZPoint* firstPrimaryVertex = parent_->getFirstPrimaryVertex() ;
+  
   store("mu_n", (unsigned int)(muons.size())) ;
   
   // Muons come with three tracks:
@@ -314,19 +292,32 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   //   Global track.  This is made from a combination of the inner and outer tracks.
   // So we need to be a little careful when we get the variables.
   
+  IIHEAnalysis* analysis = parent_ ;
+  
+  unsigned int mu_gt_n = 0 ;
+  unsigned int mu_ot_n = 0 ;
+  unsigned int mu_it_n = 0 ;
+  
   for(reco::MuonCollection::const_iterator muIt = muons.begin(); muIt != muons.end(); ++muIt){
     bool isGlobalMuon     = muIt->isGlobalMuon()     ;
     bool isStandAloneMuon = muIt->isStandAloneMuon() ;
     bool isTrackerMuon    = muIt->isTrackerMuon()    ;
-  
+    
+    // Try to save some disk space and CPU time
+    bool storeThisMuon = false ;
+    if(isGlobalMuon     && storeGlobalTrackMuons_) storeThisMuon = true ;
+    if(isStandAloneMuon && storeStandAloneMuons_ ) storeThisMuon = true ;
+    if(isTrackerMuon    && storeInnerTrackMuons_ ) storeThisMuon = true ;
+    if(storeThisMuon==false) continue ;
+    
     store("mu_isGlobalMuon"      , isGlobalMuon              ) ;
     store("mu_isStandAloneMuon"  , isStandAloneMuon          ) ;
     store("mu_isTrackerMuon"     , isTrackerMuon             ) ;        
     store("mu_isPFMuon"          , muIt->isPFMuon()          ) ;        
     store("mu_isPFIsolationValid", muIt->isPFIsolationValid()) ; 
     
-    int numberOfMatchStations        = 0 ;
-    int numberOfValidPixelHits       = 0 ;
+    int numberOfMatchStations  = 0 ;
+    int numberOfValidPixelHits = 0 ;
     
     numberOfMatchStations = muIt->numberOfMatchedStations() ;
     if(isTrackerMuon) numberOfValidPixelHits = muIt->innerTrack()->hitPattern().numberOfValidPixelHits() ;
@@ -339,22 +330,31 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     innerTrackWrapper_ ->reset() ;
     
     TrackRef globalTrack = muIt->globalTrack() ;
-    TrackRef  outerTrack = muIt->outerTrack() ;
-    TrackRef  innerTrack = muIt->innerTrack() ;
+    TrackRef  outerTrack = muIt->outerTrack()  ;
+    TrackRef  innerTrack = muIt->innerTrack()  ;
     
-    if(storeGlobalTrackMuons_){
-      if(globalTrack.isNonnull() && muIt->    isGlobalMuon()){ globalTrackWrapper_->fill(globalTrack, beamspot, firstPrimaryVertex) ; }
-      globalTrackWrapper_->store(analysis) ;
+    if(storeInnerTrackMuons_){
+      if( innerTrack.isNonnull() && muIt->   isTrackerMuon()){
+        innerTrackWrapper_->fill( innerTrack, beamspot, firstPrimaryVertex) ;
+      }
+      innerTrackWrapper_ ->store(analysis) ;
+      mu_it_n++ ;
     }
     if(storeStandAloneMuons_){
-      if( outerTrack.isNonnull() && muIt->isStandAloneMuon()){  outerTrackWrapper_->fill( outerTrack, beamspot, firstPrimaryVertex) ; }
+      if( outerTrack.isNonnull() && muIt->isStandAloneMuon()){
+        outerTrackWrapper_->fill( outerTrack, beamspot, firstPrimaryVertex) ;
+      }
       outerTrackWrapper_ ->store(analysis) ;
+      mu_ot_n++ ;
     }
-    if(storeInnerTrackMuons_){
-      if( innerTrack.isNonnull() && muIt->   isTrackerMuon()){  innerTrackWrapper_->fill( innerTrack, beamspot, firstPrimaryVertex) ; }
-      innerTrackWrapper_ ->store(analysis) ;
+    if(storeGlobalTrackMuons_){
+      if(globalTrack.isNonnull() && muIt->    isGlobalMuon()){
+        globalTrackWrapper_->fill(globalTrack, beamspot, firstPrimaryVertex) ;
+      }
+      globalTrackWrapper_->store(analysis) ;
+      mu_gt_n++ ;
     }
-        
+    
     // get TeV optimized track
     bool makeTevOptimizedTrack = muIt->isGlobalMuon() ;
     if(makeTevOptimizedTrack){
@@ -369,10 +369,10 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       store("mu_tevOptimized_pz"           , tevOptimizedTrack.first->pz()                    ) ;
       store("mu_tevOptimized_d0"           , tevOptimizedTrack.first->d0()                    ) ;
       store("mu_tevOptimized_dz"           , tevOptimizedTrack.first->dz()                    ) ;
-      store("mu_tevOptimized_dz_beamSpot"  , tevOptimizedTrack.first->dz(beamspot)            ) ;
+      store("mu_tevOptimized_dz_beamSpot"  , tevOptimizedTrack.first->dz(*beamspot)           ) ;
       store("mu_tevOptimized_dz_firstPVtx" , tevOptimizedTrack.first->dz(*firstPrimaryVertex) ) ;
       store("mu_tevOptimized_dxy"          , tevOptimizedTrack.first->dxy()                   ) ;
-      store("mu_tevOptimized_dxy_beamSpot" , tevOptimizedTrack.first->dxy(beamspot)           ) ;
+      store("mu_tevOptimized_dxy_beamSpot" , tevOptimizedTrack.first->dxy(*beamspot)          ) ;
       store("mu_tevOptimized_dxy_firstPVtx", tevOptimizedTrack.first->dxy(*firstPrimaryVertex)) ;
       store("mu_tevOptimized_ptError"      , tevOptimizedTrack.first->ptError()               ) ;
       store("mu_tevOptimized_etaError"     , tevOptimizedTrack.first->etaError()              ) ;
@@ -414,8 +414,6 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     const MuonIsolation   iso50       = muIt->isolationR05() ;
     const MuonPFIsolation pfIso30     = muIt->pfIsolationR03() ;
     const MuonPFIsolation pfIso40     = muIt->pfIsolationR04() ;
-    const MuonPFIsolation pfMeanIso30 = muIt->pfMeanDRIsoProfileR03() ;
-    const MuonPFIsolation pfMeanIso40 = muIt->pfMeanDRIsoProfileR04() ;
     
     store("mu_isolationR03_sumPt"        , iso30.sumPt        ) ;
     store("mu_isolationR03_trackerVetoPt", iso30.trackerVetoPt) ;
@@ -444,21 +442,10 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     store("mu_pfIsolationR04_sumNeutralHadronEtHighThreshold", pfIso40.sumNeutralHadronEtHighThreshold) ;
     store("mu_pfIsolationR04_sumPhotonEtHighThreshold"       , pfIso40.sumPhotonEtHighThreshold       ) ;
     store("mu_pfIsolationR04_sumPUPt"                        , pfIso40.sumPUPt                        ) ;
-    
-    store("mu_pfMeanDRIsoProfileR03_sumChargedHadronPt"             , pfMeanIso30.sumChargedHadronPt             ) ;
-    store("mu_pfMeanDRIsoProfileR03_sumChargedParticlePt"           , pfMeanIso30.sumChargedParticlePt           ) ;
-    store("mu_pfMeanDRIsoProfileR03_sumPhotonEt"                    , pfMeanIso30.sumPhotonEt                    ) ;
-    store("mu_pfMeanDRIsoProfileR03_sumNeutralHadronEtHighThreshold", pfMeanIso30.sumNeutralHadronEtHighThreshold) ;
-    store("mu_pfMeanDRIsoProfileR03_sumPhotonEtHighThreshold"       , pfMeanIso30.sumPhotonEtHighThreshold       ) ;
-    store("mu_pfMeanDRIsoProfileR03_sumPUPt"                        , pfMeanIso30.sumPUPt                        ) ;
-    
-    store("mu_pfMeanDRIsoProfileR04_sumChargedHadronPt"             , pfMeanIso40.sumChargedHadronPt             ) ;
-    store("mu_pfMeanDRIsoProfileR04_sumChargedParticlePt"           , pfMeanIso40.sumChargedParticlePt           ) ;
-    store("mu_pfMeanDRIsoProfileR04_sumPhotonEt"                    , pfMeanIso40.sumPhotonEt                    ) ;
-    store("mu_pfMeanDRIsoProfileR04_sumNeutralHadronEtHighThreshold", pfMeanIso40.sumNeutralHadronEtHighThreshold) ;
-    store("mu_pfMeanDRIsoProfileR04_sumPhotonEtHighThreshold"       , pfMeanIso40.sumPhotonEtHighThreshold       ) ;
-    store("mu_pfMeanDRIsoProfileR04_sumPUPt"                        , pfMeanIso40.sumPUPt                        ) ;
   }
+  store("mu_gt_n", mu_gt_n) ;
+  store("mu_ot_n", mu_ot_n) ;
+  store("mu_it_n", mu_it_n) ;
 }
 
 void IIHEModuleMuon::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){}

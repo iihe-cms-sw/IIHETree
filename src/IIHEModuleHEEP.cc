@@ -34,9 +34,12 @@ using namespace reco;
 using namespace edm ;
 
 IIHEModuleHEEP::IIHEModuleHEEP(const edm::ParameterSet& iConfig): IIHEModule(iConfig){
+  storeHEEP41_    = iConfig.getUntrackedParameter<bool>("storeHEEP41"    , true ) ;
+  storeHEEP50_50_ = iConfig.getUntrackedParameter<bool>("storeHEEP50_50" , true ) ;
+  storeHEEP50_25_ = iConfig.getUntrackedParameter<bool>("storeHEEP50_25" , true ) ;
+
   EcalHcal1EffAreaBarrel_  = iConfig.getUntrackedParameter<double>("EcalHcal1EffAreaBarrel" , 0.28) ;
   EcalHcal1EffAreaEndcaps_ = iConfig.getUntrackedParameter<double>("EcalHcal1EffAreaEndcaps", 0.28) ;
-  triggerDeltaRThreshold_  = iConfig.getUntrackedParameter<double>("HEEP_triggerDeltaRThreshold", 1.0) ;
   rho_ = iConfig.getUntrackedParameter<double>("kt6PFJets:rho", 0.0) ;
   
   barrelEtaUpper_41_ = iConfig.getUntrackedParameter<double>("barrelEtaUpper_41", 1.442 ) ;
@@ -180,12 +183,10 @@ void IIHEModuleHEEP::beginJob(){
   //                                          4.1                                       //
   ////////////////////////////////////////////////////////////////////////////////////////
   std::string prefix_41 = "HEEP_cutflow41" ;
-  HEEPCutflow_41_ID_        = new HEEPCutCollection(prefix_41 + "_ID"       , this) ;
-  HEEPCutflow_41_isolation_ = new HEEPCutCollection(prefix_41 + "_isolation", this) ;
-  HEEPCutflow_41_total_     = new HEEPCutCollection(prefix_41 + "_total"    , this) ;
-  
-  // Declare all the variables
-  
+  HEEPCutflow_41_acceptance_ = new HEEPCutCollection(prefix_41 + "_acceptance", this) ;
+  HEEPCutflow_41_ID_         = new HEEPCutCollection(prefix_41 + "_ID"        , this) ;
+  HEEPCutflow_41_isolation_  = new HEEPCutCollection(prefix_41 + "_isolation" , this) ;
+  HEEPCutflow_41_total_      = new HEEPCutCollection(prefix_41 + "_total"     , this) ;
   
   // These cuts must be updated so declare them separately
   cut_41_isolEMHadDepth1_ = new HEEPCut_isolEMHadDepth1(prefix_41 + "_isolEMHadDepth1", this, isolEMHadDepth1ConstantTermBarrel_41_, isolEMHadDepth1ConstantTermEndcapLowEt_41_, isolEMHadDepth1ConstantTermEndcapHighEt_41_, isolEMHadDepth1LinearTermBarrel_41_, isolEMHadDepth1LinearTermEndcap_41_, isolEMHadDepth1OffsetTermEndcap_41_) ;
@@ -195,8 +196,9 @@ void IIHEModuleHEEP::beginJob(){
   cut_41_isolEMHadDepth1_->setEcalHcal1EffAreaEndcaps(EcalHcal1EffAreaEndcaps_) ;
   cut_41_isolEMHadDepth1_->setRho(rho_) ;
   
-  HEEPCutflow_41_ID_->addCut( (HEEPCutBase*) new HEEPCut_Et           (prefix_41 + "_Et"           , this, EtThresholdBarrel_41_, EtThresholdEndcap_41_)) ;
-  HEEPCutflow_41_ID_->addCut( (HEEPCutBase*) new HEEPCut_eta          (prefix_41 + "_eta"          , this)) ;
+  HEEPCutflow_41_acceptance_->addCut( (HEEPCutBase*) new HEEPCut_Et (prefix_41 + "_Et" , this, EtThresholdBarrel_41_, EtThresholdEndcap_41_)) ;
+  HEEPCutflow_41_acceptance_->addCut( (HEEPCutBase*) new HEEPCut_eta(prefix_41 + "_eta", this)) ;
+  
   HEEPCutflow_41_ID_->addCut( (HEEPCutBase*) new HEEPCut_EcalDriven   (prefix_41 + "_EcalDriven"   , this)) ;
   HEEPCutflow_41_ID_->addCut( (HEEPCutBase*) new HEEPCut_41_dEtaIn    (prefix_41 + "_dEtaIn"       , this, dEtaInThresholdBarrel_41_, dEtaInThresholdEndcap_41_)) ;
   HEEPCutflow_41_ID_->addCut( (HEEPCutBase*) new HEEPCut_dPhiIn       (prefix_41 + "_dPhiIn"       , this, dPhiInThresholdBarrel_41_, dPhiInThresholdEndcap_41_)) ;
@@ -212,18 +214,18 @@ void IIHEModuleHEEP::beginJob(){
   HEEPCutflow_41_isolation_->addCut( (HEEPCutBase*) new HEEPCut_IsolPtTrks(prefix_41 + "_IsolPtTrks", this, IsolPtTrksThresholdBarrel_41_, IsolPtTrksThresholdEndcap_41_)) ;
   
   // Put it all together
-  HEEPCutflow_41_total_->addCutCollection(HEEPCutflow_41_ID_       ) ;
-  HEEPCutflow_41_total_->addCutCollection(HEEPCutflow_41_isolation_) ;
-  
-  HEEPCutflow_41_total_->config(barrelEtaUpper_41_, endcapEtaLower_41_, endcapEtaUpper_41_) ;
+  HEEPCutflow_41_total_->addCutCollection(HEEPCutflow_41_acceptance_) ;
+  HEEPCutflow_41_total_->addCutCollection(HEEPCutflow_41_ID_        ) ;
+  HEEPCutflow_41_total_->addCutCollection(HEEPCutflow_41_isolation_ ) ;
   
   ////////////////////////////////////////////////////////////////////////////////////////
   //                                        5.0 50ns                                    //
   ////////////////////////////////////////////////////////////////////////////////////////
   std::string prefix_50_50ns = "HEEP_cutflow50_50ns" ;
-  HEEPCutflow_50_50ns_ID_        = new HEEPCutCollection(prefix_50_50ns+"_ID"       , this) ;
-  HEEPCutflow_50_50ns_isolation_ = new HEEPCutCollection(prefix_50_50ns+"_isolation", this) ;
-  HEEPCutflow_50_50ns_total_     = new HEEPCutCollection(prefix_50_50ns+"_total"    , this) ;
+  HEEPCutflow_50_50ns_acceptance_ = new HEEPCutCollection(prefix_50_50ns+"_acceptance", this) ;
+  HEEPCutflow_50_50ns_ID_         = new HEEPCutCollection(prefix_50_50ns+"_ID"        , this) ;
+  HEEPCutflow_50_50ns_isolation_  = new HEEPCutCollection(prefix_50_50ns+"_isolation" , this) ;
+  HEEPCutflow_50_50ns_total_      = new HEEPCutCollection(prefix_50_50ns+"_total"     , this) ;
   
   // These cuts must be updated so declare them separately
   cut_50_50ns_isolEMHadDepth1_ = new HEEPCut_isolEMHadDepth1(prefix_50_50ns + "_isolEMHadDepth1", this, isolEMHadDepth1ConstantTermBarrel_50_50ns_, isolEMHadDepth1ConstantTermEndcapLowEt_50_50ns_, isolEMHadDepth1ConstantTermEndcapHighEt_50_50ns_, isolEMHadDepth1LinearTermBarrel_50_50ns_, isolEMHadDepth1LinearTermEndcap_50_50ns_, isolEMHadDepth1OffsetTermEndcap_50_50ns_) ;
@@ -234,8 +236,9 @@ void IIHEModuleHEEP::beginJob(){
   cut_50_50ns_isolEMHadDepth1_->setRho(rho_) ;
   
   // Define the ID
-  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_Et(prefix_50_50ns+"_Et", this, EtThresholdBarrel_50_, EtThresholdEndcap_50_)) ;
-  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_eta           (prefix_50_50ns + "_eta"          , this)) ;
+  HEEPCutflow_50_50ns_acceptance_->addCut( (HEEPCutBase*) new HEEPCut_Et (prefix_50_50ns + "_Et" , this, EtThresholdBarrel_50_, EtThresholdEndcap_50_)) ;
+  HEEPCutflow_50_50ns_acceptance_->addCut( (HEEPCutBase*) new HEEPCut_eta(prefix_50_50ns + "_eta", this)) ;
+  
   HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_EcalDriven    (prefix_50_50ns + "_EcalDriven"   , this)) ;
   HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_50ns_dEtaIn(prefix_50_50ns + "_dEtaIn"       , this, dEtaInConstantTermBarrel_50_50ns_, dEtaInLinearTermBarrel_50_50ns_, dEtaInCutoffTermBarrel_50_50ns_, dEtaInThresholdEndcap_50_50ns_)) ;
   HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_dPhiIn        (prefix_50_50ns + "_dPhiIn"       , this, dPhiInThresholdBarrel_50_50ns_, dPhiInThresholdEndcap_50_50ns_)) ;
@@ -251,18 +254,18 @@ void IIHEModuleHEEP::beginJob(){
   HEEPCutflow_50_50ns_isolation_->addCut( (HEEPCutBase*) new HEEPCut_IsolPtTrks(prefix_50_50ns + "_IsolPtTrks", this, IsolPtTrksThresholdBarrel_50_50ns_, IsolPtTrksThresholdEndcap_50_50ns_)) ;
   
   // Put it all together
-  HEEPCutflow_50_50ns_total_->addCutCollection(HEEPCutflow_50_50ns_ID_       ) ;
-  HEEPCutflow_50_50ns_total_->addCutCollection(HEEPCutflow_50_50ns_isolation_) ;
-  
-  HEEPCutflow_50_50ns_total_->config(barrelEtaUpper_50_, endcapEtaLower_50_, endcapEtaUpper_50_) ;
-  
+  HEEPCutflow_50_50ns_total_->addCutCollection(HEEPCutflow_50_50ns_acceptance_) ;
+  HEEPCutflow_50_50ns_total_->addCutCollection(HEEPCutflow_50_50ns_ID_        ) ;
+  HEEPCutflow_50_50ns_total_->addCutCollection(HEEPCutflow_50_50ns_isolation_ ) ;
+    
   ////////////////////////////////////////////////////////////////////////////////////////
   //                                        5.0 25ns                                    //
   ////////////////////////////////////////////////////////////////////////////////////////
   std::string prefix_50_25ns = "HEEP_cutflow50_25ns" ;
-  HEEPCutflow_50_25ns_ID_        = new HEEPCutCollection(prefix_50_25ns+"_ID"       , this) ;
-  HEEPCutflow_50_25ns_isolation_ = new HEEPCutCollection(prefix_50_25ns+"_isolation", this) ;
-  HEEPCutflow_50_25ns_total_     = new HEEPCutCollection(prefix_50_25ns+"_total"    , this) ;
+  HEEPCutflow_50_25ns_acceptance_ = new HEEPCutCollection(prefix_50_25ns+"_acceptance", this) ;
+  HEEPCutflow_50_25ns_ID_         = new HEEPCutCollection(prefix_50_25ns+"_ID"        , this) ;
+  HEEPCutflow_50_25ns_isolation_  = new HEEPCutCollection(prefix_50_25ns+"_isolation" , this) ;
+  HEEPCutflow_50_25ns_total_      = new HEEPCutCollection(prefix_50_25ns+"_total"     , this) ;
   
   // These cuts must be updated so declare them separately
   cut_50_25ns_isolEMHadDepth1_ = new HEEPCut_isolEMHadDepth1(prefix_50_25ns + "_isolEMHadDepth1", this, isolEMHadDepth1ConstantTermBarrel_50_25ns_, isolEMHadDepth1ConstantTermEndcapLowEt_50_25ns_, isolEMHadDepth1ConstantTermEndcapHighEt_50_25ns_, isolEMHadDepth1LinearTermBarrel_50_25ns_, isolEMHadDepth1LinearTermEndcap_50_25ns_, isolEMHadDepth1OffsetTermEndcap_50_25ns_) ;
@@ -273,8 +276,9 @@ void IIHEModuleHEEP::beginJob(){
   cut_50_25ns_isolEMHadDepth1_->setRho(rho_) ;
   
   // Define the ID
-  HEEPCutflow_50_25ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_Et            (prefix_50_25ns + "_Et"           , this, EtThresholdBarrel_50_, EtThresholdEndcap_50_)) ;
-  HEEPCutflow_50_25ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_eta           (prefix_50_25ns + "_eta"          , this)) ;
+  HEEPCutflow_50_25ns_acceptance_->addCut( (HEEPCutBase*) new HEEPCut_Et (prefix_50_25ns + "_Et" , this, EtThresholdBarrel_50_, EtThresholdEndcap_50_)) ;
+  HEEPCutflow_50_25ns_acceptance_->addCut( (HEEPCutBase*) new HEEPCut_eta(prefix_50_25ns + "_eta", this)) ;
+  
   HEEPCutflow_50_25ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_EcalDriven    (prefix_50_25ns + "_EcalDriven"   , this)) ;
   HEEPCutflow_50_25ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_25ns_dEtaIn(prefix_50_25ns + "_dEtaIn"       , this, dEtaInConstantTermBarrel_50_25ns_, dEtaInLinearTermBarrel_50_25ns_, dEtaInCutoffTermBarrel_50_25ns_, dEtaInConstantTermEndcap_50_25ns_, dEtaInLinearTermEndcap_50_25ns_, dEtaInCutoffTermEndcap_50_25ns_)) ;
   HEEPCutflow_50_25ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_dPhiIn        (prefix_50_25ns + "_dPhiIn"       , this, dPhiInThresholdBarrel_50_25ns_, dPhiInThresholdEndcap_50_25ns_)) ;
@@ -290,23 +294,30 @@ void IIHEModuleHEEP::beginJob(){
   HEEPCutflow_50_25ns_isolation_->addCut( (HEEPCutBase*) new HEEPCut_IsolPtTrks(prefix_50_25ns + "_IsolPtTrks", this, IsolPtTrksThresholdBarrel_50_25ns_, IsolPtTrksThresholdEndcap_50_25ns_)) ;
   
   // Put it all together
-  HEEPCutflow_50_25ns_total_->addCutCollection(HEEPCutflow_50_25ns_ID_       ) ;
-  HEEPCutflow_50_25ns_total_->addCutCollection(HEEPCutflow_50_25ns_isolation_) ;
+  HEEPCutflow_50_25ns_total_->addCutCollection(HEEPCutflow_50_25ns_acceptance_) ;
+  HEEPCutflow_50_25ns_total_->addCutCollection(HEEPCutflow_50_25ns_ID_        ) ;
+  HEEPCutflow_50_25ns_total_->addCutCollection(HEEPCutflow_50_25ns_isolation_ ) ;
   
-  HEEPCutflow_50_25ns_total_->config(barrelEtaUpper_50_, endcapEtaLower_50_, endcapEtaUpper_50_) ;
+  
+  if(storeHEEP41_   ) HEEPCutflow_41_total_     ->config(barrelEtaUpper_41_, endcapEtaLower_41_, endcapEtaUpper_41_) ;
+  if(storeHEEP50_50_) HEEPCutflow_50_50ns_total_->config(barrelEtaUpper_50_, endcapEtaLower_50_, endcapEtaUpper_50_) ;
+  if(storeHEEP50_25_) HEEPCutflow_50_25ns_total_->config(barrelEtaUpper_50_, endcapEtaLower_50_, endcapEtaUpper_50_) ;
   
   ////////////////////////////////////////////////////////////////////////////////////////
   //                     Add everything to the vector of cutflows                       //
   ////////////////////////////////////////////////////////////////////////////////////////
-  HEEPCutflows_.push_back(HEEPCutflow_41_ID_            ) ;
-  HEEPCutflows_.push_back(HEEPCutflow_41_isolation_     ) ;
-  HEEPCutflows_.push_back(HEEPCutflow_41_total_         ) ;
-  HEEPCutflows_.push_back(HEEPCutflow_50_25ns_ID_       ) ;
-  HEEPCutflows_.push_back(HEEPCutflow_50_25ns_isolation_) ;
-  HEEPCutflows_.push_back(HEEPCutflow_50_25ns_total_    ) ;
-  HEEPCutflows_.push_back(HEEPCutflow_50_50ns_ID_       ) ;
-  HEEPCutflows_.push_back(HEEPCutflow_50_50ns_isolation_) ;
-  HEEPCutflows_.push_back(HEEPCutflow_50_50ns_total_    ) ;
+  HEEPCutflows_.push_back(HEEPCutflow_41_acceptance_     ) ;
+  HEEPCutflows_.push_back(HEEPCutflow_41_ID_             ) ;
+  HEEPCutflows_.push_back(HEEPCutflow_41_isolation_      ) ;
+  HEEPCutflows_.push_back(HEEPCutflow_41_total_          ) ;
+  HEEPCutflows_.push_back(HEEPCutflow_50_25ns_acceptance_) ;
+  HEEPCutflows_.push_back(HEEPCutflow_50_25ns_ID_        ) ;
+  HEEPCutflows_.push_back(HEEPCutflow_50_25ns_isolation_ ) ;
+  HEEPCutflows_.push_back(HEEPCutflow_50_25ns_total_     ) ;
+  HEEPCutflows_.push_back(HEEPCutflow_50_50ns_acceptance_) ;
+  HEEPCutflows_.push_back(HEEPCutflow_50_50ns_ID_        ) ;
+  HEEPCutflows_.push_back(HEEPCutflow_50_50ns_isolation_ ) ;
+  HEEPCutflows_.push_back(HEEPCutflow_50_50ns_total_     ) ;
 }
 
 // ------------ method called to for each event  ------------
@@ -335,15 +346,15 @@ void IIHEModuleHEEP::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   edm::ESHandle<CaloTopology> pTopology;
   iSetup.get<CaloTopologyRecord>().get(pTopology);
   
-  EcalClusterLazyTools lazytool(iEvent, iSetup, parent_->getReducedBarrelRecHitCollectionToken(), parent_->getReducedEndcapRecHitCollectionToken()) ;
+  EcalClusterLazyTools lazytool(iEvent, iSetup, InputTag("reducedEcalRecHitsEB"),InputTag("reducedEcalRecHitsEE"),InputTag("reducedEcalRecHitsES"));
   
   reco::GsfElectronCollection electrons = parent_->getElectronCollection() ;
   for(reco::GsfElectronCollection::const_iterator gsfiter = electrons.begin() ; gsfiter!=electrons.end() ; ++gsfiter){
     reco::GsfElectron* gsf = (reco::GsfElectron*) &*gsfiter ;
     
-    HEEPCutflow_41_total_     ->applyCuts(gsf) ;
-    HEEPCutflow_50_50ns_total_->applyCuts(gsf) ;
-    HEEPCutflow_50_25ns_total_->applyCuts(gsf) ;
+    if(storeHEEP41_   ) HEEPCutflow_41_total_     ->applyCuts(gsf) ;
+    if(storeHEEP50_50_) HEEPCutflow_50_50ns_total_->applyCuts(gsf) ;
+    if(storeHEEP50_25_) HEEPCutflow_50_25ns_total_->applyCuts(gsf) ;
     
     if(true){
       // Required for preshower variables

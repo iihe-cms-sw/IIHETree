@@ -16,6 +16,17 @@ IIHEModulePhoton::~IIHEModulePhoton(){}
 // ------------ method called once each job just before starting event loop  ------------
 void IIHEModulePhoton::beginJob(){
   addBranch("ph_n", kUInt) ;
+  setBranchType(kVectorFloat) ;
+  addBranch("ph_px") ;
+  addBranch("ph_px") ;
+  addBranch("ph_px") ;
+  addBranch("ph_pt") ;
+  addBranch("ph_eta") ;
+  addBranch("ph_theta") ;
+  addBranch("ph_phi") ;
+  addBranch("ph_energy") ;
+  addBranch("ph_mass") ;
+  
   setBranchType(kVectorBool) ;
   addBranch("ph_isPFlowPhoton") ;
   addBranch("ph_isStandardPhoton") ;
@@ -96,13 +107,13 @@ void IIHEModulePhoton::beginJob(){
   
   setBranchType(kVectorFloat) ;
   addBranch("ph_chargedHadronIso") ;
-  addBranch("ph_chargedHadronIsoWrongVtx") ;
+  //addBranch("ph_chargedHadronIsoWrongVtx") ;
   addBranch("ph_neutralHadronIso") ;
   addBranch("ph_photonIso") ;
-  addBranch("ph_sumChargedParticlePt") ;
-  addBranch("ph_sumNeutralHadronEtHighThreshold") ;
-  addBranch("ph_sumPhotonEtHighThreshold") ;
-  addBranch("ph_sumPUPt") ;
+  //addBranch("ph_sumChargedParticlePt") ;
+  //addBranch("ph_sumNeutralHadronEtHighThreshold") ;
+  //addBranch("ph_sumPhotonEtHighThreshold") ;
+  //addBranch("ph_sumPUPt") ;
   
   addBranch("ph_nClusterOutsideMustache", kVectorInt) ;
   addBranch("ph_etOutsideMustache") ;
@@ -115,6 +126,18 @@ void IIHEModulePhoton::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   
   store("ph_n", (unsigned int) photons.size()) ;
   for(reco::PhotonCollection::const_iterator phiter = photons.begin() ; phiter!=photons.end() ; ++phiter){
+    /*
+    store("ph_px"    , phiter->px()) ;
+    store("ph_px"    , phiter->py()) ;
+    store("ph_px"    , phiter->pz()) ;
+    store("ph_pt"    , phiter->pt()) ;
+    store("ph_eta"   , phiter->eta()) ;
+    store("ph_theta" , phiter->theta()) ;
+    store("ph_phi"   , phiter->phi()) ;
+    store("ph_energy", phiter->energy()) ;
+    store("ph_mass"  , phiter->mass()) ;
+    */
+  
     store("ph_isPFlowPhoton"                 , phiter->isPFlowPhoton()                   ) ;
     store("ph_isStandardPhoton"              , phiter->isStandardPhoton()                ) ;
     store("ph_hasConversionTracks"           , phiter->hasConversionTracks()             ) ;
@@ -185,13 +208,13 @@ void IIHEModulePhoton::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     store("ph_nTrkHollowConeDR03"            , phiter->nTrkHollowConeDR03()              ) ;
 
     store("ph_chargedHadronIso"               , phiter->chargedHadronIso()               ) ;
-    store("ph_chargedHadronIsoWrongVtx"       , phiter->chargedHadronIsoWrongVtx()       ) ;
+    //store("ph_chargedHadronIsoWrongVtx"       , phiter->chargedHadronIsoWrongVtx()       ) ;
     store("ph_neutralHadronIso"               , phiter->neutralHadronIso()               ) ;
     store("ph_photonIso"                      , phiter->photonIso()                      ) ;
-    store("ph_sumChargedParticlePt"           , phiter->sumChargedParticlePt()           ) ;
-    store("ph_sumNeutralHadronEtHighThreshold", phiter->sumNeutralHadronEtHighThreshold()) ;
-    store("ph_sumPhotonEtHighThreshold"       , phiter->sumPhotonEtHighThreshold()       ) ;
-    store("ph_sumPUPt"                        , phiter->sumPUPt()                        ) ;
+    //store("ph_sumChargedParticlePt"           , phiter->sumChargedParticlePt()           ) ;
+    //store("ph_sumNeutralHadronEtHighThreshold", phiter->sumNeutralHadronEtHighThreshold()) ;
+    //store("ph_sumPhotonEtHighThreshold"       , phiter->sumPhotonEtHighThreshold()       ) ;
+    //store("ph_sumPUPt"                        , phiter->sumPUPt()                        ) ;
 
     store("ph_nClusterOutsideMustache"        , phiter->nClusterOutsideMustache()        ) ;
     store("ph_etOutsideMustache"              , phiter->etOutsideMustache()              ) ;

@@ -114,23 +114,29 @@ HLTrigger::HLTrigger(std::string name, HLTConfigProvider hltConfig){
   reset() ;
   acceptBranchName_   = "trig_" + name + "_accept"   ;
   prescaleBranchName_ = "trig_" + name + "_prescale" ;
-  nSC_    = nSuperclustersInTriggerName() ;
-  nPh_    = nPhotonsInTriggerName() ;
-  nEl_    = nElectronsInTriggerName() ;
-  nMu_    = nMuonsInTriggerName() ;
-  nTau_   = nTausInTriggerName() ;
-  nJet_   = nJetsInTriggerName() ;
-  hasMET_ = METInTriggerName() ;
-  nSCEl_  = nSC_+nEl_ ;
+  nSC_     = nSuperclustersInTriggerName() ;
+  nPh_     = nPhotonsInTriggerName() ;
+  nEl_     = nElectronsInTriggerName() ;
+  nMu_     = nMuonsInTriggerName() ;
+  nTau_    = nTausInTriggerName() ;
+  nJet_    = nJetsInTriggerName() ;
+  nBJet_   = nBJetsInTriggerName() ;
+  hasMET_  = METInTriggerName() ;
+  hasHT_   = HTInTriggerName() ;
+  hasALCa_ = ALCaInTriggerName() ;
+  nSCEl_   = nSC_+nEl_ ;
   
   // Slightly easier way to handle multiple objects
-  nTypes_ =    nSC_*pow(10,(int)kSuperCluster)
-          +    nPh_*pow(10,(int)kPhoton)
-          +    nEl_*pow(10,(int)kElectron)
-          +    nMu_*pow(10,(int)kMuon)
-          +   nTau_*pow(10,(int)kTau)
-          +   nJet_*pow(10,(int)kJet)
-          + hasMET_*pow(10,(int)kMET) ;
+  nTypes_ =     nSC_*pow(10,(int)kSuperCluster)
+          +     nPh_*pow(10,(int)kPhoton)
+          +     nEl_*pow(10,(int)kElectron)
+          +     nMu_*pow(10,(int)kMuon)
+          +    nTau_*pow(10,(int)kTau)
+          +    nJet_*pow(10,(int)kJet)
+          +   nBJet_*pow(10,(int)kBJet)
+          +  hasMET_*pow(10,(int)kMET) 
+          +   hasHT_*pow(10,(int)kHT) 
+          + hasALCa_*pow(10,(int)kALCa) ;
   
   findIndex(hltConfig) ;
   std::vector<std::string> moduleNames = hltConfig.moduleLabels(index_) ;
@@ -157,8 +163,11 @@ int HLTrigger::nSuperclustersInTriggerName(){
   return scCount ;
 }
 int HLTrigger::nPhotonsInTriggerName(){
-  int phCount = nSubstringInString(name_, "Ph") ;
-  return phCount ;
+  int singlePhotonCount = nSubstringInString(name_, "Photon"      ) ;
+  int doublePhotonCount = nSubstringInString(name_, "DoublePhoton") ;
+  int triplePhotonCount = nSubstringInString(name_, "TriplePhoton") ;
+  int totalPhotonCount = 2*triplePhotonCount + 1*doublePhotonCount + singlePhotonCount ;
+  return totalPhotonCount ;
 }
 int HLTrigger::nElectronsInTriggerName(){
   int singleElectronCount = nSubstringInString(name_, "Ele"      ) ;
@@ -170,7 +179,7 @@ int HLTrigger::nElectronsInTriggerName(){
 
 int HLTrigger::nMuonsInTriggerName(){
   int singleMuonCount = nSubstringInString(name_, "Mu"      ) ;
-  int doubleMuonCount = nSubstringInString(name_, "DoubleMu") + nSubstringInString(name_, "DiMu") ;
+  int doubleMuonCount = nSubstringInString(name_, "DoubleMu") + nSubstringInString(name_, "DiMu") + nSubstringInString(name_, "Dimuon") ;
   int tripleMuonCount = nSubstringInString(name_, "TripleMu") ;
   int totalMuonCount = 2*tripleMuonCount + 1*doubleMuonCount + singleMuonCount ;
   return totalMuonCount ;
@@ -180,12 +189,34 @@ int HLTrigger::nTausInTriggerName(){
   return tauCount ;
 }
 int HLTrigger::nJetsInTriggerName(){
-  int jetCount = nSubstringInString(name_, "Jet") ;
-  return jetCount ;
+  int ignoreJetCount = nSubstringInString(name_, "NoJetId"  ) ;
+  int singleJetCount = nSubstringInString(name_, "Jet"  ) ;
+  int doubleJetCount = nSubstringInString(name_, "DiJet") + nSubstringInString(name_, "DiPFJet") + nSubstringInString(name_, "DoubleJet") + nSubstringInString(name_, "DiCentralJet") + nSubstringInString(name_, "DiCentralPFJet") ;
+  int tripleJetCount = nSubstringInString(name_, "TriCentralPFJet" ) ;
+  int quadJetCount  = nSubstringInString(name_, "QuadJet" ) + nSubstringInString(name_, "QuadPFJet" ) ;
+  int sixJetCount   = nSubstringInString(name_, "SixJet"  ) + nSubstringInString(name_, "SixPFJet"  ) ;
+  int eightJetCount = nSubstringInString(name_, "EightJet") + nSubstringInString(name_, "EightPFJet") ;
+  int totalJetCount = 7*eightJetCount + 5*sixJetCount + 3*quadJetCount + 2*tripleJetCount + 1*doubleJetCount + singleJetCount - 1*ignoreJetCount ;
+  return totalJetCount ;
+}
+int HLTrigger::nBJetsInTriggerName(){
+  int singleBJetCount = nSubstringInString(name_, "BJet"  ) ;
+  int doubleBJetCount = nSubstringInString(name_, "DiBJet"  ) + nSubstringInString(name_,  "DiCentral") ;
+  int tripleBJetCount = nSubstringInString(name_, "TriiBJet") + nSubstringInString(name_, "TriCentral") ;
+  int totalBJetCount = 2*tripleBJetCount + 1*doubleBJetCount + singleBJetCount ;
+  return totalBJetCount ;
 }
 int HLTrigger::METInTriggerName(){
-  int metCount = nSubstringInString(name_, "MET") ;
-  return metCount ;
+  int METCount = nSubstringInString(name_, "MET") ;
+  return METCount ;
+}
+int HLTrigger::HTInTriggerName(){
+  int HTCount = nSubstringInString(name_, "HT") ;
+  return HTCount ;
+}
+int HLTrigger::ALCaInTriggerName(){
+  int ALCaCount = nSubstringInString(name_, "ALCa") ;
+  return ALCaCount ;
 }
 int HLTrigger::nSubstringInString(const std::string& str, const std::string& sub){
   // Taken from https://github.com/cms-sw/cmssw/blob/CMSSW_7_4_X/HLTriggerOffline/Egamma/src/EmDQM.cc#L1064

@@ -52,7 +52,7 @@ public:
   
   void addBranches(IIHEAnalysis*) ;
   void reset() ;
-  void fill(reco::TrackRef&, math::XYZPoint, math::XYZPoint*) ;
+  void fill(reco::TrackRef&, math::XYZPoint*, math::XYZPoint*) ;
   void store(IIHEAnalysis*) ;
   
   // Taken from DataFormats/MuonReco/interface/Muon.h

@@ -24,12 +24,6 @@
 #include "UserCode/IIHETree/interface/IIHEModule.h"
 #include "UserCode/IIHETree/interface/TriggerObject.h"
 
-#include "DataFormats/EgammaCandidates/interface/Photon.h"
-#include "DataFormats/EgammaCandidates/interface/PhotonFwd.h"
-
-#include "DataFormats/VertexReco/interface/Vertex.h"
-#include "DataFormats/VertexReco/interface/VertexFwd.h"
-
 // ROOT includes
 #include "TFile.h"
 #include "TTree.h"
@@ -53,7 +47,8 @@ friend class IIHEModuleVertex ;
 friend class IIHEModuleMuon ;
 
 private:
-  edm::EDGetTokenT<reco::BeamSpot> beamSpotLabel_ ;
+  //edm::EDGetTokenT<reco::BeamSpot> beamSpotLabel_ ;
+  edm::InputTag beamSpotLabel_ ;
   math::XYZPoint* beamspot_ ;
   math::XYZPoint* firstPrimaryVertex_ ;
 public:
@@ -110,11 +105,15 @@ public:
   math::XYZPoint* getFirstPrimaryVertex(){ return firstPrimaryVertex_ ; }
   math::XYZPoint* getBeamspot(){ return beamspot_ ; }
   
-  edm::EDGetTokenT<EcalRecHitCollection> getReducedBarrelRecHitCollectionToken(){ return reducedBarrelRecHitCollectionToken_ ; }
-  edm::EDGetTokenT<EcalRecHitCollection> getReducedEndcapRecHitCollectionToken(){ return reducedEndcapRecHitCollectionToken_ ; }
-  
+  edm::InputTag getReducedBarrelRecHitCollectionToken(){ return reducedBarrelRecHitCollection_ ; }
+  edm::InputTag getReducedEndcapRecHitCollectionToken(){ return reducedEndcapRecHitCollection_ ; }
+    
   void configureBranches();
   std::vector<std::string> splitString(const std::string&, const char*) ;
+  
+  bool getAcceptStatus(){ return acceptEvent_ ; }
+  void   vetoEvent(){ acceptEvent_ = false ; }
+  void acceptEvent(){ acceptEvent_ =  true ; }
   
 private:
   virtual void beginJob() ;
@@ -148,16 +147,18 @@ private:
   std::vector< std::pair<std::string, int> > missingBranches_ ;
   
   // Bools for including each module so they can be turned on/off without recompilation
-  bool includeEventModule_        ;
-  bool includeVertexModule_       ;
-  bool includeSuperClusterModule_ ;
-  bool includePhotonModule_       ;
-  bool includeElectronModule_     ;
-  bool includeMuonModule_         ;
-  bool includeMETModule_          ;
-  bool includeHEEPModule_         ;
-  bool includeMCTruthModule_      ;
-  bool includeTriggerModule_      ;
+  bool includeEventModule_           ;
+  bool includeVertexModule_          ;
+  bool includeSuperClusterModule_    ;
+  bool includePhotonModule_          ;
+  bool includeElectronModule_        ;
+  bool includeMuonModule_            ;
+  bool includeMETModule_             ;
+  bool includeHEEPModule_            ;
+  bool includeMCTruthModule_         ;
+  bool includeTriggerModule_         ;
+  bool includeZBosonModule_          ;
+  bool includeAutoAcceptEventModule_ ;
   
   // Collections of physics objects
   edm::Handle<reco::SuperClusterCollection> superClusterCollection_ ;
@@ -175,9 +176,10 @@ private:
   
   edm::InputTag reducedBarrelRecHitCollection_ ;
   edm::InputTag reducedEndcapRecHitCollection_ ;
-  edm::EDGetTokenT<EcalRecHitCollection> reducedBarrelRecHitCollectionToken_ ;
-  edm::EDGetTokenT<EcalRecHitCollection> reducedEndcapRecHitCollectionToken_ ;
   
+  bool acceptEvent_ ;
+  int nEvents_ ;
+  int nEventsStored_ ;
   bool debug_;
   std::string git_hash_  ;
   std::string globalTag_ ;

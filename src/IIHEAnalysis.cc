@@ -5,19 +5,6 @@
 
 #include <boost/algorithm/string.hpp>
 
-// CMSSW includes
-#include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/MakerMacros.h"
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "DataFormats/VertexReco/interface/Vertex.h"
-#include "DataFormats/VertexReco/interface/VertexFwd.h"
-
-#include "DataFormats/Common/interface/TriggerResults.h"
-#include "DataFormats/HLTReco/interface/TriggerEvent.h"
-#include "DataFormats/HLTReco/interface/TriggerObject.h"
-#include "DataFormats/HLTReco/interface/TriggerTypeDefs.h"
-#include "FWCore/Common/interface/TriggerNames.h"
-
 // IIHE includes
 #include "UserCode/IIHETree/interface/IIHEAnalysis.h"
 
@@ -34,6 +21,8 @@
 #include "UserCode/IIHETree/interface/IIHEModuleMET.h"
 #include "UserCode/IIHETree/interface/IIHEModuleMCTruth.h"
 #include "UserCode/IIHETree/interface/IIHEModuleTrigger.h"
+#include "UserCode/IIHETree/interface/IIHEModuleZBoson.h"
+#include "UserCode/IIHETree/interface/IIHEModuleAutoAcceptEvent.h"
 
 using namespace std ;
 using namespace reco;
@@ -44,8 +33,11 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig){
   debug_     = iConfig.getParameter<bool  >("debug"    ) ;
   git_hash_  = iConfig.getParameter<string>("git_hash" ) ;
   globalTag_ = iConfig.getParameter<string>("globalTag") ;
+  nEvents_ = 0 ;
+  nEventsStored_ = 0 ;
+  acceptEvent_ = false ;
   
-  beamSpotLabel_      = consumes<BeamSpot>(iConfig.getParameter<InputTag>("beamSpot")) ;
+  beamSpotLabel_      = iConfig.getParameter<edm::InputTag>("beamSpot") ;
   primaryVertexLabel_ = iConfig.getParameter<edm::InputTag>("primaryVertex") ;
   
   superClusterCollectionLabel_ = iConfig.getParameter<edm::InputTag>("superClusterCollection"  ) ;
@@ -55,34 +47,35 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig){
   
   reducedBarrelRecHitCollection_ = iConfig.getParameter<edm::InputTag>("reducedBarrelRecHitCollection") ;
   reducedEndcapRecHitCollection_ = iConfig.getParameter<edm::InputTag>("reducedEndcapRecHitCollection") ;
-  reducedBarrelRecHitCollectionToken_ = mayConsume<EcalRecHitCollection>(reducedBarrelRecHitCollection_) ;
-  reducedEndcapRecHitCollectionToken_ = mayConsume<EcalRecHitCollection>(reducedEndcapRecHitCollection_) ; 
   
   firstPrimaryVertex_ = new math::XYZPoint(0.0,0.0,0.0) ;
   beamspot_           = new math::XYZPoint(0.0,0.0,0.0) ;
   
-  includeTriggerModule_      = iConfig.getUntrackedParameter<bool>("includeTriggerModule"     , true ) ;
-  includeEventModule_        = iConfig.getUntrackedParameter<bool>("includeEventModule"       , true ) ;
-  includeVertexModule_       = iConfig.getUntrackedParameter<bool>("includeVertexModule"      , true ) ;
-  includeSuperClusterModule_ = iConfig.getUntrackedParameter<bool>("includeSuperClusterModule", true ) ;
-  includePhotonModule_       = iConfig.getUntrackedParameter<bool>("includePhotonModule"      , true ) ;
-  includeElectronModule_     = iConfig.getUntrackedParameter<bool>("includeElectronModule"    , true ) ;
-  includeMuonModule_         = iConfig.getUntrackedParameter<bool>("includeMuonModule"        , true ) ;
-  includeMETModule_          = iConfig.getUntrackedParameter<bool>("includeMETModule"         , true ) ;
-  includeHEEPModule_         = iConfig.getUntrackedParameter<bool>("includeHEEPModule"        , true ) ;
-  includeMCTruthModule_      = iConfig.getUntrackedParameter<bool>("includeMCTruthModule"     , true ) ;
+  includeTriggerModule_         = iConfig.getUntrackedParameter<bool>("includeTriggerModule"        , true ) ;
+  includeEventModule_           = iConfig.getUntrackedParameter<bool>("includeEventModule"          , true ) ;
+  includeVertexModule_          = iConfig.getUntrackedParameter<bool>("includeVertexModule"         , true ) ;
+  includeSuperClusterModule_    = iConfig.getUntrackedParameter<bool>("includeSuperClusterModule"   , true ) ;
+  includePhotonModule_          = iConfig.getUntrackedParameter<bool>("includePhotonModule"         , true ) ;
+  includeElectronModule_        = iConfig.getUntrackedParameter<bool>("includeElectronModule"       , true ) ;
+  includeMuonModule_            = iConfig.getUntrackedParameter<bool>("includeMuonModule"           , true ) ;
+  includeMETModule_             = iConfig.getUntrackedParameter<bool>("includeMETModule"            , true ) ;
+  includeHEEPModule_            = iConfig.getUntrackedParameter<bool>("includeHEEPModule"           , true ) ;
+  includeMCTruthModule_         = iConfig.getUntrackedParameter<bool>("includeMCTruthModule"        , true ) ;
+  includeZBosonModule_          = iConfig.getUntrackedParameter<bool>("includeZBosonModule"         , true ) ;
+  includeAutoAcceptEventModule_ = iConfig.getUntrackedParameter<bool>("includeAutoAcceptEventModule", true ) ;
   
-  if(includeTriggerModule_     ) childModules_.push_back(new IIHEModuleTrigger(iConfig)       ) ;
-  if(includeEventModule_       ) childModules_.push_back(new IIHEModuleEvent(iConfig)         ) ;
-  if(includeVertexModule_      ) childModules_.push_back(new IIHEModuleVertex(iConfig)        ) ;
-  if(includeSuperClusterModule_) childModules_.push_back(new IIHEModuleSuperCluster(iConfig)  ) ;
-  if(includePhotonModule_      ) childModules_.push_back(new IIHEModulePhoton(iConfig)        ) ;
-  if(includeElectronModule_    ) childModules_.push_back(new IIHEModuleGedGsfElectron(iConfig)) ;
-  if(includeMuonModule_        ) childModules_.push_back(new IIHEModuleMuon(iConfig)          ) ;
-  if(includeMETModule_         ) childModules_.push_back(new IIHEModuleMET(iConfig)           ) ;
-  if(includeHEEPModule_        ) childModules_.push_back(new IIHEModuleHEEP(iConfig)          ) ;
-  if(includeMCTruthModule_     ) childModules_.push_back(new IIHEModuleMCTruth(iConfig)       ) ;  
-  //mod_trigger->config(this) ;
+  if(includeTriggerModule_        ) childModules_.push_back(new IIHEModuleTrigger(iConfig)        ) ;
+  if(includeEventModule_          ) childModules_.push_back(new IIHEModuleEvent(iConfig)          ) ;
+  if(includeVertexModule_         ) childModules_.push_back(new IIHEModuleVertex(iConfig)         ) ;
+  if(includeSuperClusterModule_   ) childModules_.push_back(new IIHEModuleSuperCluster(iConfig)   ) ;
+  if(includePhotonModule_         ) childModules_.push_back(new IIHEModulePhoton(iConfig)         ) ;
+  if(includeElectronModule_       ) childModules_.push_back(new IIHEModuleGedGsfElectron(iConfig) ) ;
+  if(includeMuonModule_           ) childModules_.push_back(new IIHEModuleMuon(iConfig)           ) ;
+  if(includeMETModule_            ) childModules_.push_back(new IIHEModuleMET(iConfig)            ) ;
+  if(includeHEEPModule_           ) childModules_.push_back(new IIHEModuleHEEP(iConfig)           ) ;
+  if(includeMCTruthModule_        ) childModules_.push_back(new IIHEModuleMCTruth(iConfig)        ) ;  
+  if(includeZBosonModule_         ) childModules_.push_back(new IIHEModuleZBoson(iConfig)         ) ;  
+  if(includeAutoAcceptEventModule_) childModules_.push_back(new IIHEModuleAutoAcceptEvent(iConfig)) ;  
 }
 
 IIHEAnalysis::~IIHEAnalysis(){}
@@ -263,7 +256,7 @@ void IIHEAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   iEvent.getByLabel(    electronCollectionLabel_,     electronCollection_) ;
   iEvent.getByLabel(        muonCollectionLabel_,         muonCollection_) ;
   iEvent.getByLabel(         primaryVertexLabel_,           pvCollection_) ;
-  iEvent.getByToken(              beamSpotLabel_,         beamspotHandle_) ;
+  iEvent.getByLabel(              beamSpotLabel_,         beamspotHandle_) ;
   beamspot_->SetXYZ(beamspotHandle_->position().x(),beamspotHandle_->position().y(),beamspotHandle_->position().z()) ;
   
   // We take only the first primary vertex
@@ -278,7 +271,6 @@ void IIHEAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     childModules_.at(i)->pubAnalyze(iEvent, iSetup) ;
   }
   endEvent() ;
-  dataTree_->Fill() ;
 }
 
 void IIHEAnalysis::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){
@@ -287,16 +279,23 @@ void IIHEAnalysis::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup)
   }
 }
 void IIHEAnalysis::beginEvent(){
+  acceptEvent_ = false ;
   for(unsigned int i=0 ; i<childModules_.size() ; ++i){ childModules_.at(i)->pubBeginEvent() ; }
   for(unsigned int i=0 ; i<allVars_.size()      ; ++i){ allVars_.at(i)->beginEvent()         ; }
 }
 void IIHEAnalysis::endEvent(){
   for(unsigned int i=0 ; i<childModules_.size() ; ++i){ childModules_.at(i)->pubEndEvent() ; }
   for(unsigned int i=0 ; i<allVars_.size()      ; ++i){      allVars_.at(i)->endEvent()    ; }
+  if(acceptEvent_){
+    dataTree_->Fill() ;
+    nEventsStored_++ ;
+  }
+  nEvents_++ ;
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
 void IIHEAnalysis::endJob(){
+  for(unsigned int i=0 ; i<childModules_.size() ; ++i){ childModules_.at(i)->pubEndJob() ; }
   std::vector<std::string> untouchedBranchNames ;
   for(unsigned int i=0 ; i<allVars_.size() ; ++i){
     if(allVars_.at(i)->is_touched()==false) untouchedBranchNames.push_back(allVars_.at(i)->name()) ;
@@ -314,6 +313,7 @@ void IIHEAnalysis::endJob(){
     mainFile_->Write() ;
     delete mainFile_ ;
   }
+  std::cout << "There were " << nEvents_ << " total events of which " << nEventsStored_ << " were stored to file." << std::endl ;
 }
 
 // ------------ method for storing information into the TTree  ------------
