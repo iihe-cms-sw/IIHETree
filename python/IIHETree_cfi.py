@@ -4,7 +4,7 @@ pwd = os.getcwd()
 os.chdir("UserCode/IIHETree/")
 username = getpass.getuser()
 os.system("git log -n 1 | head -n 1 | awk '{print $2}' > /tmp/%s_git.hash"%username)
-f = open('/tmp/git.hash')
+f = open('/tmp/%s_git.hash'%username)
 git_hash = f.read().rstrip('\n')
 print 'Using git hash: ' , git_hash
 os.chdir(pwd)
