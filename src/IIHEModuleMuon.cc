@@ -278,7 +278,7 @@ void IIHEModuleMuon::beginJob(){
   addBranch("mu_pfIsolationR04_sumPhotonEtHighThreshold"       ) ;
   addBranch("mu_pfIsolationR04_sumPUPt"                        ) ;
   
-/*    CHOOSE_RELEASE_START CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
+//     CHOOSE_RELEASE_START CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
   addBranch("mu_pfMeanDRIsoProfileR03_sumChargedHadronPt"             ) ;
   addBranch("mu_pfMeanDRIsoProfileR03_sumChargedParticlePt"           ) ;
   addBranch("mu_pfMeanDRIsoProfileR03_sumPhotonEt"                    ) ;
@@ -292,9 +292,9 @@ void IIHEModuleMuon::beginJob(){
   addBranch("mu_pfMeanDRIsoProfileR04_sumNeutralHadronEtHighThreshold") ;
   addBranch("mu_pfMeanDRIsoProfileR04_sumPhotonEtHighThreshold"       ) ;
   addBranch("mu_pfMeanDRIsoProfileR04_sumPUPt"                        ) ;
- CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 */
-// CHOOSE_RELEASE_START  CMSSW_5_3_11
-// CHOOSE_RELEASE_END CMSSW_5_3_11 
+//  CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 
+/*  CHOOSE_RELEASE_START  CMSSW_5_3_11
+ CHOOSE_RELEASE_END CMSSW_5_3_11  */
   
   
 }
@@ -478,7 +478,7 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     store("mu_pfIsolationR04_sumPhotonEtHighThreshold"       , pfIso40.sumPhotonEtHighThreshold       ) ;
     store("mu_pfIsolationR04_sumPUPt"                        , pfIso40.sumPUPt                        ) ;
 
-/*  CHOOSE_RELEASE_START CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
+//   CHOOSE_RELEASE_START CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
     const MuonPFIsolation pfMeanIso30 = muIt->pfMeanDRIsoProfileR03() ;
     const MuonPFIsolation pfMeanIso40 = muIt->pfMeanDRIsoProfileR04() ;
 
@@ -495,9 +495,9 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     store("mu_pfMeanDRIsoProfileR04_sumNeutralHadronEtHighThreshold", pfMeanIso40.sumNeutralHadronEtHighThreshold) ;
     store("mu_pfMeanDRIsoProfileR04_sumPhotonEtHighThreshold"       , pfMeanIso40.sumPhotonEtHighThreshold       ) ;
     store("mu_pfMeanDRIsoProfileR04_sumPUPt"                        , pfMeanIso40.sumPUPt                        ) ;
- CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 */
-// CHOOSE_RELEASE_START  CMSSW_5_3_11
-// CHOOSE_RELEASE_END CMSSW_5_3_11 
+//  CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 
+/*  CHOOSE_RELEASE_START  CMSSW_5_3_11
+ CHOOSE_RELEASE_END CMSSW_5_3_11  */
 
   }
   store("mu_gt_n", mu_gt_n) ;
