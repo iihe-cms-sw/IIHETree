@@ -4,7 +4,7 @@ MCTruthObject::MCTruthObject(reco::Candidate* cand){
   candidate_ = cand ;
   DeltaRCut_ = 0.001 ;
 }
-MCTruthObject::~MCTruthObject(){};
+MCTruthObject::~MCTruthObject(){}
 void MCTruthObject::addMother(const reco::Candidate* mother){
   mothers_.push_back(mother) ;
 }
