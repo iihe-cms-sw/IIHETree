@@ -115,8 +115,15 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
   for(reco::GsfElectronCollection::const_iterator gsfiter=electrons.begin() ; gsfiter!=electrons.end() ; ++gsfiter){
     
     //Fill the gsf related variables
+
+/*   CHOOSE_RELEASE_START CMSSW_7_3_0 CMSSW_7_2_0
     int gsf_nLostInnerHits = gsfiter->gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS) ;
     int gsf_nLostOuterHits = gsfiter->gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_OUTER_HITS) ;
+CHOOSE_RELEASE_END CMSSW_7_3_0 CMSSW_7_2_0   */
+//   CHOOSE_RELEASE_START CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11
+    int gsf_nLostInnerHits = gsfiter->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits() ;
+    int gsf_nLostOuterHits = gsfiter->gsfTrack()->trackerExpectedHitsOuter().numberOfLostHits() ;
+//   CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11 
     
     store("gsf_energy"                        , gsfiter->energy()                        ) ;
     store("gsf_p"                             , gsfiter->p()                             ) ;
@@ -177,10 +184,24 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
     
     //http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/DataFormats/TrackReco/interface/HitPattern.h?revision=1.32&view=markup
     reco::HitPattern kfHitPattern = gsfiter->gsfTrack()->hitPattern();
-    int nbtrackhits = kfHitPattern.numberOfHits(reco::HitPattern::TRACK_HITS);
+
+/*   CHOOSE_RELEASE_START CMSSW_7_3_0 CMSSW_7_2_0
+    int nbtrackhits = kfHitPattern.numberOfHits(reco::HitPattern::TRACK_HITS) ;
+CHOOSE_RELEASE_END CMSSW_7_3_0 CMSSW_7_2_0   */
+//   CHOOSE_RELEASE_START CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11
+    int nbtrackhits = kfHitPattern.numberOfHits() ;
+//   CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11 
+
     std::vector<int> gsf_hitsinfo ;
     for(int hititer=0 ; hititer<25 ; hititer++){
+      
+/*   CHOOSE_RELEASE_START CMSSW_7_3_0 CMSSW_7_2_0
       int myhitbin = (hititer<nbtrackhits) ? kfHitPattern.getHitPattern(reco::HitPattern::TRACK_HITS, hititer) : 0 ;
+CHOOSE_RELEASE_END CMSSW_7_3_0 CMSSW_7_2_0   */
+//   CHOOSE_RELEASE_START CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11
+      int myhitbin = (hititer<nbtrackhits) ? kfHitPattern.getHitPattern(hititer) : 0 ;
+//   CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11 
+      
       gsf_hitsinfo.push_back(myhitbin) ;
     }
     store("gsf_hitsinfo", gsf_hitsinfo) ;
