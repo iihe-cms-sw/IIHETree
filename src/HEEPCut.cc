@@ -217,12 +217,12 @@ HEEPCut_missingHits::HEEPCut_missingHits(std::string name, IIHEModuleHEEP* mod, 
 }
 bool HEEPCut_missingHits::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   
-//        CHOOSE_RELEASE_START CMSSW_7_3_0 CMSSW_7_2_0
+//            CHOOSE_RELEASE_START CMSSW_7_3_0 CMSSW_7_2_0
   setValue((float) (gsfiter->gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS))) ;
-// CHOOSE_RELEASE_END CMSSW_7_3_0 CMSSW_7_2_0       
-/*        CHOOSE_RELEASE_START CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11
+//  CHOOSE_RELEASE_END CMSSW_7_3_0 CMSSW_7_2_0          
+/*            CHOOSE_RELEASE_START CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11
   setValue((float) (gsfiter->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits())) ;
-       CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11  */
+          CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11   */
   
   bool result = (value() <= threshold_+0.5) ;
   setStatus(result, cumulativeSuccess) ;

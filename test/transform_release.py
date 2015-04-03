@@ -2,7 +2,6 @@ import getopt, os, sys
 
 prefix = 'UserCode/IIHETree'
 release = 'CMSSW_7_3_0'
-release = 'CMSSW_7_0_6_patch1'
 
 argv = sys.argv[1:]
 try:
