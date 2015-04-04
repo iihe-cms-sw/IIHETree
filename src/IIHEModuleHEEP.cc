@@ -59,8 +59,8 @@ IIHEModuleHEEP::IIHEModuleHEEP(const edm::ParameterSet& iConfig): IIHEModule(iCo
   endcapEtaUpper_50_    = iConfig.getUntrackedParameter<double>("HEEP_endcapEtaUpper_50"   , 2.5   ) ;
   
   // ID
-  dEtaInThresholdBarrel_41_           = iConfig.getUntrackedParameter<double>("HEEP_dEtaInThresholdBarrel_41"        , 0.005 ) ;
-  dEtaInThresholdEndcap_41_           = iConfig.getUntrackedParameter<double>("HEEP_dEtaInThresholdEndcap_41"        , 0.007 ) ;
+  dEtaInThresholdBarrel_41_           = iConfig.getUntrackedParameter<double>("HEEP_dEtaInThresholdBarrel_41"        , 0.005  ) ;
+  dEtaInThresholdEndcap_41_           = iConfig.getUntrackedParameter<double>("HEEP_dEtaInThresholdEndcap_41"        , 0.007  ) ;
   
   dEtaInConstantTermBarrel_50_50ns_   = iConfig.getUntrackedParameter<double>("HEEP_dEtaInConstantTermBarrel_50_50ns", 0.016  ) ;
   dEtaInLinearTermBarrel_50_50ns_     = iConfig.getUntrackedParameter<double>("HEEP_dEtaInLinearTermBarrel_50_50ns"  , 0.0001 ) ;
