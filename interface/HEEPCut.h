@@ -211,6 +211,48 @@ private:
   float constantTermEndcap_ ;
 } ;
 
+class HEEPCut_50_dEtaIn: HEEPCutBase{
+public:
+  HEEPCut_50_dEtaIn(std::string, IIHEModuleHEEP*, float, float, float, float, float, float) ;
+  bool applyCut(reco::GsfElectron*, bool) ;
+private:
+  float constantTermBarrel_ ;
+  float linearTermBarrel_   ;
+  float cutoffTermBarrel_   ;
+  float constantTermEndcap_ ;
+  float linearTermEndcap_   ;
+  float cutoffTermEndcap_   ;
+} ;
+class HEEPCut_50_HOverE: HEEPCutBase{
+public:
+  HEEPCut_50_HOverE(std::string, IIHEModuleHEEP*, float, float, float, float) ;
+  bool applyCut(reco::GsfElectron*, bool) ;
+private:
+  float reciprocalTermBarrel_ ;
+  float reciprocalTermEndcap_ ;
+  float constantTermBarrel_ ;
+  float constantTermEndcap_ ;
+} ;
+
+class HEEPCut_51_dEtaIn: HEEPCutBase{
+public:
+  HEEPCut_51_dEtaIn(std::string, IIHEModuleHEEP*, float, float) ;
+  bool applyCut(reco::GsfElectron*, bool) ;
+private:
+  float thresholdBarrel_ ;
+  float thresholdEndcap_ ;
+} ;
+class HEEPCut_51_HOverE: HEEPCutBase{
+public:
+  HEEPCut_51_HOverE(std::string, IIHEModuleHEEP*, float, float, float, float) ;
+  bool applyCut(reco::GsfElectron*, bool) ;
+private:
+  float reciprocalTermBarrel_ ;
+  float reciprocalTermEndcap_ ;
+  float constantTermBarrel_ ;
+  float constantTermEndcap_ ;
+} ;
+
 
 class HEEPCutCollection{
 private:

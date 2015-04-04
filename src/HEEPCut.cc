@@ -216,14 +216,7 @@ HEEPCut_missingHits::HEEPCut_missingHits(std::string name, IIHEModuleHEEP* mod, 
   threshold_ = threshold ;
 }
 bool HEEPCut_missingHits::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  
-//                     CHOOSE_RELEASE_START CMSSW_7_3_0 CMSSW_7_2_0
   setValue((float) (gsfiter->gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS))) ;
-//    CHOOSE_RELEASE_END CMSSW_7_3_0 CMSSW_7_2_0                 
-/*                     CHOOSE_RELEASE_START CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11
-  setValue((float) (gsfiter->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits())) ;
-                 CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11     */
-  
   bool result = (value() <= threshold_+0.5) ;
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
@@ -385,6 +378,103 @@ bool HEEPCut_50_25ns_dEtaIn::applyCut(reco::GsfElectron* gsfiter, bool cumulativ
   return getStatus() ;
 }
 bool HEEPCut_50_25ns_HOverE::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
+  setValue(gsfiter->hadronicOverEm()) ;
+  float E = gsfiter->caloEnergy() ;
+  int region = detectorRegion(gsfiter) ;
+  bool result = true ;
+  switch(region){
+    case kBarrel: result = (value() < reciprocalTermBarrel_/E + constantTermBarrel_) ; break ;
+    case kEndcap: result = (value() < reciprocalTermEndcap_/E + constantTermEndcap_) ; break ;
+    default : break ;
+  }
+  setStatus(result, cumulativeSuccess) ;
+  return getStatus() ;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//                                      HEEP 5.0 cuts                                   //
+//////////////////////////////////////////////////////////////////////////////////////////
+HEEPCut_50_dEtaIn::HEEPCut_50_dEtaIn(std::string name, IIHEModuleHEEP* mod, float constantTermBarrel, float linearTermBarrel, float cutoffTermBarrel, float constantTermEndcap, float linearTermEndcap, float cutoffTermEndcap):
+  HEEPCutBase(name, mod){
+  constantTermBarrel_ = constantTermBarrel ;
+  linearTermBarrel_   = linearTermBarrel   ;
+  cutoffTermBarrel_   = cutoffTermBarrel   ;
+  constantTermEndcap_ = constantTermEndcap ;
+  linearTermEndcap_   = linearTermEndcap   ;
+  cutoffTermEndcap_   = cutoffTermEndcap   ;
+}
+HEEPCut_50_HOverE::HEEPCut_50_HOverE(std::string name, IIHEModuleHEEP* mod, float reciprocalTermBarrel, float constantTermBarrel, float reciprocalTermEndcap, float constantTermEndcap):
+  HEEPCutBase(name, mod){
+  reciprocalTermBarrel_ = reciprocalTermBarrel_ ;
+  constantTermBarrel_   = constantTermBarrel_   ;
+  reciprocalTermEndcap_ = reciprocalTermEndcap_ ;
+  constantTermEndcap_   = constantTermEndcap_   ;
+}
+
+bool HEEPCut_50_dEtaIn::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
+  setValue(gsfiter->deltaEtaSuperClusterTrackAtVtx()) ;
+  int region = detectorRegion(gsfiter) ;
+  bool result = true ;
+  float Et = gsfiter->caloEnergy()*sin(gsfiter->p4().theta()) ;
+  switch(region){
+    case kBarrel:{
+      float threshold = std::max(constantTermBarrel_ - constantTermBarrel_*Et, cutoffTermBarrel_) ;
+      result = (fabs(value()) < threshold) ;
+      break ;
+    }
+    case kEndcap:{
+      float threshold = std::max(constantTermBarrel_ - constantTermBarrel_*Et, cutoffTermBarrel_) ;
+      result = (fabs(value()) < threshold) ;
+      break ;
+    }
+    default : break ;
+  }
+  setStatus(result, cumulativeSuccess) ;
+  return getStatus() ;
+}
+bool HEEPCut_50_HOverE::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
+  setValue(gsfiter->hadronicOverEm()) ;
+  float E = gsfiter->caloEnergy() ;
+  int region = detectorRegion(gsfiter) ;
+  bool result = true ;
+  switch(region){
+    case kBarrel: result = (value() < reciprocalTermBarrel_/E + constantTermBarrel_) ; break ;
+    case kEndcap: result = (value() < reciprocalTermEndcap_/E + constantTermEndcap_) ; break ;
+    default : break ;
+  }
+  setStatus(result, cumulativeSuccess) ;
+  return getStatus() ;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//                                      HEEP 5.1 cuts                                   //
+//////////////////////////////////////////////////////////////////////////////////////////
+HEEPCut_51_dEtaIn::HEEPCut_51_dEtaIn(std::string name, IIHEModuleHEEP* mod, float thresholdBarrel, float thresholdEndcap):
+  HEEPCutBase(name, mod){
+  thresholdBarrel_ = thresholdBarrel ;
+  thresholdEndcap_ = thresholdEndcap ;
+}
+HEEPCut_51_HOverE::HEEPCut_51_HOverE(std::string name, IIHEModuleHEEP* mod, float reciprocalTermBarrel, float constantTermBarrel, float reciprocalTermEndcap, float constantTermEndcap):
+  HEEPCutBase(name, mod){
+  reciprocalTermBarrel_ = reciprocalTermBarrel_ ;
+  constantTermBarrel_   = constantTermBarrel_   ;
+  reciprocalTermEndcap_ = reciprocalTermEndcap_ ;
+  constantTermEndcap_   = constantTermEndcap_   ;
+}
+
+bool HEEPCut_51_dEtaIn::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
+  setValue(gsfiter->deltaEtaSuperClusterTrackAtVtx()) ;
+  int region = detectorRegion(gsfiter) ;
+  bool result = true ;
+  switch(region){
+    case kBarrel: result = (fabs(value()) < thresholdBarrel_) ; break ;
+    case kEndcap: result = (fabs(value()) < thresholdEndcap_) ; break ;
+    default : break ;
+  }
+  setStatus(result, cumulativeSuccess) ;
+  return getStatus() ;
+}
+bool HEEPCut_51_HOverE::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
   setValue(gsfiter->hadronicOverEm()) ;
   float E = gsfiter->caloEnergy() ;
   int region = detectorRegion(gsfiter) ;

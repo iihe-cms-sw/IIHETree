@@ -34,110 +34,170 @@ using namespace reco;
 using namespace edm ;
 
 IIHEModuleHEEP::IIHEModuleHEEP(const edm::ParameterSet& iConfig): IIHEModule(iConfig){
+  // Decide whether to store the cutflow variables for each cutflow
   storeHEEP41_    = iConfig.getUntrackedParameter<bool>("storeHEEP41"    , true ) ;
   storeHEEP50_50_ = iConfig.getUntrackedParameter<bool>("storeHEEP50_50" , true ) ;
   storeHEEP50_25_ = iConfig.getUntrackedParameter<bool>("storeHEEP50_25" , true ) ;
+  storeHEEP50_    = iConfig.getUntrackedParameter<bool>("storeHEEP50_"   , true ) ;
+  storeHEEP51_    = iConfig.getUntrackedParameter<bool>("storeHEEP51_"   , true ) ;
 
   EcalHcal1EffAreaBarrel_  = iConfig.getUntrackedParameter<double>("EcalHcal1EffAreaBarrel" , 0.28) ;
   EcalHcal1EffAreaEndcaps_ = iConfig.getUntrackedParameter<double>("EcalHcal1EffAreaEndcaps", 0.28) ;
   rho_ = iConfig.getUntrackedParameter<double>("kt6PFJets:rho", 0.0) ;
   
-  barrelEtaUpper_41_ = iConfig.getUntrackedParameter<double>("barrelEtaUpper_41", 1.442 ) ;
-  endcapEtaLower_41_ = iConfig.getUntrackedParameter<double>("endcapEtaLower_41", 1.56  ) ;
-  endcapEtaUpper_41_ = iConfig.getUntrackedParameter<double>("endcapEtaUpper_41", 2.5   ) ;
-  barrelEtaUpper_50_ = iConfig.getUntrackedParameter<double>("barrelEtaUpper_50", 1.4442) ;
-  endcapEtaLower_50_ = iConfig.getUntrackedParameter<double>("endcapEtaLower_50", 1.566 ) ;
-  endcapEtaUpper_50_ = iConfig.getUntrackedParameter<double>("endcapEtaUpper_50", 2.5   ) ;
+  // Acceptance
+  EtThresholdBarrel_41_ = iConfig.getUntrackedParameter<double>("HEEP_EtThresholdBarrel_41", 35.0) ;
+  EtThresholdEndcap_41_ = iConfig.getUntrackedParameter<double>("HEEP_EtThresholdEndcap_41", 35.0) ;
+  EtThresholdBarrel_50_ = iConfig.getUntrackedParameter<double>("HEEP_EtThresholdBarrel_50", 35.0) ;
+  EtThresholdEndcap_50_ = iConfig.getUntrackedParameter<double>("HEEP_EtThresholdEndcap_50", 35.0) ;
   
-  isolEMHadDepth1ConstantTermBarrel_41_       = iConfig.getUntrackedParameter<double>("isolEMHadDepth1ConstantTermBarrel_41"      , 2.0 ) ;
-  isolEMHadDepth1ConstantTermEndcapLowEt_41_  = iConfig.getUntrackedParameter<double>("isolEMHadDepth1ConstantTermEndcapLowEt_41" , 2.5 ) ;
-  isolEMHadDepth1ConstantTermEndcapHighEt_41_ = iConfig.getUntrackedParameter<double>("isolEMHadDepth1ConstantTermEndcapHighEt_41", 2.5 ) ;
-  isolEMHadDepth1LinearTermBarrel_41_         = iConfig.getUntrackedParameter<double>("isolEMHadDepth1LinearTermBarrel_41"        , 0.03) ;
-  isolEMHadDepth1LinearTermEndcap_41_         = iConfig.getUntrackedParameter<double>("isolEMHadDepth1LinearTermEndcap_41"        , 0.03) ;
-  isolEMHadDepth1OffsetTermEndcap_41_         = iConfig.getUntrackedParameter<double>("isolEMHadDepth1OffsetTermEndcap_41"        , 50.0) ;
+  barrelEtaUpper_41_    = iConfig.getUntrackedParameter<double>("HEEP_barrelEtaUpper_41"   , 1.442 ) ;
+  endcapEtaLower_41_    = iConfig.getUntrackedParameter<double>("HEEP_endcapEtaLower_41"   , 1.56  ) ;
+  endcapEtaUpper_41_    = iConfig.getUntrackedParameter<double>("HEEP_endcapEtaUpper_41"   , 2.5   ) ;
+  barrelEtaUpper_50_    = iConfig.getUntrackedParameter<double>("HEEP_barrelEtaUpper_50"   , 1.4442) ;
+  endcapEtaLower_50_    = iConfig.getUntrackedParameter<double>("HEEP_endcapEtaLower_50"   , 1.566 ) ;
+  endcapEtaUpper_50_    = iConfig.getUntrackedParameter<double>("HEEP_endcapEtaUpper_50"   , 2.5   ) ;
   
-  isolEMHadDepth1ConstantTermBarrel_50_50ns_       = iConfig.getUntrackedParameter<double>("isolEMHadDepth1ConstantTermBarrel_50_50ns"      , 2.0 ) ;
-  isolEMHadDepth1ConstantTermEndcapLowEt_50_50ns_  = iConfig.getUntrackedParameter<double>("isolEMHadDepth1ConstantTermEndcapLowEt_50_50ns" , 2.5 ) ;
-  isolEMHadDepth1ConstantTermEndcapHighEt_50_50ns_ = iConfig.getUntrackedParameter<double>("isolEMHadDepth1ConstantTermEndcapHighEt_50_50ns", 2.5 ) ;
-  isolEMHadDepth1LinearTermBarrel_50_50ns_         = iConfig.getUntrackedParameter<double>("isolEMHadDepth1LinearTermBarrel_50_50ns"        , 0.03) ;
-  isolEMHadDepth1LinearTermEndcap_50_50ns_         = iConfig.getUntrackedParameter<double>("isolEMHadDepth1LinearTermEndcap_50_50ns"        , 0.03) ;
-  isolEMHadDepth1OffsetTermEndcap_50_50ns_         = iConfig.getUntrackedParameter<double>("isolEMHadDepth1OffsetTermEndcap_50_50ns"        , 50.0) ;
+  // ID
+  dEtaInThresholdBarrel_41_           = iConfig.getUntrackedParameter<double>("HEEP_dEtaInThresholdBarrel_41"        , 0.005 ) ;
+  dEtaInThresholdEndcap_41_           = iConfig.getUntrackedParameter<double>("HEEP_dEtaInThresholdEndcap_41"        , 0.007 ) ;
   
-  isolEMHadDepth1ConstantTermBarrel_50_25ns_       = iConfig.getUntrackedParameter<double>("isolEMHadDepth1ConstantTermBarrel_50_25ns"      , 2.0 ) ;
-  isolEMHadDepth1ConstantTermEndcapLowEt_50_25ns_  = iConfig.getUntrackedParameter<double>("isolEMHadDepth1ConstantTermEndcapLowEt_50_25ns" , 2.5 ) ;
-  isolEMHadDepth1ConstantTermEndcapHighEt_50_25ns_ = iConfig.getUntrackedParameter<double>("isolEMHadDepth1ConstantTermEndcapHighEt_50_25ns", 2.5 ) ;
-  isolEMHadDepth1LinearTermBarrel_50_25ns_         = iConfig.getUntrackedParameter<double>("isolEMHadDepth1LinearTermBarrel_50_25ns"        , 0.03) ;
-  isolEMHadDepth1LinearTermEndcap_50_25ns_         = iConfig.getUntrackedParameter<double>("isolEMHadDepth1LinearTermEndcap_50_25ns"        , 0.03) ;
-  isolEMHadDepth1OffsetTermEndcap_50_25ns_         = iConfig.getUntrackedParameter<double>("isolEMHadDepth1OffsetTermEndcap_50_25ns"        , 50.0) ;
+  dEtaInConstantTermBarrel_50_50ns_   = iConfig.getUntrackedParameter<double>("HEEP_dEtaInConstantTermBarrel_50_50ns", 0.016  ) ;
+  dEtaInLinearTermBarrel_50_50ns_     = iConfig.getUntrackedParameter<double>("HEEP_dEtaInLinearTermBarrel_50_50ns"  , 0.0001 ) ;
+  dEtaInCutoffTermBarrel_50_50ns_     = iConfig.getUntrackedParameter<double>("HEEP_dEtaInCutoffTermBarrel_50_50ns"  , 0.004  ) ;
+  dEtaInThresholdEndcap_50_50ns_      = iConfig.getUntrackedParameter<double>("HEEP_dEtaInThresholdEndcap_50_50ns"   , 0.02   ) ;
   
-  EtThresholdBarrel_41_ = iConfig.getUntrackedParameter<double>("EtThresholdBarrel_41", 35.0) ;
-  EtThresholdEndcap_41_ = iConfig.getUntrackedParameter<double>("EtThresholdEndcap_41", 35.0) ;
-  EtThresholdBarrel_50_ = iConfig.getUntrackedParameter<double>("EtThresholdBarrel_50", 35.0) ;
-  EtThresholdEndcap_50_ = iConfig.getUntrackedParameter<double>("EtThresholdEndcap_50", 35.0) ;
+  dEtaInConstantTermBarrel_50_25ns_   = iConfig.getUntrackedParameter<double>("HEEP_dEtaInConstantTermBarrel_50_25ns", 0.016  ) ;
+  dEtaInLinearTermBarrel_50_25ns_     = iConfig.getUntrackedParameter<double>("HEEP_dEtaInLinearTermBarrel_50_25ns"  , 0.0001 ) ;
+  dEtaInCutoffTermBarrel_50_25ns_     = iConfig.getUntrackedParameter<double>("HEEP_dEtaInCutoffTermBarrel_50_25ns"  , 0.004  ) ;
+  dEtaInConstantTermEndcap_50_25ns_   = iConfig.getUntrackedParameter<double>("HEEP_dEtaInConstantTermEndcap_50_25ns", 0.016  ) ;
+  dEtaInLinearTermEndcap_50_25ns_     = iConfig.getUntrackedParameter<double>("HEEP_dEtaInLinearTermEndcap_50_25ns"  , 0.0001 ) ;
+  dEtaInCutoffTermEndcap_50_25ns_     = iConfig.getUntrackedParameter<double>("HEEP_dEtaInCutoffTermEndcap_50_25ns"  , 0.004  ) ;
   
-  dEtaInThresholdBarrel_41_ = iConfig.getUntrackedParameter<double>("dEtaInThresholdBarrel_41", 0.005) ;
-  dEtaInThresholdEndcap_41_ = iConfig.getUntrackedParameter<double>("dEtaInThresholdEndcap_41", 0.007) ;
+  dEtaInConstantTermBarrel_50_        = iConfig.getUntrackedParameter<double>("HEEP_dEtaInConstantTermBarrel_50"     , 0.016  ) ;
+  dEtaInLinearTermBarrel_50_          = iConfig.getUntrackedParameter<double>("HEEP_dEtaInLinearTermBarrel_50"       , 0.0001 ) ;
+  dEtaInCutoffTermBarrel_50_          = iConfig.getUntrackedParameter<double>("HEEP_dEtaInCutoffTermBarrel_50"       , 0.004  ) ;
+  dEtaInConstantTermEndcap_50_        = iConfig.getUntrackedParameter<double>("HEEP_dEtaInConstantTermEndcap_50"     , 0.015  ) ;
+  dEtaInLinearTermEndcap_50_          = iConfig.getUntrackedParameter<double>("HEEP_dEtaInLinearTermEndcap_50"       , 0.00085) ;
+  dEtaInCutoffTermEndcap_50_          = iConfig.getUntrackedParameter<double>("HEEP_dEtaInCutoffTermEndcap_50"       , 0.006  ) ;
   
-  dEtaInConstantTermBarrel_50_50ns_ = iConfig.getUntrackedParameter<double>("dEtaInConstantTermBarrel_50_50ns", 0.016 ) ;
-  dEtaInLinearTermBarrel_50_50ns_   = iConfig.getUntrackedParameter<double>("dEtaInLinearTermBarrel_50_50ns"  , 0.0001) ;
-  dEtaInCutoffTermBarrel_50_50ns_   = iConfig.getUntrackedParameter<double>("dEtaInCutoffTermBarrel_50_50ns"  , 0.004 ) ;
-  dEtaInThresholdEndcap_50_50ns_    = iConfig.getUntrackedParameter<double>("dEtaInThresholdEndcap_50_50ns"   , 0.02  ) ;
+  dEtaInThresholdBarrel_51_           = iConfig.getUntrackedParameter<double>("HEEP_dEtaInThresholdBarrel_51"        , 0.004 ) ;
+  dEtaInThresholdEndcap_51_           = iConfig.getUntrackedParameter<double>("HEEP_dEtaInThresholdEndcap_51"        , 0.006 ) ;
   
-  dEtaInConstantTermBarrel_50_25ns_ = iConfig.getUntrackedParameter<double>("dEtaInConstantTermBarrel_50_25ns", 0.016 ) ;
-  dEtaInLinearTermBarrel_50_25ns_   = iConfig.getUntrackedParameter<double>("dEtaInLinearTermBarrel_50_25ns"  , 0.0001) ;
-  dEtaInCutoffTermBarrel_50_25ns_   = iConfig.getUntrackedParameter<double>("dEtaInCutoffTermBarrel_50_25ns"  , 0.004 ) ;
-  dEtaInConstantTermEndcap_50_25ns_ = iConfig.getUntrackedParameter<double>("dEtaInConstantTermEndcap_50_25ns", 0.016 ) ;
-  dEtaInLinearTermEndcap_50_25ns_   = iConfig.getUntrackedParameter<double>("dEtaInLinearTermEndcap_50_25ns"  , 0.0001) ;
-  dEtaInCutoffTermEndcap_50_25ns_   = iConfig.getUntrackedParameter<double>("dEtaInCutoffTermEndcap_50_25ns"  , 0.004 ) ;
+  dPhiInThresholdBarrel_41_           = iConfig.getUntrackedParameter<double>("HEEP_dPhiInThresholdBarrel_41"     , 0.06) ;
+  dPhiInThresholdEndcap_41_           = iConfig.getUntrackedParameter<double>("HEEP_dPhiInThresholdEndcap_41"     , 0.06) ;
+  dPhiInThresholdBarrel_50_50ns_      = iConfig.getUntrackedParameter<double>("HEEP_dPhiInThresholdBarrel_50_50ns", 0.06) ;
+  dPhiInThresholdEndcap_50_50ns_      = iConfig.getUntrackedParameter<double>("HEEP_dPhiInThresholdEndcap_50_50ns", 0.15) ;
+  dPhiInThresholdBarrel_50_25ns_      = iConfig.getUntrackedParameter<double>("HEEP_dPhiInThresholdBarrel_50_25ns", 0.06) ;
+  dPhiInThresholdEndcap_50_25ns_      = iConfig.getUntrackedParameter<double>("HEEP_dPhiInThresholdEndcap_50_25ns", 0.06) ;
+  dPhiInThresholdBarrel_50_           = iConfig.getUntrackedParameter<double>("HEEP_dPhiInThresholdBarrel_50"     , 0.06) ;
+  dPhiInThresholdEndcap_50_           = iConfig.getUntrackedParameter<double>("HEEP_dPhiInThresholdEndcap_50"     , 0.06) ;
+  dPhiInThresholdBarrel_51_           = iConfig.getUntrackedParameter<double>("HEEP_dPhiInThresholdBarrel_51"     , 0.06) ;
+  dPhiInThresholdEndcap_51_           = iConfig.getUntrackedParameter<double>("HEEP_dPhiInThresholdEndcap_51"     , 0.06) ;
   
-  dPhiInThresholdBarrel_41_      = iConfig.getUntrackedParameter<double>("dPhiInThresholdBarrel_41"     , 0.06) ;
-  dPhiInThresholdEndcap_41_      = iConfig.getUntrackedParameter<double>("dPhiInThresholdEndcap_41"     , 0.06) ;
-  dPhiInThresholdBarrel_50_50ns_ = iConfig.getUntrackedParameter<double>("dPhiInThresholdBarrel_50_50ns", 0.06) ;
-  dPhiInThresholdEndcap_50_50ns_ = iConfig.getUntrackedParameter<double>("dPhiInThresholdEndcap_50_50ns", 0.15) ;
-  dPhiInThresholdBarrel_50_25ns_ = iConfig.getUntrackedParameter<double>("dPhiInThresholdBarrel_50_25ns", 0.06) ;
-  dPhiInThresholdEndcap_50_25ns_ = iConfig.getUntrackedParameter<double>("dPhiInThresholdEndcap_50_25ns", 0.06) ;
+  HOverEThresholdBarrel_41_           = iConfig.getUntrackedParameter<double>("HEEP_HOverEThresholdBarrel_41", 0.05) ;
+  HOverEThresholdEndcap_41_           = iConfig.getUntrackedParameter<double>("HEEP_HOverEThresholdEndcap_41", 0.05) ;
   
-  HOverEThresholdBarrel_41_      = iConfig.getUntrackedParameter<double>("HOverEThresholdBarrel_41", 0.05) ;
-  HOverEThresholdEndcap_41_      = iConfig.getUntrackedParameter<double>("HOverEThresholdEndcap_41", 0.05) ;
+  HOverEReciprocalTermBarrel_50_50ns_ = iConfig.getUntrackedParameter<double>("HEEP_HOverEReciprocalTermBarrel_50_50ns", 2.0 ) ;
+  HOverEConstantTermBarrel_50_50ns_   = iConfig.getUntrackedParameter<double>("HEEP_HOverEConstantTermBarrel_50_50ns"  , 0.05) ;
+  HOverEReciprocalTermEndcap_50_50ns_ = iConfig.getUntrackedParameter<double>("HEEP_HOverEReciprocalTermEndcap_50_50ns", 12.5) ;
+  HOverEConstantTermEndcap_50_50ns_   = iConfig.getUntrackedParameter<double>("HEEP_HOverEConstantTermEndcap_50_50ns"  , 0.05) ;
   
-  HOverEReciprocalTermBarrel_50_50ns_ = iConfig.getUntrackedParameter<double>("HOverEReciprocalTermBarrel_50_50ns", 2.0 ) ;
-  HOverEConstantTermBarrel_50_50ns_   = iConfig.getUntrackedParameter<double>("HOverEConstantTermBarrel_50_50ns"  , 0.05) ;
-  HOverEReciprocalTermEndcap_50_50ns_ = iConfig.getUntrackedParameter<double>("HOverEReciprocalTermEndcap_50_50ns", 12.5) ;
-  HOverEConstantTermEndcap_50_50ns_   = iConfig.getUntrackedParameter<double>("HOverEConstantTermEndcap_50_50ns"  , 0.05) ;
+  HOverEReciprocalTermBarrel_50_25ns_ = iConfig.getUntrackedParameter<double>("HEEP_HOverEReciprocalTermBarrel_50_25ns", 2.0 ) ;
+  HOverEConstantTermBarrel_50_25ns_   = iConfig.getUntrackedParameter<double>("HEEP_HOverEConstantTermBarrel_50_25ns"  , 0.05) ;
+  HOverEReciprocalTermEndcap_50_25ns_ = iConfig.getUntrackedParameter<double>("HEEP_HOverEReciprocalTermEndcap_50_25ns", 12.5) ;
+  HOverEConstantTermEndcap_50_25ns_   = iConfig.getUntrackedParameter<double>("HEEP_HOverEConstantTermEndcap_50_25ns"  , 0.05) ;
   
-  HOverEReciprocalTermBarrel_50_25ns_ = iConfig.getUntrackedParameter<double>("HOverEReciprocalTermBarrel_50_25ns", 2.0 ) ;
-  HOverEConstantTermBarrel_50_25ns_   = iConfig.getUntrackedParameter<double>("HOverEConstantTermBarrel_50_25ns"  , 0.05) ;
-  HOverEReciprocalTermEndcap_50_25ns_ = iConfig.getUntrackedParameter<double>("HOverEReciprocalTermEndcap_50_25ns", 12.5) ;
-  HOverEConstantTermEndcap_50_25ns_   = iConfig.getUntrackedParameter<double>("HOverEConstantTermEndcap_50_25ns"  , 0.05) ;
+  HOverEReciprocalTermBarrel_50_      = iConfig.getUntrackedParameter<double>("HEEP_HOverEReciprocalTermBarrel_50"     , 2.0 ) ;
+  HOverEConstantTermBarrel_50_        = iConfig.getUntrackedParameter<double>("HEEP_HOverEConstantTermBarrel_50"       , 0.05) ;
+  HOverEReciprocalTermEndcap_50_      = iConfig.getUntrackedParameter<double>("HEEP_HOverEReciprocalTermEndcap_50"     , 12.5) ;
+  HOverEConstantTermEndcap_50_        = iConfig.getUntrackedParameter<double>("HEEP_HOverEConstantTermEndcap_50"       , 0.05) ;
   
-  SigmaIetaIetaThreshold_41_      = iConfig.getUntrackedParameter<double>("SigmaIetaIetaThreshold_41"     , 0.03) ;
-  SigmaIetaIetaThreshold_50_50ns_ = iConfig.getUntrackedParameter<double>("SigmaIetaIetaThreshold_50_50ns", 0.03) ;
-  SigmaIetaIetaThreshold_50_25ns_ = iConfig.getUntrackedParameter<double>("SigmaIetaIetaThreshold_50_25ns", 0.03) ;
+  HOverEReciprocalTermBarrel_51_      = iConfig.getUntrackedParameter<double>("HEEP_HOverEReciprocalTermBarrel_51"     , 2.0 ) ;
+  HOverEConstantTermBarrel_51_        = iConfig.getUntrackedParameter<double>("HEEP_HOverEConstantTermBarrel_51"       , 0.05) ;
+  HOverEReciprocalTermEndcap_51_      = iConfig.getUntrackedParameter<double>("HEEP_HOverEReciprocalTermEndcap_51"     , 12.5) ;
+  HOverEConstantTermEndcap_51_        = iConfig.getUntrackedParameter<double>("HEEP_HOverEConstantTermEndcap_51"       , 0.05) ;
   
-  E1x5threshold_41_      = iConfig.getUntrackedParameter<double>("E1x5threshold_41"     , 0.83) ;
-  E2x5threshold_41_      = iConfig.getUntrackedParameter<double>("E2x5threshold_41"     , 0.94) ;
-  E1x5threshold_50_50ns_ = iConfig.getUntrackedParameter<double>("E1x5threshold_50_50ns", 0.83) ;
-  E2x5threshold_50_50ns_ = iConfig.getUntrackedParameter<double>("E2x5threshold_50_50ns", 0.94) ;
-  E1x5threshold_50_25ns_ = iConfig.getUntrackedParameter<double>("E1x5threshold_50_25ns", 0.83) ;
-  E2x5threshold_50_25ns_ = iConfig.getUntrackedParameter<double>("E2x5threshold_50_25ns", 0.94) ;
+  SigmaIetaIetaThreshold_41_      = iConfig.getUntrackedParameter<double>("HEEP_SigmaIetaIetaThreshold_41"     , 0.03) ;
+  SigmaIetaIetaThreshold_50_50ns_ = iConfig.getUntrackedParameter<double>("HEEP_SigmaIetaIetaThreshold_50_50ns", 0.03) ;
+  SigmaIetaIetaThreshold_50_25ns_ = iConfig.getUntrackedParameter<double>("HEEP_SigmaIetaIetaThreshold_50_25ns", 0.03) ;
+  SigmaIetaIetaThreshold_50_      = iConfig.getUntrackedParameter<double>("HEEP_SigmaIetaIetaThreshold_50"     , 0.03) ;
+  SigmaIetaIetaThreshold_51_      = iConfig.getUntrackedParameter<double>("HEEP_SigmaIetaIetaThreshold_50"     , 0.03) ;
   
-  IsolPtTrksThresholdBarrel_41_      = iConfig.getUntrackedParameter<double>("IsolPtTrksThresholdBarrel_41"     , 5.0) ;
-  IsolPtTrksThresholdEndcap_41_      = iConfig.getUntrackedParameter<double>("IsolPtTrksThresholdEndcap_41"     , 5.0) ;
-  IsolPtTrksThresholdBarrel_50_50ns_ = iConfig.getUntrackedParameter<double>("IsolPtTrksThresholdBarrel_50_50ns", 5.0) ;
-  IsolPtTrksThresholdEndcap_50_50ns_ = iConfig.getUntrackedParameter<double>("IsolPtTrksThresholdEndcap_50_50ns", 5.0) ;
-  IsolPtTrksThresholdBarrel_50_25ns_ = iConfig.getUntrackedParameter<double>("IsolPtTrksThresholdBarrel_50_25ns", 5.0) ;
-  IsolPtTrksThresholdEndcap_50_25ns_ = iConfig.getUntrackedParameter<double>("IsolPtTrksThresholdEndcap_50_25ns", 5.0) ;
+  E1x5threshold_41_      = iConfig.getUntrackedParameter<double>("HEEP_E1x5threshold_41"     , 0.83) ;
+  E2x5threshold_41_      = iConfig.getUntrackedParameter<double>("HEEP_E2x5threshold_41"     , 0.94) ;
+  E1x5threshold_50_50ns_ = iConfig.getUntrackedParameter<double>("HEEP_E1x5threshold_50_50ns", 0.83) ;
+  E2x5threshold_50_50ns_ = iConfig.getUntrackedParameter<double>("HEEP_E2x5threshold_50_50ns", 0.94) ;
+  E1x5threshold_50_25ns_ = iConfig.getUntrackedParameter<double>("HEEP_E1x5threshold_50_25ns", 0.83) ;
+  E2x5threshold_50_25ns_ = iConfig.getUntrackedParameter<double>("HEEP_E2x5threshold_50_25ns", 0.94) ;
+  E1x5threshold_50_      = iConfig.getUntrackedParameter<double>("HEEP_E1x5threshold_50"     , 0.83) ;
+  E2x5threshold_50_      = iConfig.getUntrackedParameter<double>("HEEP_E2x5threshold_50"     , 0.94) ;
+  E1x5threshold_51_      = iConfig.getUntrackedParameter<double>("HEEP_E1x5threshold_51"     , 0.83) ;
+  E2x5threshold_51_      = iConfig.getUntrackedParameter<double>("HEEP_E2x5threshold_51"     , 0.94) ;
   
-  dxyFirstPvThresholdBarrel_41_      = iConfig.getUntrackedParameter<double>("dxyFirstPvThresholdBarrel_41"     , 0.02) ;
-  dxyFirstPvThresholdEndcap_41_      = iConfig.getUntrackedParameter<double>("dxyFirstPvThresholdEndcap_41"     , 0.05) ;
-  dxyFirstPvThresholdBarrel_50_50ns_ = iConfig.getUntrackedParameter<double>("dxyFirstPvThresholdBarrel_50_50ns", 0.02) ;
-  dxyFirstPvThresholdEndcap_50_50ns_ = iConfig.getUntrackedParameter<double>("dxyFirstPvThresholdEndcap_50_50ns", 0.05) ;
-  dxyFirstPvThresholdBarrel_50_25ns_ = iConfig.getUntrackedParameter<double>("dxyFirstPvThresholdBarrel_50_25ns", 0.02) ;
-  dxyFirstPvThresholdEndcap_50_25ns_ = iConfig.getUntrackedParameter<double>("dxyFirstPvThresholdEndcap_50_25ns", 0.05) ;
+  missingHitsThreshold_41_      = iConfig.getUntrackedParameter<double>("HEEP_missingHitsThreshold_41"     , 1) ;
+  missingHitsThreshold_50_50ns_ = iConfig.getUntrackedParameter<double>("HEEP_missingHitsThreshold_50_50ns", 1) ;
+  missingHitsThreshold_50_25ns_ = iConfig.getUntrackedParameter<double>("HEEP_missingHitsThreshold_50_25ns", 1) ;
+  missingHitsThreshold_50_      = iConfig.getUntrackedParameter<double>("HEEP_missingHitsThreshold_50"     , 1) ;
+  missingHitsThreshold_51_      = iConfig.getUntrackedParameter<double>("HEEP_missingHitsThreshold_51"     , 1) ;
   
-  missingHitsThreshold_41_      = iConfig.getUntrackedParameter<double>("missingHitsThreshold_41"     , 1) ;
-  missingHitsThreshold_50_50ns_ = iConfig.getUntrackedParameter<double>("missingHitsThreshold_50_50ns", 1) ;
-  missingHitsThreshold_50_25ns_ = iConfig.getUntrackedParameter<double>("missingHitsThreshold_50_25ns", 1) ;
+  dxyFirstPvThresholdBarrel_41_      = iConfig.getUntrackedParameter<double>("HEEP_dxyFirstPvThresholdBarrel_41"     , 0.02) ;
+  dxyFirstPvThresholdEndcap_41_      = iConfig.getUntrackedParameter<double>("HEEP_dxyFirstPvThresholdEndcap_41"     , 0.05) ;
+  dxyFirstPvThresholdBarrel_50_50ns_ = iConfig.getUntrackedParameter<double>("HEEP_dxyFirstPvThresholdBarrel_50_50ns", 0.02) ;
+  dxyFirstPvThresholdEndcap_50_50ns_ = iConfig.getUntrackedParameter<double>("HEEP_dxyFirstPvThresholdEndcap_50_50ns", 0.05) ;
+  dxyFirstPvThresholdBarrel_50_25ns_ = iConfig.getUntrackedParameter<double>("HEEP_dxyFirstPvThresholdBarrel_50_25ns", 0.02) ;
+  dxyFirstPvThresholdEndcap_50_25ns_ = iConfig.getUntrackedParameter<double>("HEEP_dxyFirstPvThresholdEndcap_50_25ns", 0.05) ;
+  dxyFirstPvThresholdBarrel_50_      = iConfig.getUntrackedParameter<double>("HEEP_dxyFirstPvThresholdBarrel_50"     , 0.02) ;
+  dxyFirstPvThresholdEndcap_50_      = iConfig.getUntrackedParameter<double>("HEEP_dxyFirstPvThresholdEndcap_50"     , 0.05) ;
+  dxyFirstPvThresholdBarrel_51_      = iConfig.getUntrackedParameter<double>("HEEP_dxyFirstPvThresholdBarrel_51"     , 0.02) ;
+  dxyFirstPvThresholdEndcap_51_      = iConfig.getUntrackedParameter<double>("HEEP_dxyFirstPvThresholdEndcap_51"     , 0.05) ;
+  
+  // Isolation
+  isolEMHadDepth1ConstantTermBarrel_41_            = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1ConstantTermBarrel_41"           , 2.0 ) ;
+  isolEMHadDepth1ConstantTermEndcapLowEt_41_       = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1ConstantTermEndcapLowEt_41"      , 2.5 ) ;
+  isolEMHadDepth1ConstantTermEndcapHighEt_41_      = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1ConstantTermEndcapHighEt_41"     , 2.5 ) ;
+  isolEMHadDepth1LinearTermBarrel_41_              = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1LinearTermBarrel_41"             , 0.03) ;
+  isolEMHadDepth1LinearTermEndcap_41_              = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1LinearTermEndcap_41"             , 0.03) ;
+  isolEMHadDepth1OffsetTermEndcap_41_              = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1OffsetTermEndcap_41"             , 50.0) ;
+  
+  isolEMHadDepth1ConstantTermBarrel_50_50ns_       = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1ConstantTermBarrel_50_50ns"      , 2.0 ) ;
+  isolEMHadDepth1ConstantTermEndcapLowEt_50_50ns_  = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1ConstantTermEndcapLowEt_50_50ns" , 2.5 ) ;
+  isolEMHadDepth1ConstantTermEndcapHighEt_50_50ns_ = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1ConstantTermEndcapHighEt_50_50ns", 2.5 ) ;
+  isolEMHadDepth1LinearTermBarrel_50_50ns_         = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1LinearTermBarrel_50_50ns"        , 0.03) ;
+  isolEMHadDepth1LinearTermEndcap_50_50ns_         = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1LinearTermEndcap_50_50ns"        , 0.03) ;
+  isolEMHadDepth1OffsetTermEndcap_50_50ns_         = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1OffsetTermEndcap_50_50ns"        , 50.0) ;
+  
+  isolEMHadDepth1ConstantTermBarrel_50_25ns_       = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1ConstantTermBarrel_50_25ns"      , 2.0 ) ;
+  isolEMHadDepth1ConstantTermEndcapLowEt_50_25ns_  = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1ConstantTermEndcapLowEt_50_25ns" , 2.5 ) ;
+  isolEMHadDepth1ConstantTermEndcapHighEt_50_25ns_ = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1ConstantTermEndcapHighEt_50_25ns", 2.5 ) ;
+  isolEMHadDepth1LinearTermBarrel_50_25ns_         = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1LinearTermBarrel_50_25ns"        , 0.03) ;
+  isolEMHadDepth1LinearTermEndcap_50_25ns_         = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1LinearTermEndcap_50_25ns"        , 0.03) ;
+  isolEMHadDepth1OffsetTermEndcap_50_25ns_         = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1OffsetTermEndcap_50_25ns"        , 50.0) ;
+  
+  isolEMHadDepth1ConstantTermBarrel_50_            = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1ConstantTermBarrel_50"           , 2.0 ) ;
+  isolEMHadDepth1ConstantTermEndcapLowEt_50_       = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1ConstantTermEndcapLowEt_50"      , 2.5 ) ;
+  isolEMHadDepth1ConstantTermEndcapHighEt_50_      = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1ConstantTermEndcapHighEt_50"     , 2.5 ) ;
+  isolEMHadDepth1LinearTermBarrel_50_              = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1LinearTermBarrel_50"             , 0.03) ;
+  isolEMHadDepth1LinearTermEndcap_50_              = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1LinearTermEndcap_50"             , 0.03) ;
+  isolEMHadDepth1OffsetTermEndcap_50_              = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1OffsetTermEndcap_50"             , 50.0) ;
+  
+  isolEMHadDepth1ConstantTermBarrel_51_            = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1ConstantTermBarrel_51"           , 2.0 ) ;
+  isolEMHadDepth1ConstantTermEndcapLowEt_51_       = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1ConstantTermEndcapLowEt_51"      , 2.5 ) ;
+  isolEMHadDepth1ConstantTermEndcapHighEt_51_      = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1ConstantTermEndcapHighEt_51"     , 2.5 ) ;
+  isolEMHadDepth1LinearTermBarrel_51_              = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1LinearTermBarrel_51"             , 0.03) ;
+  isolEMHadDepth1LinearTermEndcap_51_              = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1LinearTermEndcap_51"             , 0.03) ;
+  isolEMHadDepth1OffsetTermEndcap_51_              = iConfig.getUntrackedParameter<double>("HEEP_isolEMHadDepth1OffsetTermEndcap_51"             , 50.0) ;
+  
+  IsolPtTrksThresholdBarrel_41_      = iConfig.getUntrackedParameter<double>("HEEP_IsolPtTrksThresholdBarrel_41"     , 5.0) ;
+  IsolPtTrksThresholdEndcap_41_      = iConfig.getUntrackedParameter<double>("HEEP_IsolPtTrksThresholdEndcap_41"     , 5.0) ;
+  IsolPtTrksThresholdBarrel_50_50ns_ = iConfig.getUntrackedParameter<double>("HEEP_IsolPtTrksThresholdBarrel_50_50ns", 5.0) ;
+  IsolPtTrksThresholdEndcap_50_50ns_ = iConfig.getUntrackedParameter<double>("HEEP_IsolPtTrksThresholdEndcap_50_50ns", 5.0) ;
+  IsolPtTrksThresholdBarrel_50_25ns_ = iConfig.getUntrackedParameter<double>("HEEP_IsolPtTrksThresholdBarrel_50_25ns", 5.0) ;
+  IsolPtTrksThresholdEndcap_50_25ns_ = iConfig.getUntrackedParameter<double>("HEEP_IsolPtTrksThresholdEndcap_50_25ns", 5.0) ;
+  IsolPtTrksThresholdBarrel_50_      = iConfig.getUntrackedParameter<double>("HEEP_IsolPtTrksThresholdBarrel_50"     , 5.0) ;
+  IsolPtTrksThresholdEndcap_50_      = iConfig.getUntrackedParameter<double>("HEEP_IsolPtTrksThresholdEndcap_50"     , 5.0) ;
+  IsolPtTrksThresholdBarrel_51_      = iConfig.getUntrackedParameter<double>("HEEP_IsolPtTrksThresholdBarrel_51"     , 5.0) ;
+  IsolPtTrksThresholdEndcap_51_      = iConfig.getUntrackedParameter<double>("HEEP_IsolPtTrksThresholdEndcap_51"     , 5.0) ;
 }
 IIHEModuleHEEP::~IIHEModuleHEEP(){}
 
@@ -239,14 +299,14 @@ void IIHEModuleHEEP::beginJob(){
   HEEPCutflow_50_50ns_acceptance_->addCut( (HEEPCutBase*) new HEEPCut_Et (prefix_50_50ns + "_Et" , this, EtThresholdBarrel_50_, EtThresholdEndcap_50_)) ;
   HEEPCutflow_50_50ns_acceptance_->addCut( (HEEPCutBase*) new HEEPCut_eta(prefix_50_50ns + "_eta", this)) ;
   
-  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_EcalDriven    (prefix_50_50ns + "_EcalDriven"   , this)) ;
+  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_EcalDriven   (prefix_50_50ns + "_EcalDriven"   , this)) ;
   HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_50ns_dEtaIn(prefix_50_50ns + "_dEtaIn"       , this, dEtaInConstantTermBarrel_50_50ns_, dEtaInLinearTermBarrel_50_50ns_, dEtaInCutoffTermBarrel_50_50ns_, dEtaInThresholdEndcap_50_50ns_)) ;
-  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_dPhiIn        (prefix_50_50ns + "_dPhiIn"       , this, dPhiInThresholdBarrel_50_50ns_, dPhiInThresholdEndcap_50_50ns_)) ;
+  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_dPhiIn       (prefix_50_50ns + "_dPhiIn"       , this, dPhiInThresholdBarrel_50_50ns_, dPhiInThresholdEndcap_50_50ns_)) ;
   HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_50ns_HOverE(prefix_50_50ns + "_HOverE"       , this, HOverEReciprocalTermBarrel_50_50ns_, HOverEConstantTermBarrel_50_50ns_, HOverEReciprocalTermEndcap_50_50ns_, HOverEConstantTermEndcap_50_50ns_)) ;
-  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_SigmaIetaIeta (prefix_50_50ns + "_SigmaIetaIeta", this, SigmaIetaIetaThreshold_50_50ns_)) ;
-  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_E1x5OverE5x5  (prefix_50_50ns + "_E1x5OverE5x5" , this)) ;
-  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_E2x5OverE5x5  (prefix_50_50ns + "_E2x5OverE5x5" , this, E1x5threshold_50_50ns_, E2x5threshold_50_50ns_)) ;
-  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_missingHits   (prefix_50_50ns + "_missingHits"  , this, missingHitsThreshold_50_50ns_)) ;
+  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_SigmaIetaIeta(prefix_50_50ns + "_SigmaIetaIeta", this, SigmaIetaIetaThreshold_50_50ns_)) ;
+  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_E1x5OverE5x5 (prefix_50_50ns + "_E1x5OverE5x5" , this)) ;
+  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_E2x5OverE5x5 (prefix_50_50ns + "_E2x5OverE5x5" , this, E1x5threshold_50_50ns_, E2x5threshold_50_50ns_)) ;
+  HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_missingHits  (prefix_50_50ns + "_missingHits"  , this, missingHitsThreshold_50_50ns_)) ;
   HEEPCutflow_50_50ns_ID_->addCut( (HEEPCutBase*) cut_50_50ns_dxyFirstPV_) ;
   
   // Define the isolation
@@ -279,14 +339,14 @@ void IIHEModuleHEEP::beginJob(){
   HEEPCutflow_50_25ns_acceptance_->addCut( (HEEPCutBase*) new HEEPCut_Et (prefix_50_25ns + "_Et" , this, EtThresholdBarrel_50_, EtThresholdEndcap_50_)) ;
   HEEPCutflow_50_25ns_acceptance_->addCut( (HEEPCutBase*) new HEEPCut_eta(prefix_50_25ns + "_eta", this)) ;
   
-  HEEPCutflow_50_25ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_EcalDriven    (prefix_50_25ns + "_EcalDriven"   , this)) ;
+  HEEPCutflow_50_25ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_EcalDriven   (prefix_50_25ns + "_EcalDriven"   , this)) ;
   HEEPCutflow_50_25ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_25ns_dEtaIn(prefix_50_25ns + "_dEtaIn"       , this, dEtaInConstantTermBarrel_50_25ns_, dEtaInLinearTermBarrel_50_25ns_, dEtaInCutoffTermBarrel_50_25ns_, dEtaInConstantTermEndcap_50_25ns_, dEtaInLinearTermEndcap_50_25ns_, dEtaInCutoffTermEndcap_50_25ns_)) ;
-  HEEPCutflow_50_25ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_dPhiIn        (prefix_50_25ns + "_dPhiIn"       , this, dPhiInThresholdBarrel_50_25ns_, dPhiInThresholdEndcap_50_25ns_)) ;
+  HEEPCutflow_50_25ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_dPhiIn       (prefix_50_25ns + "_dPhiIn"       , this, dPhiInThresholdBarrel_50_25ns_, dPhiInThresholdEndcap_50_25ns_)) ;
   HEEPCutflow_50_25ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_25ns_HOverE(prefix_50_25ns + "_HOverE"       , this, HOverEReciprocalTermBarrel_50_25ns_, HOverEConstantTermBarrel_50_25ns_, HOverEReciprocalTermEndcap_50_25ns_, HOverEConstantTermEndcap_50_25ns_)) ;
-  HEEPCutflow_50_25ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_SigmaIetaIeta (prefix_50_25ns + "_SigmaIetaIeta", this, SigmaIetaIetaThreshold_50_25ns_)) ;
-  HEEPCutflow_50_25ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_E1x5OverE5x5  (prefix_50_25ns + "_E1x5OverE5x5" , this)) ;
-  HEEPCutflow_50_25ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_E2x5OverE5x5  (prefix_50_25ns + "_E2x5OverE5x5" , this, E1x5threshold_50_25ns_, E2x5threshold_50_25ns_)) ;
-  HEEPCutflow_50_25ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_missingHits   (prefix_50_25ns + "_missingHits"  , this, missingHitsThreshold_50_25ns_)) ;
+  HEEPCutflow_50_25ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_SigmaIetaIeta(prefix_50_25ns + "_SigmaIetaIeta", this, SigmaIetaIetaThreshold_50_25ns_)) ;
+  HEEPCutflow_50_25ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_E1x5OverE5x5 (prefix_50_25ns + "_E1x5OverE5x5" , this)) ;
+  HEEPCutflow_50_25ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_E2x5OverE5x5 (prefix_50_25ns + "_E2x5OverE5x5" , this, E1x5threshold_50_25ns_, E2x5threshold_50_25ns_)) ;
+  HEEPCutflow_50_25ns_ID_->addCut( (HEEPCutBase*) new HEEPCut_missingHits  (prefix_50_25ns + "_missingHits"  , this, missingHitsThreshold_50_25ns_)) ;
   HEEPCutflow_50_25ns_ID_->addCut( (HEEPCutBase*) cut_50_25ns_dxyFirstPV_) ;
   
   // Define the isolation
@@ -298,10 +358,94 @@ void IIHEModuleHEEP::beginJob(){
   HEEPCutflow_50_25ns_total_->addCutCollection(HEEPCutflow_50_25ns_ID_        ) ;
   HEEPCutflow_50_25ns_total_->addCutCollection(HEEPCutflow_50_25ns_isolation_ ) ;
   
+  ////////////////////////////////////////////////////////////////////////////////////////
+  //                                           5.0                                      //
+  ////////////////////////////////////////////////////////////////////////////////////////
+  std::string prefix_50 = "HEEP_cutflow50" ;
+  HEEPCutflow_50_acceptance_ = new HEEPCutCollection(prefix_50+"_acceptance", this) ;
+  HEEPCutflow_50_ID_         = new HEEPCutCollection(prefix_50+"_ID"        , this) ;
+  HEEPCutflow_50_isolation_  = new HEEPCutCollection(prefix_50+"_isolation" , this) ;
+  HEEPCutflow_50_total_      = new HEEPCutCollection(prefix_50+"_total"     , this) ;
   
+  // These cuts must be updated so declare them separately
+  cut_50_isolEMHadDepth1_ = new HEEPCut_isolEMHadDepth1(prefix_50 + "_isolEMHadDepth1", this, isolEMHadDepth1ConstantTermBarrel_50_, isolEMHadDepth1ConstantTermEndcapLowEt_50_, isolEMHadDepth1ConstantTermEndcapHighEt_50_, isolEMHadDepth1LinearTermBarrel_50_, isolEMHadDepth1LinearTermEndcap_50_, isolEMHadDepth1OffsetTermEndcap_50_) ;
+  cut_50_dxyFirstPV_      = new HEEPCut_dxyFirstPV     (prefix_50 + "_dxyFirstPV"     , this, dxyFirstPvThresholdBarrel_50_, dxyFirstPvThresholdEndcap_50_) ;
+  
+  cut_50_isolEMHadDepth1_->setEcalHcal1EffAreaBarrel (EcalHcal1EffAreaBarrel_ ) ;
+  cut_50_isolEMHadDepth1_->setEcalHcal1EffAreaEndcaps(EcalHcal1EffAreaEndcaps_) ;
+  cut_50_isolEMHadDepth1_->setRho(rho_) ;
+  
+  // Define the ID
+  HEEPCutflow_50_acceptance_->addCut( (HEEPCutBase*) new HEEPCut_Et (prefix_50 + "_Et" , this, EtThresholdBarrel_50_, EtThresholdEndcap_50_)) ;
+  HEEPCutflow_50_acceptance_->addCut( (HEEPCutBase*) new HEEPCut_eta(prefix_50 + "_eta", this)) ;
+  
+  HEEPCutflow_50_ID_->addCut( (HEEPCutBase*) new HEEPCut_EcalDriven   (prefix_50 + "_EcalDriven"   , this)) ;
+  HEEPCutflow_50_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_dEtaIn(prefix_50 + "_dEtaIn"       , this, dEtaInConstantTermBarrel_50_, dEtaInLinearTermBarrel_50_, dEtaInCutoffTermBarrel_50_, dEtaInConstantTermEndcap_50_, dEtaInLinearTermEndcap_50_, dEtaInCutoffTermEndcap_50_)) ;
+  HEEPCutflow_50_ID_->addCut( (HEEPCutBase*) new HEEPCut_dPhiIn       (prefix_50 + "_dPhiIn"       , this, dPhiInThresholdBarrel_50_, dPhiInThresholdEndcap_50_)) ;
+  HEEPCutflow_50_ID_->addCut( (HEEPCutBase*) new HEEPCut_50_HOverE(prefix_50 + "_HOverE"       , this, HOverEReciprocalTermBarrel_50_, HOverEConstantTermBarrel_50_, HOverEReciprocalTermEndcap_50_, HOverEConstantTermEndcap_50_)) ;
+  HEEPCutflow_50_ID_->addCut( (HEEPCutBase*) new HEEPCut_SigmaIetaIeta(prefix_50 + "_SigmaIetaIeta", this, SigmaIetaIetaThreshold_50_)) ;
+  HEEPCutflow_50_ID_->addCut( (HEEPCutBase*) new HEEPCut_E1x5OverE5x5 (prefix_50 + "_E1x5OverE5x5" , this)) ;
+  HEEPCutflow_50_ID_->addCut( (HEEPCutBase*) new HEEPCut_E2x5OverE5x5 (prefix_50 + "_E2x5OverE5x5" , this, E1x5threshold_50_, E2x5threshold_50_)) ;
+  HEEPCutflow_50_ID_->addCut( (HEEPCutBase*) new HEEPCut_missingHits  (prefix_50 + "_missingHits"  , this, missingHitsThreshold_50_)) ;
+  HEEPCutflow_50_ID_->addCut( (HEEPCutBase*) cut_50_dxyFirstPV_) ;
+  
+  // Define the isolation
+  HEEPCutflow_50_isolation_->addCut( (HEEPCutBase*) cut_50_isolEMHadDepth1_) ;
+  HEEPCutflow_50_isolation_->addCut( (HEEPCutBase*) new HEEPCut_IsolPtTrks(prefix_50 + "_IsolPtTrks", this, IsolPtTrksThresholdBarrel_50_, IsolPtTrksThresholdEndcap_50_)) ;
+  
+  // Put it all together
+  HEEPCutflow_50_total_->addCutCollection(HEEPCutflow_50_acceptance_) ;
+  HEEPCutflow_50_total_->addCutCollection(HEEPCutflow_50_ID_        ) ;
+  HEEPCutflow_50_total_->addCutCollection(HEEPCutflow_50_isolation_ ) ;
+  
+  ////////////////////////////////////////////////////////////////////////////////////////
+  //                                           5.1                                      //
+  ////////////////////////////////////////////////////////////////////////////////////////
+  std::string prefix_51 = "HEEP_cutflow51" ;
+  HEEPCutflow_51_acceptance_ = new HEEPCutCollection(prefix_51+"_acceptance", this) ;
+  HEEPCutflow_51_ID_         = new HEEPCutCollection(prefix_51+"_ID"        , this) ;
+  HEEPCutflow_51_isolation_  = new HEEPCutCollection(prefix_51+"_isolation" , this) ;
+  HEEPCutflow_51_total_      = new HEEPCutCollection(prefix_51+"_total"     , this) ;
+  
+  // These cuts must be updated so declare them separately
+  cut_51_isolEMHadDepth1_ = new HEEPCut_isolEMHadDepth1(prefix_51 + "_isolEMHadDepth1", this, isolEMHadDepth1ConstantTermBarrel_51_, isolEMHadDepth1ConstantTermEndcapLowEt_51_, isolEMHadDepth1ConstantTermEndcapHighEt_51_, isolEMHadDepth1LinearTermBarrel_51_, isolEMHadDepth1LinearTermEndcap_51_, isolEMHadDepth1OffsetTermEndcap_51_) ;
+  cut_51_dxyFirstPV_      = new HEEPCut_dxyFirstPV     (prefix_51 + "_dxyFirstPV"     , this, dxyFirstPvThresholdBarrel_51_, dxyFirstPvThresholdEndcap_51_) ;
+  
+  cut_51_isolEMHadDepth1_->setEcalHcal1EffAreaBarrel (EcalHcal1EffAreaBarrel_ ) ;
+  cut_51_isolEMHadDepth1_->setEcalHcal1EffAreaEndcaps(EcalHcal1EffAreaEndcaps_) ;
+  cut_51_isolEMHadDepth1_->setRho(rho_) ;
+  
+  // Define the ID
+  HEEPCutflow_51_acceptance_->addCut( (HEEPCutBase*) new HEEPCut_Et (prefix_51 + "_Et" , this, EtThresholdBarrel_50_, EtThresholdEndcap_50_)) ;
+  HEEPCutflow_51_acceptance_->addCut( (HEEPCutBase*) new HEEPCut_eta(prefix_51 + "_eta", this)) ;
+  
+  HEEPCutflow_51_ID_->addCut( (HEEPCutBase*) new HEEPCut_EcalDriven   (prefix_51 + "_EcalDriven"   , this)) ;
+  HEEPCutflow_51_ID_->addCut( (HEEPCutBase*) new HEEPCut_51_dEtaIn    (prefix_51 + "_dEtaIn"       , this, dEtaInThresholdBarrel_51_, dEtaInThresholdEndcap_51_)) ;
+  HEEPCutflow_51_ID_->addCut( (HEEPCutBase*) new HEEPCut_dPhiIn       (prefix_51 + "_dPhiIn"       , this, dPhiInThresholdBarrel_51_, dPhiInThresholdEndcap_51_)) ;
+  HEEPCutflow_51_ID_->addCut( (HEEPCutBase*) new HEEPCut_51_HOverE(prefix_51 + "_HOverE"       , this, HOverEReciprocalTermBarrel_51_, HOverEConstantTermBarrel_51_, HOverEReciprocalTermEndcap_51_, HOverEConstantTermEndcap_51_)) ;
+  HEEPCutflow_51_ID_->addCut( (HEEPCutBase*) new HEEPCut_SigmaIetaIeta(prefix_51 + "_SigmaIetaIeta", this, SigmaIetaIetaThreshold_51_)) ;
+  HEEPCutflow_51_ID_->addCut( (HEEPCutBase*) new HEEPCut_E1x5OverE5x5 (prefix_51 + "_E1x5OverE5x5" , this)) ;
+  HEEPCutflow_51_ID_->addCut( (HEEPCutBase*) new HEEPCut_E2x5OverE5x5 (prefix_51 + "_E2x5OverE5x5" , this, E1x5threshold_51_, E2x5threshold_51_)) ;
+  HEEPCutflow_51_ID_->addCut( (HEEPCutBase*) new HEEPCut_missingHits  (prefix_51 + "_missingHits"  , this, missingHitsThreshold_51_)) ;
+  HEEPCutflow_51_ID_->addCut( (HEEPCutBase*) cut_51_dxyFirstPV_) ;
+  
+  // Define the isolation
+  HEEPCutflow_51_isolation_->addCut( (HEEPCutBase*) cut_51_isolEMHadDepth1_) ;
+  HEEPCutflow_51_isolation_->addCut( (HEEPCutBase*) new HEEPCut_IsolPtTrks(prefix_51 + "_IsolPtTrks", this, IsolPtTrksThresholdBarrel_51_, IsolPtTrksThresholdEndcap_51_)) ;
+  
+  // Put it all together
+  HEEPCutflow_51_total_->addCutCollection(HEEPCutflow_51_acceptance_) ;
+  HEEPCutflow_51_total_->addCutCollection(HEEPCutflow_51_ID_        ) ;
+  HEEPCutflow_51_total_->addCutCollection(HEEPCutflow_51_isolation_ ) ;
+  
+  ////////////////////////////////////////////////////////////////////////////////////////
+  //                                     Do the config                                  //
+  ////////////////////////////////////////////////////////////////////////////////////////
   if(storeHEEP41_   ) HEEPCutflow_41_total_     ->config(barrelEtaUpper_41_, endcapEtaLower_41_, endcapEtaUpper_41_) ;
   if(storeHEEP50_50_) HEEPCutflow_50_50ns_total_->config(barrelEtaUpper_50_, endcapEtaLower_50_, endcapEtaUpper_50_) ;
   if(storeHEEP50_25_) HEEPCutflow_50_25ns_total_->config(barrelEtaUpper_50_, endcapEtaLower_50_, endcapEtaUpper_50_) ;
+  if(storeHEEP50_   ) HEEPCutflow_50_total_     ->config(barrelEtaUpper_50_, endcapEtaLower_50_, endcapEtaUpper_50_) ;
+  if(storeHEEP51_   ) HEEPCutflow_51_total_     ->config(barrelEtaUpper_50_, endcapEtaLower_50_, endcapEtaUpper_50_) ;
   
   ////////////////////////////////////////////////////////////////////////////////////////
   //                     Add everything to the vector of cutflows                       //
@@ -318,6 +462,12 @@ void IIHEModuleHEEP::beginJob(){
   HEEPCutflows_.push_back(HEEPCutflow_50_50ns_ID_        ) ;
   HEEPCutflows_.push_back(HEEPCutflow_50_50ns_isolation_ ) ;
   HEEPCutflows_.push_back(HEEPCutflow_50_50ns_total_     ) ;
+  HEEPCutflows_.push_back(HEEPCutflow_50_acceptance_     ) ;
+  HEEPCutflows_.push_back(HEEPCutflow_50_ID_             ) ;
+  HEEPCutflows_.push_back(HEEPCutflow_50_isolation_      ) ;
+  HEEPCutflows_.push_back(HEEPCutflow_51_acceptance_     ) ;
+  HEEPCutflows_.push_back(HEEPCutflow_51_ID_             ) ;
+  HEEPCutflows_.push_back(HEEPCutflow_51_isolation_      ) ;
 }
 
 // ------------ method called to for each event  ------------
@@ -328,6 +478,8 @@ void IIHEModuleHEEP::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   cut_41_dxyFirstPV_     ->setFirstPV(firstPrimaryVertex) ;
   cut_50_50ns_dxyFirstPV_->setFirstPV(firstPrimaryVertex) ;
   cut_50_25ns_dxyFirstPV_->setFirstPV(firstPrimaryVertex) ;
+  cut_50_dxyFirstPV_     ->setFirstPV(firstPrimaryVertex) ;
+  cut_51_dxyFirstPV_     ->setFirstPV(firstPrimaryVertex) ;
   
   // Get the hit information
   Handle<EcalRecHitCollection> EBhits;
@@ -360,6 +512,8 @@ void IIHEModuleHEEP::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     if(storeHEEP41_   ) HEEPCutflow_41_total_     ->applyCuts(gsf) ;
     if(storeHEEP50_50_) HEEPCutflow_50_50ns_total_->applyCuts(gsf) ;
     if(storeHEEP50_25_) HEEPCutflow_50_25ns_total_->applyCuts(gsf) ;
+    if(storeHEEP50_   ) HEEPCutflow_50_total_     ->applyCuts(gsf) ;
+    if(storeHEEP51_   ) HEEPCutflow_51_total_     ->applyCuts(gsf) ;
     
     if(true){
       // Required for preshower variables
