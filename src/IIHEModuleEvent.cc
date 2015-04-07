@@ -17,6 +17,8 @@ void IIHEModuleEvent::beginJob(){
   addBranch("ev_event"          ) ;
   addBranch("ev_run"            ) ;
   addBranch("ev_luminosityBlock") ;
+  
+  addBranch("ev_rho", kFloat) ;
 }
 
 // ------------ method called to for each event  ------------
@@ -24,6 +26,11 @@ void IIHEModuleEvent::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   store("ev_event"          , ((unsigned int) (iEvent.id().event()          ))) ;
   store("ev_run"            , ((unsigned int) (iEvent.id().run()            ))) ;
   store("ev_luminosityBlock", ((unsigned int) (iEvent.id().luminosityBlock()))) ;
+  
+  edm::Handle<double> rhoHandle ;
+  iEvent.getByLabel(InputTag("fixedGridRhoAll"), rhoHandle) ;
+  float rho = *rhoHandle ;
+  store("ev_rho", rho) ;
 }
 
 void IIHEModuleEvent::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){}

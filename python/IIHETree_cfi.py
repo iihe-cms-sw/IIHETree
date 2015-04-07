@@ -4,7 +4,7 @@ pwd = os.getcwd()
 os.chdir("UserCode/IIHETree/")
 username = getpass.getuser()
 os.system("git log -n 1 | head -n 1 | awk '{print $2}' > /tmp/%s_git.hash"%username)
-f = open('/tmp/git.hash')
+f = open('/tmp/%s_git.hash'%username)
 git_hash = f.read().rstrip('\n')
 print 'Using git hash: ' , git_hash
 os.chdir(pwd)
@@ -13,9 +13,6 @@ IIHEAnalysis = cms.EDAnalyzer("IIHEAnalysis",
     beamSpot      = cms.InputTag("offlineBeamSpot"),
     primaryVertex = cms.InputTag('offlinePrimaryVertices'),
     git_hash = cms.string(git_hash),
-    
-    HEEP_EcalHcal1EffAreaBarrel  = cms.untracked.double(0.28),
-    HEEP_EcalHcal1EffAreaEndcaps = cms.untracked.double(0.28),
     
     HEEP_EtThresholdBarrel_41 = cms.untracked.double( 35.0 ),
     HEEP_EtThresholdEndcap_41 = cms.untracked.double( 35.0 ),
@@ -103,30 +100,44 @@ IIHEAnalysis = cms.EDAnalyzer("IIHEAnalysis",
     HEEP_isolEMHadDepth1LinearTermBarrel_41              = cms.untracked.double( 0.03 ),
     HEEP_isolEMHadDepth1LinearTermEndcap_41              = cms.untracked.double( 0.03 ),
     HEEP_isolEMHadDepth1OffsetTermEndcap_41              = cms.untracked.double( 50.0 ),
+    HEEP_isolEMHadDepth1EcalHcal1EffAreaBarrel_41        = cms.untracked.double( 0.28 ),
+    HEEP_isolEMHadDepth1EcalHcal1EffAreaEndcap_41        = cms.untracked.double( 0.28 ),
+    
     HEEP_isolEMHadDepth1ConstantTermBarrel_50_50ns       = cms.untracked.double( 2.0  ),
     HEEP_isolEMHadDepth1ConstantTermEndcapLowEt_50_50ns  = cms.untracked.double( 2.5  ),
     HEEP_isolEMHadDepth1ConstantTermEndcapHighEt_50_50ns = cms.untracked.double( 2.5  ),
     HEEP_isolEMHadDepth1LinearTermBarrel_50_50ns         = cms.untracked.double( 0.03 ),
     HEEP_isolEMHadDepth1LinearTermEndcap_50_50ns         = cms.untracked.double( 0.03 ),
     HEEP_isolEMHadDepth1OffsetTermEndcap_50_50ns         = cms.untracked.double( 50.0 ),
+    HEEP_isolEMHadDepth1EcalHcal1EffAreaBarrel_50_50ns   = cms.untracked.double( 0.28 ),
+    HEEP_isolEMHadDepth1EcalHcal1EffAreaEndcap_50_50ns   = cms.untracked.double( 0.28 ),
+    
     HEEP_isolEMHadDepth1ConstantTermBarrel_50_25ns       = cms.untracked.double( 2.0  ),
     HEEP_isolEMHadDepth1ConstantTermEndcapLowEt_50_25ns  = cms.untracked.double( 2.5  ),
     HEEP_isolEMHadDepth1ConstantTermEndcapHighEt_50_25ns = cms.untracked.double( 2.5  ),
     HEEP_isolEMHadDepth1LinearTermBarrel_50_25ns         = cms.untracked.double( 0.03 ),
     HEEP_isolEMHadDepth1LinearTermEndcap_50_25ns         = cms.untracked.double( 0.03 ),
     HEEP_isolEMHadDepth1OffsetTermEndcap_50_25ns         = cms.untracked.double( 50.0 ),
+    HEEP_isolEMHadDepth1EcalHcal1EffAreaBarrel_50_25ns = cms.untracked.double(0.28),
+    HEEP_isolEMHadDepth1EcalHcal1EffAreaEndcap_50_25ns = cms.untracked.double(0.28),
+    
     HEEP_isolEMHadDepth1ConstantTermBarrel_50            = cms.untracked.double( 2.0  ),
     HEEP_isolEMHadDepth1ConstantTermEndcapLowEt_50       = cms.untracked.double( 2.5  ),
     HEEP_isolEMHadDepth1ConstantTermEndcapHighEt_50      = cms.untracked.double( 2.5  ),
     HEEP_isolEMHadDepth1LinearTermBarrel_50              = cms.untracked.double( 0.03 ),
     HEEP_isolEMHadDepth1LinearTermEndcap_50              = cms.untracked.double( 0.03 ),
     HEEP_isolEMHadDepth1OffsetTermEndcap_50              = cms.untracked.double( 50.0 ),
+    HEEP_isolEMHadDepth1EcalHcal1EffAreaBarrel_50        = cms.untracked.double( 0.28 ),
+    HEEP_isolEMHadDepth1EcalHcal1EffAreaEndcap_50        = cms.untracked.double( 0.28 ),
+    
     HEEP_isolEMHadDepth1ConstantTermBarrel_51            = cms.untracked.double( 2.0  ),
     HEEP_isolEMHadDepth1ConstantTermEndcapLowEt_51       = cms.untracked.double( 2.5  ),
     HEEP_isolEMHadDepth1ConstantTermEndcapHighEt_51      = cms.untracked.double( 2.5  ),
     HEEP_isolEMHadDepth1LinearTermBarrel_51              = cms.untracked.double( 0.03 ),
     HEEP_isolEMHadDepth1LinearTermEndcap_51              = cms.untracked.double( 0.03 ),
     HEEP_isolEMHadDepth1OffsetTermEndcap_51              = cms.untracked.double( 50.0 ),
+    HEEP_isolEMHadDepth1EcalHcal1EffAreaBarrel_51        = cms.untracked.double( 0.28 ),
+    HEEP_isolEMHadDepth1EcalHcal1EffAreaEndcap_51        = cms.untracked.double( 0.28 ),
     
     HEEP_IsolPtTrksThresholdBarrel_41      = cms.untracked.double( 5.0 ),
     HEEP_IsolPtTrksThresholdEndcap_41      = cms.untracked.double( 5.0 ),

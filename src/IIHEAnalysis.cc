@@ -37,6 +37,15 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig){
   nEventsStored_ = 0 ;
   acceptEvent_ = false ;
   
+  edm::Service<TFileService> fs ;
+  fs->file().cd() ;
+  
+  //mainFile_ = TFile("outfile.root", "RECREATE") ;
+  dataTree_ = new TTree("IIHEAnalysis", "IIHEAnalysis") ;
+  metaTree_ = new TTree("meta", "Information about globalTag etc") ;
+  metaTree_->Branch("git_hash" , &git_hash_ ) ;
+  metaTree_->Branch("globalTag", &globalTag_) ;
+  
 //    CHOOSE_RELEASE_START CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
   beamSpotLabel_      = consumes<BeamSpot>(iConfig.getParameter<InputTag>("beamSpot")) ;
 //  CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1  
@@ -59,7 +68,6 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig){
 //  CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1  
 /*   CHOOSE_RELEASE_START CMSSW_5_3_11
   CHOOSE_RELEASE_END CMSSW_5_3_11  */
-
   
   firstPrimaryVertex_ = new math::XYZPoint(0.0,0.0,0.0) ;
   beamspot_           = new math::XYZPoint(0.0,0.0,0.0) ;
@@ -76,7 +84,7 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig){
   includeMCTruthModule_         = iConfig.getUntrackedParameter<bool>("includeMCTruthModule"        , true ) ;
   includeZBosonModule_          = iConfig.getUntrackedParameter<bool>("includeZBosonModule"         , true ) ;
   includeAutoAcceptEventModule_ = iConfig.getUntrackedParameter<bool>("includeAutoAcceptEventModule", true ) ;
-  
+    
   if(includeTriggerModule_        ) childModules_.push_back(new IIHEModuleTrigger(iConfig)        ) ;
   if(includeEventModule_          ) childModules_.push_back(new IIHEModuleEvent(iConfig)          ) ;
   if(includeVertexModule_         ) childModules_.push_back(new IIHEModuleVertex(iConfig)         ) ;
@@ -93,6 +101,14 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig){
 
 IIHEAnalysis::~IIHEAnalysis(){}
 
+bool IIHEAnalysis::addValueToMetaTree(std::string parName, float value){
+  BranchWrapperF* bw = new BranchWrapperF(parName) ;
+  metaTreePars_.push_back(bw) ;
+  bw->config(metaTree_) ;
+  bw->set(value) ;
+  return true ;
+}
+
 bool IIHEAnalysis::branchExists(std::string name){
   for(unsigned int i=0 ; i<allVars_.size() ; ++i){
     if(allVars_.at(i)->name()==name) return true ;
@@ -107,7 +123,7 @@ bool IIHEAnalysis::addBranch(std::string name){ return addBranch(name, currentVa
 bool IIHEAnalysis::addBranch(std::string name, int type){
   // First check to see if this branch name has already been used
   bool success = !(branchExists(name)) ;
-  if(false) std::cout << "Adding a branch named " << name << " " << success << endl ;
+  if(debug_) std::cout << "Adding a branch named " << name << " " << success << endl ;
   if(success==false){
     return false ;
   }
@@ -211,28 +227,20 @@ bool IIHEAnalysis::addBranch(std::string name, int type){
 
 // ------------ method called once each job just before starting event loop  -------------
 void IIHEAnalysis::beginJob(){
-  edm::Service<TFileService> fs;
-  mainFile_ = new TFile("outfile.root", "RECREATE") ;
-  dataTree_ = new TTree("IIHEAnalysis", "IIHEAnalysis") ;
-  metaTree_ = new TTree("meta", "Information about globalTag etc") ;
-  metaTree_->Branch("git_hash" , &git_hash_ ) ;
-  metaTree_->Branch("globalTag", &globalTag_) ;
-  
   for(unsigned int i=0 ; i<childModules_.size() ; ++i){
     childModules_.at(i)->config(this) ;
     childModules_.at(i)->pubBeginJob() ;
   }
-  
-  metaTree_->Fill() ;
   configureBranches() ;
 }
 
 void IIHEAnalysis::listBranches(){
-  if(dataTree_) dataTree_->GetListOfLeaves()->ls() ;
+  dataTree_->GetListOfLeaves()->ls() ;
 }
 
 int IIHEAnalysis::saveToFile(TObject* obj){
-  mainFile_->cd() ;
+  edm::Service<TFileService> fs ;
+  fs->file().cd() ;
   return obj->Write() ;
 }
 
@@ -329,10 +337,10 @@ void IIHEAnalysis::endJob(){
     }
   }
   
-  if(mainFile_){
-    mainFile_->Write() ;
-    delete mainFile_ ;
-  }
+  addValueToMetaTree("nEventsRaw"   , nEvents_      ) ;
+  addValueToMetaTree("nEventsStored", nEventsStored_) ;
+  metaTree_->Fill() ;
+  
   std::cout << "There were " << nEvents_ << " total events of which " << nEventsStored_ << " were stored to file." << std::endl ;
 }
 

@@ -15,9 +15,8 @@ IIHEModuleZBoson::IIHEModuleZBoson(const edm::ParameterSet& iConfig): IIHEModule
   mJpsiAcceptUpper_ = iConfig.getUntrackedParameter<double>("ZBosonJPsiAcceptMassUpper",  3.5) ;
   mUpsAcceptLower_  = iConfig.getUntrackedParameter<double>("ZBosonUpsAcceptMassLower" ,  8.0) ;
   mUpsAcceptUpper_  = iConfig.getUntrackedParameter<double>("ZBosonUpsAcceptMassUpper" , 12.0) ;
-  
-  mZLowerCutoff_    = iConfig.getUntrackedParameter<double>("ZBosonZMassLowerCuttoff", 0.0) ;
-  mZUpperCutoff_    = iConfig.getUntrackedParameter<double>("ZBosonZMassUpperCuttoff", 1e6) ;
+  mZLowerCutoff_    = iConfig.getUntrackedParameter<double>("ZBosonZMassLowerCuttoff"  ,  0.0) ;
+  mZUpperCutoff_    = iConfig.getUntrackedParameter<double>("ZBosonZMassUpperCuttoff"  ,  1e6) ;
 }
 IIHEModuleZBoson::~IIHEModuleZBoson(){}
 
@@ -30,6 +29,11 @@ void IIHEModuleZBoson::beginJob(){
   nAcceptZeeg_ = 0 ;
   nAcceptZmmg_ = 0 ;
   nAcceptAll_  = 0 ;
+  
+  nZeeTotal_  = 0 ;
+  nZmmTotal_  = 0 ;
+  nZeegTotal_ = 0 ;
+  nZmmgTotal_ = 0 ;
   
   addBranch("Zee_n"    , kInt        ) ;
   addBranch("Zee_mass" , kVectorFloat) ;
@@ -56,6 +60,15 @@ void IIHEModuleZBoson::beginJob(){
   addBranch("Zmmg_i2"  , kVectorInt  ) ;
   addBranch("Zmmg_iph" , kVectorInt  ) ;
   addBranch("Zmmg_highestMass", kInt ) ;
+  
+  addValueToMetaTree("ZBoson_DeltaRCut"        , DeltaRCut_        ) ;
+  addValueToMetaTree("ZBoson_mZAccept"         , mZAccept_         ) ;
+  addValueToMetaTree("ZBoson_JpsiAcceptLower"  , mJpsiAcceptLower_ ) ;
+  addValueToMetaTree("ZBoson_mJpsiAcceptUpper" , mJpsiAcceptUpper_ ) ;
+  addValueToMetaTree("ZBoson_mUpsAcceptLower"  , mUpsAcceptLower_  ) ;
+  addValueToMetaTree("ZBoson_mUpsAcceptUpper"  , mUpsAcceptUpper_  ) ;
+  addValueToMetaTree("ZBoson_mZLowerCutoff"    , mZLowerCutoff_    ) ;
+  addValueToMetaTree("ZBoson_mZLowerCutoff"    , mZUpperCutoff_    ) ;
 }
 
 // ------------ method called to for each event  ------------
@@ -154,6 +167,7 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
           Zeeg_highestMassIndex = Zeeg_n ;
         }
         Zeeg_n++ ;
+        nZeegTotal_++ ;
       }
       
       // Check to see if we're in the range we want
@@ -172,6 +186,7 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
         Zee_highestMassIndex = Zee_n ;
       }
       Zee_n++ ;
+      nZeeTotal_++ ;
     }
   }
   for(unsigned int i1=0 ; i1<mup4s.size() ; ++i1){
@@ -203,6 +218,7 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
           Zmmg_highestMassIndex = Zmmg_n ;
         }
         Zmmg_n++ ;
+        nZmmTotal_++ ;
       }
       
       // Check to see if we're in the range we want
@@ -229,6 +245,7 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
         Zmm_highestMassIndex = Zmm_n ;
       }
       Zmm_n++ ;
+      nZmmTotal_++ ;
     }
   }
   
@@ -270,6 +287,19 @@ void IIHEModuleZBoson::endJob(){
   std::cout << "  nAcceptZeeg = " << nAcceptZeeg_ << std::endl ;
   std::cout << "  nAcceptZmmg = " << nAcceptZmmg_ << std::endl ;
   std::cout << "  nAcceptAll  = " << nAcceptAll_  << std::endl ;
+  
+  addValueToMetaTree("ZBoson_nAcceptZee" , nAcceptZee_ ) ;
+  addValueToMetaTree("ZBoson_nAcceptZmm" , nAcceptZmm_ ) ;
+  addValueToMetaTree("ZBoson_nAcceptJmm" , nAcceptJmm_ ) ;
+  addValueToMetaTree("ZBoson_nAcceptYmm" , nAcceptYmm_ ) ;
+  addValueToMetaTree("ZBoson_nAcceptZeeg", nAcceptZeeg_) ;
+  addValueToMetaTree("ZBoson_nAcceptZmmg", nAcceptZmmg_) ;
+  addValueToMetaTree("ZBoson_nAcceptAll" , nAcceptAll_ ) ;
+  
+  addValueToMetaTree("ZBoson_nZeeTotal"  , nZeeTotal_  ) ;
+  addValueToMetaTree("ZBoson_nZmmTotal"  , nZmmTotal_  ) ;
+  addValueToMetaTree("ZBoson_nZeegTotal" , nZeegTotal_ ) ;
+  addValueToMetaTree("ZBoson_nZmmgTotal" , nZmmgTotal_ ) ;
 }
 
 DEFINE_FWK_MODULE(IIHEModuleZBoson);

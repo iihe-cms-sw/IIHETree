@@ -10,8 +10,28 @@
 
 class IIHEModuleHEEP ;
 
+class HEEPParameter{
+private:
+  int cutflow_ ;
+  std::string name_ ;
+  std::string pset_name_ ;
+  float defValue_ ;  
+  float value_ ;
+public:
+  HEEPParameter(int, std::string name, std::string, float) ;
+  void setValue(const edm::ParameterSet&) ;
+  bool makeBranch(IIHEAnalysis*) ;
+  int cutflow(){ return cutflow_ ; }
+  std::string cutflowName() ;
+  std::string name(){ return name_ ; }
+  float value(){ return value_ ; }
+  void print(){ std::cout << name_ << ": " << value_ << std::endl ; }
+};
+
+
 class HEEPCutBase{
 private:
+  int cutflow_ ;
   std::string name_ ;
   std::string branchName_n_ ;
   std::string branchName_nCumulative_ ;
@@ -28,7 +48,7 @@ private:
   float endcapEtaUpper_ ;
   
 public:
-  HEEPCutBase(std::string, IIHEModuleHEEP*) ;
+  HEEPCutBase(int, std::string, IIHEModuleHEEP*) ;
   ~HEEPCutBase() ;
   virtual bool applyCut(reco::GsfElectron*, bool) ;
   bool addBranches() ;
@@ -39,6 +59,7 @@ public:
   void setValue(float value){ value_ = value ; }
   float value(){ return value_ ; }
   std::string name(){ return name_ ; }
+  int cutflow(){ return cutflow_ ; }
   
   void beginEvent() ;
   void endEvent() ;
@@ -52,13 +73,13 @@ public:
     endcapEtaLower_ = endcapEtaLower ;
     endcapEtaUpper_ = endcapEtaUpper ;
   }
-  
-  enum DetectorRegion{ kNone , kBarrel , kEndcap , kGap , kForward } ; // kGap, kForward not yet used
+  virtual void config(std::vector<HEEPParameter*> parameters_) ;
 };
 
 class HEEPCut_Et: HEEPCutBase{
 public:
-  HEEPCut_Et(std::string, IIHEModuleHEEP*, float, float) ;
+  HEEPCut_Et(int, std::string, IIHEModuleHEEP*) ;
+  void config(std::vector<HEEPParameter*> parameters_) ;
   bool applyCut(reco::GsfElectron*, bool) ;
 private:
   float thresholdBarrel_ ;
@@ -66,17 +87,19 @@ private:
 } ;
 class HEEPCut_eta: HEEPCutBase{
 public:
-  HEEPCut_eta(std::string, IIHEModuleHEEP*) ;
+  HEEPCut_eta(int, std::string, IIHEModuleHEEP*) ;
   bool applyCut(reco::GsfElectron*, bool) ;
 } ;
 class HEEPCut_EcalDriven: HEEPCutBase{
 public:
-  HEEPCut_EcalDriven(std::string, IIHEModuleHEEP*) ;
+  HEEPCut_EcalDriven(int, std::string, IIHEModuleHEEP*) ;
+  void config(std::vector<HEEPParameter*> parameters_) ;
   bool applyCut(reco::GsfElectron*, bool) ;
 } ;
 class HEEPCut_dPhiIn: HEEPCutBase{
 public:
-  HEEPCut_dPhiIn(std::string, IIHEModuleHEEP*, float, float) ;
+  HEEPCut_dPhiIn(int, std::string, IIHEModuleHEEP*) ;
+  void config(std::vector<HEEPParameter*> parameters_) ;
   bool applyCut(reco::GsfElectron*, bool) ;
 private:
   float thresholdBarrel_ ;
@@ -84,19 +107,22 @@ private:
 } ;
 class HEEPCut_SigmaIetaIeta: HEEPCutBase{
 public:
-  HEEPCut_SigmaIetaIeta(std::string, IIHEModuleHEEP*, float) ;
+  HEEPCut_SigmaIetaIeta(int, std::string, IIHEModuleHEEP*) ;
+  void config(std::vector<HEEPParameter*> parameters_) ;
   bool applyCut(reco::GsfElectron*, bool) ;
 private:
   float threshold_ ;
 } ;
 class HEEPCut_E1x5OverE5x5: HEEPCutBase{
 public:
-  HEEPCut_E1x5OverE5x5(std::string, IIHEModuleHEEP*) ;
+  HEEPCut_E1x5OverE5x5(int, std::string, IIHEModuleHEEP*) ;
+  void config(std::vector<HEEPParameter*> parameters_) ;
   bool applyCut(reco::GsfElectron*, bool) ;
 } ;
 class HEEPCut_E2x5OverE5x5: HEEPCutBase{
 public:
-  HEEPCut_E2x5OverE5x5(std::string, IIHEModuleHEEP*, float, float) ;
+  HEEPCut_E2x5OverE5x5(int, std::string, IIHEModuleHEEP*) ;
+  void config(std::vector<HEEPParameter*> parameters_) ;
   bool applyCut(reco::GsfElectron*, bool) ;
 private:
   float thresholdE1x5_ ;
@@ -105,8 +131,8 @@ private:
 class HEEPCut_isolEMHadDepth1: HEEPCutBase{
 private:
   float rho_ ;
-  float EcalHcal1EffAreaBarrel_  ;
-  float EcalHcal1EffAreaEndcaps_ ;
+  float EcalHcal1EffAreaBarrel_ ;
+  float EcalHcal1EffAreaEndcap_ ;
   float constantTermBarrel_ ;
   float constantTermEndcapLowEt_ ;
   float constantTermEndcapHighEt_ ;
@@ -114,16 +140,15 @@ private:
   float linearTermEndcap_ ;
   float offsetTermEndcap_ ;
 public:
-  HEEPCut_isolEMHadDepth1(std::string, IIHEModuleHEEP*, float, float, float, float, float, float) ;
+  HEEPCut_isolEMHadDepth1(int, std::string, IIHEModuleHEEP*) ;
+  void config(std::vector<HEEPParameter*> parameters_) ;
   bool applyCut(reco::GsfElectron*, bool) ;
   void setRho(float) ;
-  void setEcalHcal1EffAreaBarrel (float) ;
-  void setEcalHcal1EffAreaEndcaps(float) ;
-private:
 } ;
 class HEEPCut_IsolPtTrks: HEEPCutBase{
 public:
-  HEEPCut_IsolPtTrks(std::string, IIHEModuleHEEP*, float, float) ;
+  HEEPCut_IsolPtTrks(int, std::string, IIHEModuleHEEP*) ;
+  void config(std::vector<HEEPParameter*> parameters_) ;
   bool applyCut(reco::GsfElectron*, bool) ;
 private:
   float thresholdBarrel_ ;
@@ -131,7 +156,8 @@ private:
 } ;
 class HEEPCut_missingHits: HEEPCutBase{
 public:
-  HEEPCut_missingHits(std::string, IIHEModuleHEEP*, float) ;
+  HEEPCut_missingHits(int, std::string, IIHEModuleHEEP*) ;
+  void config(std::vector<HEEPParameter*> parameters_) ;
   bool applyCut(reco::GsfElectron*, bool) ;
 private:
   float threshold_ ;
@@ -142,7 +168,8 @@ private:
   float thresholdBarrel_ ;
   float thresholdEndcap_ ;
 public:
-  HEEPCut_dxyFirstPV(std::string, IIHEModuleHEEP*, float, float) ;
+  HEEPCut_dxyFirstPV(int, std::string, IIHEModuleHEEP*) ;
+  void config(std::vector<HEEPParameter*> parameters_) ;
   bool applyCut(reco::GsfElectron*, bool) ;
   void setFirstPV(math::XYZPoint*) ;
 } ;
@@ -150,7 +177,8 @@ public:
 
 class HEEPCut_41_dEtaIn: HEEPCutBase{
 public:
-  HEEPCut_41_dEtaIn(std::string, IIHEModuleHEEP*, float, float) ;
+  HEEPCut_41_dEtaIn(int, std::string, IIHEModuleHEEP*) ;
+  void config(std::vector<HEEPParameter*> parameters_) ;
   bool applyCut(reco::GsfElectron*, bool) ;
 private:
   float thresholdBarrel_ ;
@@ -158,7 +186,8 @@ private:
 } ;
 class HEEPCut_41_HOverE: HEEPCutBase{
 public:
-  HEEPCut_41_HOverE(std::string, IIHEModuleHEEP*, float, float) ;
+  HEEPCut_41_HOverE(int, std::string, IIHEModuleHEEP*) ;
+  void config(std::vector<HEEPParameter*> parameters_) ;
   bool applyCut(reco::GsfElectron*, bool) ;
 private:
   float thresholdBarrel_ ;
@@ -168,7 +197,8 @@ private:
 
 class HEEPCut_50_50ns_dEtaIn: HEEPCutBase{
 public:
-  HEEPCut_50_50ns_dEtaIn(std::string, IIHEModuleHEEP*, float, float, float, float) ;
+  HEEPCut_50_50ns_dEtaIn(int, std::string, IIHEModuleHEEP*) ;
+  void config(std::vector<HEEPParameter*> parameters_) ;
   bool applyCut(reco::GsfElectron*, bool) ;
 private:
   float constantTermBarrel_ ;
@@ -178,7 +208,8 @@ private:
 } ;
 class HEEPCut_50_50ns_HOverE: HEEPCutBase{
 public:
-  HEEPCut_50_50ns_HOverE(std::string, IIHEModuleHEEP*, float, float, float, float) ;
+  HEEPCut_50_50ns_HOverE(int, std::string, IIHEModuleHEEP*) ;
+  void config(std::vector<HEEPParameter*> parameters_) ;
   bool applyCut(reco::GsfElectron*, bool) ;
 private:
   float reciprocalTermBarrel_ ;
@@ -190,7 +221,8 @@ private:
 
 class HEEPCut_50_25ns_dEtaIn: HEEPCutBase{
 public:
-  HEEPCut_50_25ns_dEtaIn(std::string, IIHEModuleHEEP*, float, float, float, float, float, float) ;
+  HEEPCut_50_25ns_dEtaIn(int, std::string, IIHEModuleHEEP*) ;
+  void config(std::vector<HEEPParameter*> parameters_) ;
   bool applyCut(reco::GsfElectron*, bool) ;
 private:
   float constantTermBarrel_ ;
@@ -202,7 +234,8 @@ private:
 } ;
 class HEEPCut_50_25ns_HOverE: HEEPCutBase{
 public:
-  HEEPCut_50_25ns_HOverE(std::string, IIHEModuleHEEP*, float, float, float, float) ;
+  HEEPCut_50_25ns_HOverE(int, std::string, IIHEModuleHEEP*) ;
+  void config(std::vector<HEEPParameter*> parameters_) ;
   bool applyCut(reco::GsfElectron*, bool) ;
 private:
   float reciprocalTermBarrel_ ;
@@ -213,7 +246,8 @@ private:
 
 class HEEPCut_50_dEtaIn: HEEPCutBase{
 public:
-  HEEPCut_50_dEtaIn(std::string, IIHEModuleHEEP*, float, float, float, float, float, float) ;
+  HEEPCut_50_dEtaIn(int, std::string, IIHEModuleHEEP*) ;
+  void config(std::vector<HEEPParameter*> parameters_) ;
   bool applyCut(reco::GsfElectron*, bool) ;
 private:
   float constantTermBarrel_ ;
@@ -225,7 +259,8 @@ private:
 } ;
 class HEEPCut_50_HOverE: HEEPCutBase{
 public:
-  HEEPCut_50_HOverE(std::string, IIHEModuleHEEP*, float, float, float, float) ;
+  HEEPCut_50_HOverE(int, std::string, IIHEModuleHEEP*) ;
+  void config(std::vector<HEEPParameter*> parameters_) ;
   bool applyCut(reco::GsfElectron*, bool) ;
 private:
   float reciprocalTermBarrel_ ;
@@ -236,7 +271,8 @@ private:
 
 class HEEPCut_51_dEtaIn: HEEPCutBase{
 public:
-  HEEPCut_51_dEtaIn(std::string, IIHEModuleHEEP*, float, float) ;
+  HEEPCut_51_dEtaIn(int, std::string, IIHEModuleHEEP*) ;
+  void config(std::vector<HEEPParameter*> parameters_) ;
   bool applyCut(reco::GsfElectron*, bool) ;
 private:
   float thresholdBarrel_ ;
@@ -244,7 +280,8 @@ private:
 } ;
 class HEEPCut_51_HOverE: HEEPCutBase{
 public:
-  HEEPCut_51_HOverE(std::string, IIHEModuleHEEP*, float, float, float, float) ;
+  HEEPCut_51_HOverE(int, std::string, IIHEModuleHEEP*) ;
+  void config(std::vector<HEEPParameter*> parameters_) ;
   bool applyCut(reco::GsfElectron*, bool) ;
 private:
   float reciprocalTermBarrel_ ;
@@ -256,6 +293,7 @@ private:
 
 class HEEPCutCollection{
 private:
+  int cutflow_ ;
   bool status_ ;
   std::string name_ ;
   std::string branchName_n_ ;
@@ -270,11 +308,12 @@ private:
   int cutIndex_ ;
   int collectionIndex_ ;
   
+  bool isActive_ ;
   int nPass_ ;
   
   enum cutType{ kCut , kCollection } ;
 public:
-  HEEPCutCollection(std::string, IIHEModuleHEEP*) ;
+  HEEPCutCollection(int, std::string, IIHEModuleHEEP*, bool) ;
   ~HEEPCutCollection() ;
   
   void beginEvent() ;
@@ -286,7 +325,9 @@ public:
   bool applyCuts(reco::GsfElectron*) ;
   bool getStatus(){ return status_ ; }
   void makeCutflowHistogram() ;
-  void config(float, float, float) ;
+  void config(std::vector<HEEPParameter*>) ;
+  int cutflow(){ return cutflow_ ; }
+  bool isActive(){ return isActive_ ; }
 };
 
 #endif

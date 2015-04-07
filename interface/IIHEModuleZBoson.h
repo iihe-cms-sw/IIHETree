@@ -33,6 +33,11 @@ private:
   int nAcceptZeeg_ ;
   int nAcceptZmmg_ ;
   int nAcceptAll_  ;
+  
+  int nZeeTotal_  ;
+  int nZmmTotal_  ;
+  int nZeegTotal_ ;
+  int nZmmgTotal_ ;
 
 public:
   explicit IIHEModuleZBoson(const edm::ParameterSet& iConfig);

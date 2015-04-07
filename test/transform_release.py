@@ -37,12 +37,12 @@ for dir in directories:
                     
                     if release in line:
                         changedFile = True
-                        line = '// %s'%line
+                        line = '//%s'%line
                     else:
                         if 'START' in line:
-                            line = '/* %s'%line
+                            line = '/*%s'%line
                         elif 'END' in line:
-                            line = '%s */'%line
+                            line = '%s*/'%line
                     line = '%s\n'%line
                 lines_out.append(line)
                 
