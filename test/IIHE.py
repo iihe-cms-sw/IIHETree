@@ -15,18 +15,18 @@ process.source = cms.Source("PoolSource",fileNames = readFiles, secondaryFileNam
 
 readFiles.extend( [
     '/store/mc/Phys14DR/ZprimeToEE_M-5000_Tune4C_13TeV-pythia8/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/00000/0AD36E59-BD6B-E411-BABC-00266CFFA7A8.root',
-    '/store/mc/Phys14DR/ZprimeToEE_M-5000_Tune4C_13TeV-pythia8/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/00000/16D0A2E6-BB6B-E411-B3AF-00266CF32920.root',
-    '/store/mc/Phys14DR/ZprimeToEE_M-5000_Tune4C_13TeV-pythia8/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/00000/4445BF5A-A66B-E411-B462-002590AC4E28.root',
-    '/store/mc/Phys14DR/ZprimeToEE_M-5000_Tune4C_13TeV-pythia8/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/00000/9AB68F75-396C-E411-A28D-002590DB9262.root',
-    '/store/mc/Phys14DR/ZprimeToEE_M-5000_Tune4C_13TeV-pythia8/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/00000/A8367075-396C-E411-8FE6-002590DB9262.root',
-    '/store/mc/Phys14DR/ZprimeToEE_M-5000_Tune4C_13TeV-pythia8/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/10000/46FE2F45-BD6B-E411-83B5-008CFA104E64.root',
-    '/store/mc/Phys14DR/ZprimeToEE_M-5000_Tune4C_13TeV-pythia8/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/10000/6628077B-016C-E411-A2B5-00266CFFA754.root',
-    '/store/mc/Phys14DR/ZprimeToEE_M-5000_Tune4C_13TeV-pythia8/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/10000/7C413593-BE6B-E411-B8E6-0025904B1420.root',
-    '/store/mc/Phys14DR/ZprimeToEE_M-5000_Tune4C_13TeV-pythia8/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/10000/82BD2B28-B16B-E411-9EB8-002481E94C56.root',
-    '/store/mc/Phys14DR/ZprimeToEE_M-5000_Tune4C_13TeV-pythia8/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/10000/9085294F-016C-E411-9A4C-0025907DCA9C.root',
-    '/store/mc/Phys14DR/ZprimeToEE_M-5000_Tune4C_13TeV-pythia8/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/10000/9AA8B9D8-D36B-E411-AABA-D8D385FF6C5E.root',
-    '/store/mc/Phys14DR/ZprimeToEE_M-5000_Tune4C_13TeV-pythia8/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/10000/BAE5B92F-B66B-E411-B7B6-002481E101DC.root',
-    '/store/mc/Phys14DR/ZprimeToEE_M-5000_Tune4C_13TeV-pythia8/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/10000/FA016B56-AA6B-E411-8D1A-00266CF25E44.root'
+    #'/store/mc/Phys14DR/ZprimeToEE_M-5000_Tune4C_13TeV-pythia8/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/00000/16D0A2E6-BB6B-E411-B3AF-00266CF32920.root',
+    #'/store/mc/Phys14DR/ZprimeToEE_M-5000_Tune4C_13TeV-pythia8/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/00000/4445BF5A-A66B-E411-B462-002590AC4E28.root',
+    #'/store/mc/Phys14DR/ZprimeToEE_M-5000_Tune4C_13TeV-pythia8/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/00000/9AB68F75-396C-E411-A28D-002590DB9262.root',
+    #'/store/mc/Phys14DR/ZprimeToEE_M-5000_Tune4C_13TeV-pythia8/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/00000/A8367075-396C-E411-8FE6-002590DB9262.root',
+    #'/store/mc/Phys14DR/ZprimeToEE_M-5000_Tune4C_13TeV-pythia8/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/10000/46FE2F45-BD6B-E411-83B5-008CFA104E64.root',
+    #'/store/mc/Phys14DR/ZprimeToEE_M-5000_Tune4C_13TeV-pythia8/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/10000/6628077B-016C-E411-A2B5-00266CFFA754.root',
+    #'/store/mc/Phys14DR/ZprimeToEE_M-5000_Tune4C_13TeV-pythia8/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/10000/7C413593-BE6B-E411-B8E6-0025904B1420.root',
+    #'/store/mc/Phys14DR/ZprimeToEE_M-5000_Tune4C_13TeV-pythia8/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/10000/82BD2B28-B16B-E411-9EB8-002481E94C56.root',
+    #'/store/mc/Phys14DR/ZprimeToEE_M-5000_Tune4C_13TeV-pythia8/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/10000/9085294F-016C-E411-9A4C-0025907DCA9C.root',
+    #'/store/mc/Phys14DR/ZprimeToEE_M-5000_Tune4C_13TeV-pythia8/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/10000/9AA8B9D8-D36B-E411-AABA-D8D385FF6C5E.root',
+    #'/store/mc/Phys14DR/ZprimeToEE_M-5000_Tune4C_13TeV-pythia8/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/10000/BAE5B92F-B66B-E411-B7B6-002481E101DC.root',
+    #'/store/mc/Phys14DR/ZprimeToEE_M-5000_Tune4C_13TeV-pythia8/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/10000/FA016B56-AA6B-E411-8D1A-00266CF25E44.root'
     #'file:/user/aidan/public/Spring14dr__ZPrimePSIToEEMuMu_M-3000_13TeV_pythia8__AODSIM__PU20bx25_POSTLS170_V5-v1__067C0233-6ED1-E311-8C07-0025902008EC.root'
     #'file:/user/gfasanel/public/0CCBF0FA-2289-E411-A5D4-003048F0E55A.root'
     #'file:Run2012A.root'
@@ -50,7 +50,7 @@ process.options = cms.untracked.PSet(
 )
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100000)
+    input = cms.untracked.int32(1000)
 )
 
 process.TFileService = cms.Service("TFileService",
@@ -77,6 +77,7 @@ process.IIHEAnalysis.TriggerResults = cms.InputTag('TriggerResults', '', 'HLT')
 # Used for the crystal reconstruction in the HEEP module
 process.IIHEAnalysis.reducedBarrelRecHitCollection = cms.InputTag('reducedEcalRecHitsEB')
 process.IIHEAnalysis.reducedEndcapRecHitCollection = cms.InputTag('reducedEcalRecHitsEE')
+process.IIHEAnalysis.reducedESRecHitCollection     = cms.InputTag('reducedEcalRecHitsES')
 
 process.IIHEAnalysis.storeGlobalTrackMuons = cms.untracked.bool(True)
 process.IIHEAnalysis.storeStandAloneMuons  = cms.untracked.bool(True)

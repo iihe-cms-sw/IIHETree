@@ -77,6 +77,8 @@ public:
   void store(std::string, std::vector<unsigned int>);
   void setBranchType(int);
   
+  bool addValueToMetaTree(std::string, float) ;
+  
   void   vetoEvent() ;
   void acceptEvent() ;
   

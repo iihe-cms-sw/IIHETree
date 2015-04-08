@@ -93,6 +93,25 @@ void IIHEModulePreshower::printPreshowerCells(int start){
       }
     }
   }
+  int isMin =  1000 ;
+  int isMax = -1000 ;
+  int ixMin =  1000 ;
+  int ixMax = -1000 ;
+  int iyMin =  1000 ;
+  int iyMax = -1000 ;
+  for(unsigned int i=0 ; i<detIds.size() ; ++i){
+    esDetId = detIds.at(i) ;
+    int is = esDetId.strip() ;
+    int ix = esDetId.six() ;
+    int iy = esDetId.siy() ;
+    if(is<isMin) isMin = is ;
+    if(is>isMax) isMax = is ;
+    if(ix<ixMin) ixMin = ix ;
+    if(ix>ixMax) ixMax = ix ;
+    if(iy<iyMin) iyMin = iy ;
+    if(iy>iyMax) iyMax = iy ;
+  }
+  std::cout << ixMin << " " << ixMax << " , " << iyMin << " " << iyMax << " , " << isMin << " " << isMax << std::endl ;
 }
 
 void IIHEModulePreshower::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){}

@@ -11,10 +11,10 @@
 // Inherited
 class BranchWrapperBase{
   public:
-    BranchWrapperBase(std::string);
-    ~BranchWrapperBase();
-    virtual void beginEvent();
-    virtual void endEvent();
+    BranchWrapperBase(std::string) ;
+    ~BranchWrapperBase() ;
+    virtual void beginEvent() ;
+    virtual void endEvent() ;
     std::string name(){ return name_; } ;
     bool  is_filled(){ return is_filled_ ; } ;
     bool is_touched(){ return is_touched_; } ;
@@ -30,62 +30,62 @@ class BranchWrapperBase{
 
 class BranchWrapperB  : public BranchWrapperBase{
   private:
-    bool value_;
+    bool value_ ;
   public:
     BranchWrapperB(std::string) ;
     ~BranchWrapperB(){} ;
-    void set(bool);
-    int  config(TTree*);
-    void beginEvent();
-    void endEvent();
+    void set(bool) ;
+    int  config(TTree*) ;
+    void beginEvent() ;
+    void endEvent() ;
 };
 
 class BranchWrapperD  : public BranchWrapperBase{
   private:
-    double value_;
+    double value_ ;
   public:
     BranchWrapperD(std::string) ;
     ~BranchWrapperD(){} ;
-    void set(double);
-    int  config(TTree*);
-    void beginEvent();
-    void endEvent();
+    void set(double) ;
+    int  config(TTree*) ;
+    void beginEvent() ;
+    void endEvent() ;
 };
 
 class BranchWrapperF  : public BranchWrapperBase{
   private:
-    float value_;
+    float value_ ;
   public:
     BranchWrapperF(std::string) ;
     ~BranchWrapperF(){} ;
-    void set(float);
-    int  config(TTree*);
-    void beginEvent();
-    void endEvent();
+    void set(float) ;
+    int  config(TTree*) ;
+    void beginEvent() ;
+    void endEvent() ;
 };
 
 class BranchWrapperI  : public BranchWrapperBase{
   private:
-    int value_;
+    int value_ ;
   public:
     BranchWrapperI(std::string) ;
     ~BranchWrapperI(){} ;
-    void set(int);
-    int  config(TTree*);
-    void beginEvent();
-    void endEvent();
+    void set(int) ;
+    int  config(TTree*) ;
+    void beginEvent() ;
+    void endEvent() ;
 };
 
 class BranchWrapperU  : public BranchWrapperBase{
   private:
-    int value_;
+    int value_ ;
   public:
     BranchWrapperU(std::string) ;
     ~BranchWrapperU(){} ;
-    void set(unsigned int);
-    int  config(TTree*);
-    void beginEvent();
-    void endEvent();
+    void set(unsigned int) ;
+    int  config(TTree*) ;
+    void beginEvent() ;
+    void endEvent() ;
 };
 
 
@@ -96,10 +96,10 @@ class BranchWrapperBV : public BranchWrapperBase{
   public:
     BranchWrapperBV(std::string) ;
     ~BranchWrapperBV() ;
-    void push(bool);
-    int config(TTree*);
-    void beginEvent();
-    void endEvent();
+    void push(bool) ;
+    int config(TTree*) ;
+    void beginEvent() ;
+    void endEvent() ;
 };
 
 class BranchWrapperDV : public BranchWrapperBase{
@@ -108,10 +108,10 @@ class BranchWrapperDV : public BranchWrapperBase{
   public:
     BranchWrapperDV(std::string) ;
     ~BranchWrapperDV() ;
-    void push(double);
-    int config(TTree*);
-    void beginEvent();
-    void endEvent();
+    void push(double) ;
+    int config(TTree*) ;
+    void beginEvent() ;
+    void endEvent() ;
 };
 
 class BranchWrapperFV : public BranchWrapperBase{
@@ -120,10 +120,10 @@ class BranchWrapperFV : public BranchWrapperBase{
   public:
     BranchWrapperFV(std::string) ;
     ~BranchWrapperFV() ;
-    void push(float);
-    int config(TTree*);
-    void beginEvent();
-    void endEvent();
+    void push(float) ;
+    int config(TTree*) ;
+    void beginEvent() ;
+    void endEvent() ;
 };
 
 class BranchWrapperIV : public BranchWrapperBase{
@@ -132,10 +132,10 @@ class BranchWrapperIV : public BranchWrapperBase{
   public:
     BranchWrapperIV(std::string) ;
     ~BranchWrapperIV() ;
-    void push(int);
-    int config(TTree*);
-    void beginEvent();
-    void endEvent();
+    void push(int) ;
+    int config(TTree*) ;
+    void beginEvent() ;
+    void endEvent() ;
 };
 
 class BranchWrapperUV : public BranchWrapperBase{
@@ -144,10 +144,10 @@ class BranchWrapperUV : public BranchWrapperBase{
   public:
     BranchWrapperUV(std::string) ;
     ~BranchWrapperUV() ;
-    void push(unsigned int);
-    int config(TTree*);
-    void beginEvent();
-    void endEvent();
+    void push(unsigned int) ;
+    int config(TTree*) ;
+    void beginEvent() ;
+    void endEvent() ;
 };
 
 
@@ -158,10 +158,10 @@ class BranchWrapperBVV: public BranchWrapperBase{
   public:
     BranchWrapperBVV(std::string) ;
     ~BranchWrapperBVV() ;
-    void push(std::vector<bool>);
-    int config(TTree*);
-    void beginEvent();
-    void endEvent();
+    void push(std::vector<bool>) ;
+    int config(TTree*) ;
+    void beginEvent() ;
+    void endEvent() ;
 };
 
 class BranchWrapperDVV: public BranchWrapperBase{
@@ -170,10 +170,10 @@ class BranchWrapperDVV: public BranchWrapperBase{
   public:
     BranchWrapperDVV(std::string) ;
     ~BranchWrapperDVV() ;
-    void push(std::vector<double>);
-    int config(TTree*);
-    void beginEvent();
-    void endEvent();
+    void push(std::vector<double>) ;
+    int config(TTree*) ;
+    void beginEvent() ;
+    void endEvent() ;
 };
 
 class BranchWrapperFVV: public BranchWrapperBase{
@@ -182,10 +182,10 @@ class BranchWrapperFVV: public BranchWrapperBase{
   public:
     BranchWrapperFVV(std::string) ;
     ~BranchWrapperFVV() ;
-    void push(std::vector<float>);
-    int config(TTree*);
-    void beginEvent();
-    void endEvent();
+    void push(std::vector<float>) ;
+    int config(TTree*) ;
+    void beginEvent() ;
+    void endEvent() ;
 };
 
 class BranchWrapperIVV: public BranchWrapperBase{
@@ -194,10 +194,10 @@ class BranchWrapperIVV: public BranchWrapperBase{
   public:
     BranchWrapperIVV(std::string) ;
     ~BranchWrapperIVV() ;
-    void push(std::vector<int>);
-    int config(TTree*);
-    void beginEvent();
-    void endEvent();
+    void push(std::vector<int>) ;
+    int config(TTree*) ;
+    void beginEvent() ;
+    void endEvent() ;
 };
 
 class BranchWrapperUVV: public BranchWrapperBase{
@@ -206,10 +206,10 @@ class BranchWrapperUVV: public BranchWrapperBase{
   public:
     BranchWrapperUVV(std::string) ;
     ~BranchWrapperUVV() ;
-    void push(std::vector<unsigned int>);
-    int config(TTree*);
-    void beginEvent();
-    void endEvent();
+    void push(std::vector<unsigned int>) ;
+    int config(TTree*) ;
+    void beginEvent() ;
+    void endEvent() ;
 };
 
 
