@@ -215,6 +215,7 @@ void IIHEModuleMuon::beginJob(){
   addBranch("mu_numberOfValidPixelHits") ;
   addBranch("mu_numberOfValidTrackerHits") ;
   addBranch("mu_numberOfValidMuonHits") ;
+  addBranch("mu_numberOfValidGEMHits") ;
   
   // TeV optimized values
   addBranch("mu_tevOptimized_charge", kVectorInt) ;
@@ -331,11 +332,15 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     int numberOfValidPixelHits   = 0 ;
     int numberOfValidTrackerHits = 0 ;
     int numberOfValidMuonHits    = 0 ;
+    int numberOfValidGEMHits    = 0 ;
     
     numberOfMatchStations = muIt->numberOfMatchedStations() ;
     if(isTrackerMuon) {
       numberOfValidPixelHits = muIt->innerTrack()->hitPattern().numberOfValidPixelHits() ;
       numberOfValidTrackerHits = muIt->innerTrack()->hitPattern().trackerLayersWithMeasurement() ;
+    }
+    if (isStandAloneMuon) {
+      numberOfValidGEMHits = muIt->standAloneMuon()->hitPattern().numberOfValidMuonGEMHits() ;
     }
     if (isGlobalMuon) {
       numberOfValidMuonHits = muIt->globalTrack()->hitPattern().numberOfValidMuonHits() ;
@@ -345,6 +350,7 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     store("mu_numberOfValidPixelHits" , numberOfValidPixelHits) ;
     store("mu_numberOfValidTrackerHits" , numberOfValidTrackerHits) ;
     store("mu_numberOfValidMuonHits"    , numberOfValidMuonHits   ) ;
+    store("mu_numberOfValidGEMHits"     , numberOfValidGEMHits    ) ;
     
     globalTrackWrapper_->reset() ;
     outerTrackWrapper_ ->reset() ;
