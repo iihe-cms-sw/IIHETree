@@ -30,9 +30,6 @@
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
 #include "RecoEgamma/EgammaElectronAlgos/interface/ElectronHcalHelper.h"
 
-
-
-
 #include "UserCode/IIHETree/interface/BranchWrapper.h"
 #include "UserCode/IIHETree/interface/IIHEAnalysis.h"
 
@@ -76,6 +73,8 @@ public:
   void store(std::string, std::vector<int         >);
   void store(std::string, std::vector<unsigned int>);
   void setBranchType(int);
+  
+  bool addValueToMetaTree(std::string, float) ;
   
   void   vetoEvent() ;
   void acceptEvent() ;
