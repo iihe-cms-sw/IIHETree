@@ -20,17 +20,21 @@ bool IIHEModule::addBranch(std::string name){
 void IIHEModule::  vetoEvent(){ parent_->  vetoEvent() ; }
 void IIHEModule::acceptEvent(){ parent_->acceptEvent() ; }
 
-void IIHEModule::store(std::string name, bool         value){ parent_->store(name, value) ; }
-void IIHEModule::store(std::string name, double       value){ parent_->store(name, value) ; }
-void IIHEModule::store(std::string name, float        value){ parent_->store(name, value) ; }
-void IIHEModule::store(std::string name, int          value){ parent_->store(name, value) ; }
-void IIHEModule::store(std::string name, unsigned int value){ parent_->store(name, value) ; }
+void IIHEModule::store(std::string name, bool                      value){ parent_->store(name, value) ; }
+void IIHEModule::store(std::string name, double                    value){ parent_->store(name, value) ; }
+void IIHEModule::store(std::string name, float                     value){ parent_->store(name, value) ; }
+void IIHEModule::store(std::string name, int                       value){ parent_->store(name, value) ; }
+void IIHEModule::store(std::string name, unsigned int              value){ parent_->store(name, value) ; }
 void IIHEModule::store(std::string name, std::vector<bool>         value){ parent_->store(name, value) ; }
 void IIHEModule::store(std::string name, std::vector<double>       value){ parent_->store(name, value) ; }
 void IIHEModule::store(std::string name, std::vector<float>        value){ parent_->store(name, value) ; }
 void IIHEModule::store(std::string name, std::vector<int>          value){ parent_->store(name, value) ; }
 void IIHEModule::store(std::string name, std::vector<unsigned int> value){ parent_->store(name, value) ; }
 void IIHEModule::setBranchType(int type){ parent_->setBranchType(type) ; }
+
+bool IIHEModule::addValueToMetaTree(std::string name, float value){
+  return parent_->addValueToMetaTree(name, value) ;
+}
 
 void IIHEModule::addToMCTruthWhitelist(std::vector<int> pdgIds){ parent_->addToMCTruthWhitelist(pdgIds) ; }
 
