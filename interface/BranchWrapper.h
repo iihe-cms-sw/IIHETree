@@ -24,8 +24,8 @@ class BranchWrapperBase{
     virtual int config(TTree*){return -1; } ;
   private:
     std::string name_ ;
-    bool is_filled_;
-    bool is_touched_;
+    bool is_filled_ ;
+    bool is_touched_ ;
 };
 
 class BranchWrapperB  : public BranchWrapperBase{
