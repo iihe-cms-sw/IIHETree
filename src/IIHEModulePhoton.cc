@@ -108,13 +108,19 @@ void IIHEModulePhoton::beginJob(){
   
   setBranchType(kVectorFloat) ;
   addBranch("ph_chargedHadronIso") ;
-  addBranch("ph_chargedHadronIsoWrongVtx") ;
+  
   addBranch("ph_neutralHadronIso") ;
   addBranch("ph_photonIso") ;
+  
+//CHOOSE_RELEASE_START DEFAULT CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0
+  addBranch("ph_chargedHadronIsoWrongVtx") ;
   addBranch("ph_sumChargedParticlePt") ;
   addBranch("ph_sumNeutralHadronEtHighThreshold") ;
   addBranch("ph_sumPhotonEtHighThreshold") ;
   addBranch("ph_sumPUPt") ;
+//CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0
+/*CHOOSE_RELEASE_START CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11
+CHOOSE_RELEASE_END CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11*/
   
   addBranch("ph_nClusterOutsideMustache", kVectorInt) ;
   addBranch("ph_etOutsideMustache") ;
@@ -207,13 +213,18 @@ void IIHEModulePhoton::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     store("ph_nTrkHollowConeDR03"            , phiter->nTrkHollowConeDR03()              ) ;
 
     store("ph_chargedHadronIso"               , phiter->chargedHadronIso()               ) ;
-    store("ph_chargedHadronIsoWrongVtx"       , phiter->chargedHadronIsoWrongVtx()       ) ;
     store("ph_neutralHadronIso"               , phiter->neutralHadronIso()               ) ;
     store("ph_photonIso"                      , phiter->photonIso()                      ) ;
+    
+//CHOOSE_RELEASE_START DEFAULT CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0
+    store("ph_chargedHadronIsoWrongVtx"       , phiter->chargedHadronIsoWrongVtx()       ) ;
     store("ph_sumChargedParticlePt"           , phiter->sumChargedParticlePt()           ) ;
     store("ph_sumNeutralHadronEtHighThreshold", phiter->sumNeutralHadronEtHighThreshold()) ;
     store("ph_sumPhotonEtHighThreshold"       , phiter->sumPhotonEtHighThreshold()       ) ;
     store("ph_sumPUPt"                        , phiter->sumPUPt()                        ) ;
+//CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0
+/*CHOOSE_RELEASE_START CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11
+CHOOSE_RELEASE_END CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11*/
 
     store("ph_nClusterOutsideMustache"        , phiter->nClusterOutsideMustache()        ) ;
     store("ph_etOutsideMustache"              , phiter->etOutsideMustache()              ) ;

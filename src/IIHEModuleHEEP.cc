@@ -346,7 +346,12 @@ void IIHEModuleHEEP::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   edm::ESHandle<CaloTopology> pTopology;
   iSetup.get<CaloTopologyRecord>().get(pTopology);
   
-  EcalClusterLazyTools lazytool(iEvent, iSetup, parent_->getReducedBarrelRecHitCollectionToken(), parent_->getReducedEndcapRecHitCollectionToken()) ;
+//CHOOSE_RELEASE_START CMSSW_7_3_0 CMSSW_7_2_0
+    EcalClusterLazyTools lazytool(iEvent, iSetup, parent_->getReducedBarrelRecHitCollectionToken(), parent_->getReducedEndcapRecHitCollectionToken()) ;
+//CHOOSE_RELEASE_END CMSSW_7_3_0 CMSSW_7_2_0
+/*CHOOSE_RELEASE_START DEFAULT
+    EcalClusterLazyTools lazytool(iEvent, iSetup, InputTag("reducedEcalRecHitsEB"),InputTag("reducedEcalRecHitsEE"),InputTag("reducedEcalRecHitsES"));
+CHOOSE_RELEASE_END DEFAULT*/
   
   reco::GsfElectronCollection electrons = parent_->getElectronCollection() ;
   for(reco::GsfElectronCollection::const_iterator gsfiter = electrons.begin() ; gsfiter!=electrons.end() ; ++gsfiter){
