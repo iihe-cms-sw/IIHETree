@@ -37,12 +37,12 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig){
   nEventsStored_ = 0 ;
   acceptEvent_ = false ;
   
-//    CHOOSE_RELEASE_START CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
+//CHOOSE_RELEASE_START DEFAULT
   beamSpotLabel_      = consumes<BeamSpot>(iConfig.getParameter<InputTag>("beamSpot")) ;
-//  CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1  
-/*   CHOOSE_RELEASE_START CMSSW_5_3_11
+//CHOOSE_RELEASE_END DEFAULT
+/*CHOOSE_RELEASE_START CMSSW_5_3_11
   beamSpotLabel_      = iConfig.getParameter<edm::InputTag>("beamSpot") ;
-  CHOOSE_RELEASE_END CMSSW_5_3_11  */
+CHOOSE_RELEASE_END CMSSW_5_3_11*/
   
   primaryVertexLabel_          = iConfig.getParameter<edm::InputTag>("primaryVertex") ;
   superClusterCollectionLabel_ = iConfig.getParameter<edm::InputTag>("superClusterCollection"  ) ;
@@ -53,12 +53,12 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig){
   reducedBarrelRecHitCollection_ = iConfig.getParameter<edm::InputTag>("reducedBarrelRecHitCollection") ;
   reducedEndcapRecHitCollection_ = iConfig.getParameter<edm::InputTag>("reducedEndcapRecHitCollection") ;
 
-//    CHOOSE_RELEASE_START CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
+//CHOOSE_RELEASE_START DEFAULT
   reducedBarrelRecHitCollectionToken_ = mayConsume<EcalRecHitCollection>(reducedBarrelRecHitCollection_) ;
   reducedEndcapRecHitCollectionToken_ = mayConsume<EcalRecHitCollection>(reducedEndcapRecHitCollection_) ; 
-//  CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1  
-/*   CHOOSE_RELEASE_START CMSSW_5_3_11
-  CHOOSE_RELEASE_END CMSSW_5_3_11  */
+//CHOOSE_RELEASE_END DEFAULT
+/*CHOOSE_RELEASE_START CMSSW_5_3_11
+CHOOSE_RELEASE_END CMSSW_5_3_11   */
 
   
   firstPrimaryVertex_ = new math::XYZPoint(0.0,0.0,0.0) ;
@@ -270,12 +270,12 @@ void IIHEAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   iEvent.getByLabel(        muonCollectionLabel_,         muonCollection_) ;
   iEvent.getByLabel(         primaryVertexLabel_,           pvCollection_) ;
   
-//    CHOOSE_RELEASE_START CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
+//CHOOSE_RELEASE_START DEFAULT
   iEvent.getByToken(beamSpotLabel_, beamspotHandle_) ;
-// CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1   
-/*   CHOOSE_RELEASE_START  CMSSW_5_3_11
+//CHOOSE_RELEASE_END DEFAULT
+/*CHOOSE_RELEASE_START CMSSW_5_3_11
   iEvent.getByLabel(beamSpotLabel_, beamspotHandle_) ;
-  CHOOSE_RELEASE_END CMSSW_5_3_11  */
+CHOOSE_RELEASE_END CMSSW_5_3_11*/
   
   beamspot_->SetXYZ(beamspotHandle_->position().x(),beamspotHandle_->position().y(),beamspotHandle_->position().z()) ;
   

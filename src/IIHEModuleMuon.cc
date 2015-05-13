@@ -220,6 +220,11 @@ void IIHEModuleMuon::beginJob(){
   addBranch("mu_numberOfValidPixelHits"  ) ;
   addBranch("mu_numberOfValidTrackerHits") ;
   addBranch("mu_numberOfValidMuonHits"   ) ;
+//CHOOSE_RELEASE_START CMSSW_6_2_0_SLHC23_patch1
+  addBranch("mu_numberOfValidGEMHits"    ) ;
+//CHOOSE_RELEASE_END CMSSW_6_2_0_SLHC23_patch1
+/*CHOOSE_RELEASE_START DEFAULT
+CHOOSE_RELEASE_END DEFAULT*/
   
   // TeV optimized values
   addBranch("mu_tevOptimized_charge", kVectorInt) ;
@@ -278,7 +283,7 @@ void IIHEModuleMuon::beginJob(){
   addBranch("mu_pfIsolationR04_sumPhotonEtHighThreshold"       ) ;
   addBranch("mu_pfIsolationR04_sumPUPt"                        ) ;
   
-//     CHOOSE_RELEASE_START CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
+//CHOOSE_RELEASE_START DEFAULT CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
   addBranch("mu_pfMeanDRIsoProfileR03_sumChargedHadronPt"             ) ;
   addBranch("mu_pfMeanDRIsoProfileR03_sumChargedParticlePt"           ) ;
   addBranch("mu_pfMeanDRIsoProfileR03_sumPhotonEt"                    ) ;
@@ -292,11 +297,9 @@ void IIHEModuleMuon::beginJob(){
   addBranch("mu_pfMeanDRIsoProfileR04_sumNeutralHadronEtHighThreshold") ;
   addBranch("mu_pfMeanDRIsoProfileR04_sumPhotonEtHighThreshold"       ) ;
   addBranch("mu_pfMeanDRIsoProfileR04_sumPUPt"                        ) ;
-//  CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 
-/*  CHOOSE_RELEASE_START  CMSSW_5_3_11
- CHOOSE_RELEASE_END CMSSW_5_3_11  */
-  
-  
+//CHOOSE_RELEASE_END DEFAULT CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
+/*CHOOSE_RELEASE_START  CMSSW_5_3_11
+CHOOSE_RELEASE_END CMSSW_5_3_11*/
 }
 
 // ------------ method called to for each event  ------------
@@ -334,9 +337,9 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     
     store("mu_isGlobalMuon"      , isGlobalMuon              ) ;
     store("mu_isStandAloneMuon"  , isStandAloneMuon          ) ;
-    store("mu_isTrackerMuon"     , isTrackerMuon             ) ;        
-    store("mu_isPFMuon"          , muIt->isPFMuon()          ) ;        
-    store("mu_isPFIsolationValid", muIt->isPFIsolationValid()) ; 
+    store("mu_isTrackerMuon"     , isTrackerMuon             ) ;
+    store("mu_isPFMuon"          , muIt->isPFMuon()          ) ;
+    store("mu_isPFIsolationValid", muIt->isPFIsolationValid()) ;
     
     int numberOfMatchStations    = 0 ;
     int numberOfValidPixelHits   = 0 ;
@@ -344,11 +347,12 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     int numberOfValidMuonHits    = 0 ;
     
     numberOfMatchStations = muIt->numberOfMatchedStations() ;
-    if(isTrackerMuon) {
+    if(isTrackerMuon){
       numberOfValidPixelHits = muIt->innerTrack()->hitPattern().numberOfValidPixelHits() ;
       numberOfValidTrackerHits = muIt->innerTrack()->hitPattern().trackerLayersWithMeasurement() ;
     }
-    if (isGlobalMuon) {
+    
+    if(isGlobalMuon){
       numberOfValidMuonHits = muIt->globalTrack()->hitPattern().numberOfValidMuonHits() ;
     }
     
@@ -356,6 +360,16 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     store("mu_numberOfValidPixelHits"  , numberOfValidPixelHits  ) ;
     store("mu_numberOfValidTrackerHits", numberOfValidTrackerHits) ;
     store("mu_numberOfValidMuonHits"   , numberOfValidMuonHits   ) ;
+    
+//CHOOSE_RELEASE_START CMSSW_6_2_0_SLHC23_patch1
+    int numberOfValidGEMHits     = 0 ;
+    if(isStandAloneMuon){
+      numberOfValidGEMHits = muIt->standAloneMuon()->hitPattern().numberOfValidMuonGEMHits() ;
+    }
+    store("mu_numberOfValidGEMHits"    , numberOfValidGEMHits    ) ;
+//CHOOSE_RELEASE_END CMSSW_6_2_0_SLHC23_patch1
+/*CHOOSE_RELEASE_START DEFAULT
+CHOOSE_RELEASE_END DEFAULT*/
     
     globalTrackWrapper_->reset() ;
     outerTrackWrapper_ ->reset() ;
@@ -478,7 +492,7 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     store("mu_pfIsolationR04_sumPhotonEtHighThreshold"       , pfIso40.sumPhotonEtHighThreshold       ) ;
     store("mu_pfIsolationR04_sumPUPt"                        , pfIso40.sumPUPt                        ) ;
 
-//   CHOOSE_RELEASE_START CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
+//CHOOSE_RELEASE_START DEFAULT CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
     const MuonPFIsolation pfMeanIso30 = muIt->pfMeanDRIsoProfileR03() ;
     const MuonPFIsolation pfMeanIso40 = muIt->pfMeanDRIsoProfileR04() ;
 
@@ -495,9 +509,9 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     store("mu_pfMeanDRIsoProfileR04_sumNeutralHadronEtHighThreshold", pfMeanIso40.sumNeutralHadronEtHighThreshold) ;
     store("mu_pfMeanDRIsoProfileR04_sumPhotonEtHighThreshold"       , pfMeanIso40.sumPhotonEtHighThreshold       ) ;
     store("mu_pfMeanDRIsoProfileR04_sumPUPt"                        , pfMeanIso40.sumPUPt                        ) ;
-//  CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 
-/*  CHOOSE_RELEASE_START  CMSSW_5_3_11
- CHOOSE_RELEASE_END CMSSW_5_3_11  */
+//CHOOSE_RELEASE_END DEFAULT CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
+/*CHOOSE_RELEASE_START  CMSSW_5_3_11
+CHOOSE_RELEASE_END CMSSW_5_3_11*/
 
   }
   store("mu_gt_n", mu_gt_n) ;
