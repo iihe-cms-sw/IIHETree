@@ -86,6 +86,8 @@ public:
   int  saveToFile(TObject*) ;
   void listBranches() ;
   
+  bool addValueToMetaTree(std::string, float) ;
+  
   // MC truth
   void addToMCTruthWhitelist(std::vector<int>) ;
   std::vector<int> getMCTruthWhitelist(){ return MCTruthWhitelist_ ; }
