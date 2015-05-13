@@ -213,13 +213,13 @@ CHOOSE_RELEASE_END CMSSW_5_3_11*/
   
   // MC truth module
   std::vector<int> MCTruthWhitelist_ ;
-
-  // config parameters -------------------------------
-  TFile* mainFile_ ;
-  TTree* dataTree_ ;
-  TTree* metaTree_ ;
   
   std::vector<IIHEModule*> childModules_;
+  
+  std::vector<BranchWrapperF*> metaTreePars_ ;
+  
+  TTree* dataTree_ ;
+  TTree* metaTree_ ;
 };
 #endif
 //define this as a plug-in
