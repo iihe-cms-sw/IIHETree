@@ -361,15 +361,15 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     store("mu_numberOfValidTrackerHits", numberOfValidTrackerHits) ;
     store("mu_numberOfValidMuonHits"   , numberOfValidMuonHits   ) ;
     
-//CHOOSE_RELEASE_START CMSSW_6_2_0_SLHC23_patch1
+/*CHOOSE_RELEASE_START CMSSW_6_2_0_SLHC23_patch1
     int numberOfValidGEMHits     = 0 ;
     if(isStandAloneMuon){
       numberOfValidGEMHits = muIt->standAloneMuon()->hitPattern().numberOfValidMuonGEMHits() ;
     }
     store("mu_numberOfValidGEMHits"    , numberOfValidGEMHits    ) ;
-//CHOOSE_RELEASE_END CMSSW_6_2_0_SLHC23_patch1
-/*CHOOSE_RELEASE_START DEFAULT
-CHOOSE_RELEASE_END DEFAULT*/
+CHOOSE_RELEASE_END CMSSW_6_2_0_SLHC23_patch1*/
+//CHOOSE_RELEASE_START DEFAULT
+CHOOSE_RELEASE_END DEFAULT//
     
     globalTrackWrapper_->reset() ;
     outerTrackWrapper_ ->reset() ;
