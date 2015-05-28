@@ -46,9 +46,9 @@ IIHEAnalysis::IIHEAnalysis(const edm::ParameterSet& iConfig){
   metaTree_->Branch("git_hash" , &git_hash_ ) ;
   metaTree_->Branch("globalTag", &globalTag_) ;
   
-//CHOOSE_RELEASE_START DEFAULT
+//CHOOSE_RELEASE_START DEFAULT CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
   beamSpotLabel_      = consumes<BeamSpot>(iConfig.getParameter<InputTag>("beamSpot")) ;
-//CHOOSE_RELEASE_END DEFAULT
+//CHOOSE_RELEASE_END DEFAULT CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
 /*CHOOSE_RELEASE_START CMSSW_5_3_11
   beamSpotLabel_      = iConfig.getParameter<edm::InputTag>("beamSpot") ;
 CHOOSE_RELEASE_END CMSSW_5_3_11*/
@@ -62,10 +62,10 @@ CHOOSE_RELEASE_END CMSSW_5_3_11*/
   reducedBarrelRecHitCollection_ = iConfig.getParameter<edm::InputTag>("reducedBarrelRecHitCollection") ;
   reducedEndcapRecHitCollection_ = iConfig.getParameter<edm::InputTag>("reducedEndcapRecHitCollection") ;
 
-//CHOOSE_RELEASE_START DEFAULT
+//CHOOSE_RELEASE_START DEFAULT CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
   reducedBarrelRecHitCollectionToken_ = mayConsume<EcalRecHitCollection>(reducedBarrelRecHitCollection_) ;
   reducedEndcapRecHitCollectionToken_ = mayConsume<EcalRecHitCollection>(reducedEndcapRecHitCollection_) ; 
-//CHOOSE_RELEASE_END DEFAULT
+//CHOOSE_RELEASE_END DEFAULT CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
 /*CHOOSE_RELEASE_START CMSSW_5_3_11
 CHOOSE_RELEASE_END CMSSW_5_3_11  */
   
@@ -278,9 +278,9 @@ void IIHEAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   iEvent.getByLabel(        muonCollectionLabel_,         muonCollection_) ;
   iEvent.getByLabel(         primaryVertexLabel_,           pvCollection_) ;
   
-//CHOOSE_RELEASE_START DEFAULT
+//CHOOSE_RELEASE_START DEFAULT CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
   iEvent.getByToken(beamSpotLabel_, beamspotHandle_) ;
-// CHOOSE_RELEASE_END DEFAULT
+// CHOOSE_RELEASE_END DEFAULT CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
 /*CHOOSE_RELEASE_START CMSSW_5_3_11
   iEvent.getByLabel(beamSpotLabel_, beamspotHandle_) ;
 CHOOSE_RELEASE_END CMSSW_5_3_11*/

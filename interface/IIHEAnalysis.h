@@ -53,9 +53,9 @@ friend class IIHEModuleVertex ;
 friend class IIHEModuleMuon ;
 
 private:
-//CHOOSE_RELEASE_START DEFAULT
+//CHOOSE_RELEASE_START DEFAULT CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
   edm::EDGetTokenT<reco::BeamSpot> beamSpotLabel_ ;
-//CHOOSE_RELEASE_END DEFAULT
+// CHOOSE_RELEASE_END DEFAULT CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
 /*CHOOSE_RELEASE_START CMSSW_5_3_11
   edm::InputTag beamSpotLabel_ ;
 CHOOSE_RELEASE_END CMSSW_5_3_11*/
@@ -118,15 +118,15 @@ public:
   math::XYZPoint* getFirstPrimaryVertex(){ return firstPrimaryVertex_ ; }
   math::XYZPoint* getBeamspot(){ return beamspot_ ; }
   
-// CHOOSE_RELEASE_START DEFAULT
+/* CHOOSE_RELEASE_START DEFAULT
   edm::EDGetTokenT<EcalRecHitCollection> getReducedBarrelRecHitCollectionToken(){ return reducedBarrelRecHitCollectionToken_ ; }
   edm::EDGetTokenT<EcalRecHitCollection> getReducedEndcapRecHitCollectionToken(){ return reducedEndcapRecHitCollectionToken_ ; }
   edm::EDGetTokenT<EcalRecHitCollection>     getReducedESRecHitCollectionToken(){ return     reducedESRecHitCollectionToken_ ; }
-// CHOOSE_RELEASE_END DEFAULT
-/* CHOOSE_RELEASE_START CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
+ CHOOSE_RELEASE_END DEFAULT*/
+// CHOOSE_RELEASE_START CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
   edm::EDGetTokenT<EcalRecHitCollection> getReducedBarrelRecHitCollectionToken(){ return reducedBarrelRecHitCollectionToken_ ; }
   edm::EDGetTokenT<EcalRecHitCollection> getReducedEndcapRecHitCollectionToken(){ return reducedEndcapRecHitCollectionToken_ ; }
-CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1*/
+//CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
 /* CHOOSE_RELEASE_START CMSSW_5_3_11
   edm::InputTag getReducedBarrelRecHitCollectionToken(){ return reducedBarrelRecHitCollection_ ; }
   edm::InputTag getReducedEndcapRecHitCollectionToken(){ return reducedEndcapRecHitCollection_ ; }
@@ -205,15 +205,15 @@ private:
   edm::InputTag reducedBarrelRecHitCollection_ ;
   edm::InputTag reducedEndcapRecHitCollection_ ;
   
-//CHOOSE_RELEASE_START DEFAULT
+/*CHOOSE_RELEASE_START DEFAULT
   edm::EDGetTokenT<EcalRecHitCollection> reducedBarrelRecHitCollectionToken_ ;
   edm::EDGetTokenT<EcalRecHitCollection> reducedEndcapRecHitCollectionToken_ ;
   edm::EDGetTokenT<EcalRecHitCollection>     reducedESRecHitCollectionToken_ ;
-// CHOOSE_RELEASE_END DEFAULT
-/*CHOOSE_RELEASE_START CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
+ CHOOSE_RELEASE_END DEFAULT*/
+//CHOOSE_RELEASE_START CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
   edm::EDGetTokenT<EcalRecHitCollection> reducedBarrelRecHitCollectionToken_ ;
   edm::EDGetTokenT<EcalRecHitCollection> reducedEndcapRecHitCollectionToken_ ;
-CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1*/
+//CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
 /*CHOOSE_RELEASE_START CMSSW_5_3_11
 CHOOSE_RELEASE_END CMSSW_5_3_11*/
     
