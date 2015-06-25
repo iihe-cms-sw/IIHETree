@@ -9,7 +9,8 @@ enum ZTypes{
   kJmm,
   kYmm,
   kZeeg,
-  kZmmg
+  kZmmg,
+  kZem
 };
 
 // class decleration
@@ -28,6 +29,7 @@ private:
    
   int nAcceptZee_  ;
   int nAcceptZmm_  ;
+  int nAcceptZem_  ;
   int nAcceptJmm_  ;
   int nAcceptYmm_  ;
   int nAcceptZeeg_ ;

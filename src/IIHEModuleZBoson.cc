@@ -25,6 +25,7 @@ IIHEModuleZBoson::~IIHEModuleZBoson(){}
 void IIHEModuleZBoson::beginJob(){
   nAcceptZee_  = 0 ;
   nAcceptZmm_  = 0 ;
+  nAcceptZem_  = 0 ;
   nAcceptJmm_  = 0 ;
   nAcceptYmm_  = 0 ;
   nAcceptZeeg_ = 0 ;
@@ -43,11 +44,18 @@ void IIHEModuleZBoson::beginJob(){
   addBranch("Zmm_i2"   , kVectorInt  ) ;
   addBranch("Zmm_highestMass", kInt  ) ;
   
-  addBranch("Zeeg_n"   , kInt        ) ;
-  addBranch("Zeeg_mass", kVectorFloat) ;
-  addBranch("Zeeg_i1"  , kVectorInt  ) ;
-  addBranch("Zeeg_i2"  , kVectorInt  ) ;
-  addBranch("Zeeg_iph" , kVectorInt  ) ;
+  addBranch("Zem_n"          , kInt        ) ;
+  addBranch("Zem_mass"       , kVectorFloat) ;
+  addBranch("Zem_mass_HEEP"  , kVectorFloat) ;
+  addBranch("Zem_i1"         , kVectorInt  ) ;
+  addBranch("Zem_i2"         , kVectorInt  ) ;
+  addBranch("Zem_highestMass", kInt  ) ;
+  
+  addBranch("Zeeg_n"          , kInt        ) ;
+  addBranch("Zeeg_mass"       , kVectorFloat) ;
+  addBranch("Zeeg_i1"         , kVectorInt  ) ;
+  addBranch("Zeeg_i2"         , kVectorInt  ) ;
+  addBranch("Zeeg_iph"        , kVectorInt  ) ;
   addBranch("Zeeg_highestMass", kInt ) ;
   
   addBranch("Zmmg_n"   , kInt        ) ;
@@ -72,6 +80,7 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   std::vector<TLorentzVector> php4s ;
   std::vector<TLorentzVector> elp4s ;
   std::vector<TLorentzVector> mup4s ;
+  std::vector<TLorentzVector> HEEPp4s ;
   
   for(reco::PhotonCollection::const_iterator phiter = photons.begin() ; phiter!=photons.end() ; ++phiter){
     float px = phiter->px() ;
@@ -87,6 +96,14 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     float pz = gsfiter->pz() ;
     float E = sqrt(mEl*mEl+px*px+py*py+pz*pz) ;
     elp4s.push_back(TLorentzVector(px, py, pz, E)) ;
+    
+    float HEEP_ET  = gsfiter->caloEnergy()*sin(gsfiter->p4().theta()) ;
+    float HEEP_eta = gsfiter->superCluster()->eta() ;
+    float HEEP_phi = gsfiter->superCluster()->phi() ;
+    float HEEP_E   = gsfiter->caloEnergy() ;
+    TLorentzVector HEEPp4 ;
+    HEEPp4.SetPtEtaPhiE(HEEP_ET, HEEP_eta, HEEP_phi, HEEP_E) ;
+    HEEPp4s.push_back(HEEPp4) ;
   }
   
   for(reco::MuonCollection::const_iterator muiter = muons.begin(); muiter!=muons.end() ; ++muiter){
@@ -103,6 +120,7 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   int acceptThisEvent = 0 ;
   bool acceptZee  = false ;
   bool acceptZmm  = false ;
+  bool acceptZem  = false ;
   bool acceptJmm  = false ;
   bool acceptYmm  = false ;
   bool acceptZeeg = false ;
@@ -110,16 +128,19 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   
   int Zee_n  = 0 ;
   int Zmm_n  = 0 ;
+  int Zem_n  = 0 ;
   int Zeeg_n = 0 ;
   int Zmmg_n = 0 ;
   
   float Zee_highestMass  = 0 ;
   float Zmm_highestMass  = 0 ;
+  float Zem_highestMass  = 0 ;
   float Zeeg_highestMass = 0 ;
   float Zmmg_highestMass = 0 ;
   
   int Zee_highestMassIndex  = -1 ;
   int Zmm_highestMassIndex  = -1 ;
+  int Zem_highestMassIndex  = -1 ;
   int Zeeg_highestMassIndex = -1 ;
   int Zmmg_highestMassIndex = -1 ;
   
@@ -127,8 +148,10 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   for(unsigned int i1=0 ; i1<elp4s.size() ; ++i1){
     for(unsigned int i2=i1+1 ; i2<elp4s.size() ; ++i2){
       if(elp4s.at(i1).DeltaR(elp4s.at(i2)) < DeltaRCut_) continue ;
-      TLorentzVector Zeep4 = elp4s.at(i1) + elp4s.at(i2) ;
+      TLorentzVector Zeep4     = elp4s  .at(i1) + elp4s  .at(i2) ;
+      TLorentzVector ZeeHEEPp4 = HEEPp4s.at(i1) + HEEPp4s.at(i2) ;
       float mZee = Zeep4.M() ;
+      float mZee_HEEP = ZeeHEEPp4.M() ;
       
       // Look for Z->eeg candidates
       for(unsigned iph=0 ; iph<php4s.size() ; ++iph){
@@ -157,10 +180,11 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
       }
       
       // Check to see if we're in the range we want
-      if(mZee<mZLowerCutoff_) continue ;
-      if(mZee>mZUpperCutoff_) continue ;
+      if(mZee<mZLowerCutoff_ && mZee_HEEP<mZLowerCutoff_) continue ;
+      if(mZee>mZUpperCutoff_ && mZee_HEEP>mZUpperCutoff_) continue ;
       
       store("Zee_mass", mZee) ;
+      store("Zee_mass_HEEP", mZee_HEEP) ;
       store("Zee_i1"  , i1) ;
       store("Zee_i2"  , i2) ;
       if(mZee>mZAccept_){
@@ -231,6 +255,33 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
       Zmm_n++ ;
     }
   }
+  for(unsigned int i1=0 ; i1<elp4s.size() ; ++i1){
+    for(unsigned int i2=i1+1 ; i2<mup4s.size() ; ++i2){
+      if(elp4s.at(i1).DeltaR(mup4s.at(i2)) < DeltaRCut_) continue ;
+      TLorentzVector Zemp4     = elp4s  .at(i1) + mup4s.at(i2) ;
+      TLorentzVector ZemHEEPp4 = HEEPp4s.at(i1) + mup4s.at(i2) ;
+      float mZem = Zemp4.M() ;
+      float mZem_HEEP = ZemHEEPp4.M() ;
+      
+      // Check to see if we're in the range we want
+      if(mZem<mZLowerCutoff_ && mZem_HEEP<mZLowerCutoff_) continue ;
+      if(mZem>mZUpperCutoff_ && mZem_HEEP>mZUpperCutoff_) continue ;
+      
+      store("Zem_mass", mZem) ;
+      store("Zem_mass_HEEP", mZem_HEEP) ;
+      store("Zem_i1"  , i1) ;
+      store("Zem_i2"  , i2) ;
+      if(mZem>mZAccept_){
+        acceptThisEvent += pow(10, (int)kZem) ;
+        acceptZem = true ;
+      }
+      if(mZem>Zem_highestMass){
+        Zem_highestMass = mZem ;
+        Zem_highestMassIndex = Zem_n ;
+      }
+      Zem_n++ ;
+    }
+  }
   
   // Save the event if we see something we like
   if(acceptThisEvent>0){
@@ -239,6 +290,7 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   }
   if(acceptZee ) nAcceptZee_ ++ ;
   if(acceptZmm ) nAcceptZmm_ ++ ;
+  if(acceptZem ) nAcceptZem_ ++ ;
   if(acceptJmm ) nAcceptJmm_ ++ ;
   if(acceptYmm ) nAcceptYmm_ ++ ;
   if(acceptZeeg) nAcceptZeeg_++ ;
@@ -246,11 +298,13 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   
   store("Zee_n" , Zee_n ) ;
   store("Zmm_n" , Zmm_n ) ;
+  store("Zem_n" , Zem_n ) ;
   store("Zeeg_n", Zeeg_n) ;
   store("Zmmg_n", Zmmg_n) ;
   
   store("Zee_highestMass" , Zee_highestMassIndex ) ;
   store("Zmm_highestMass" , Zmm_highestMassIndex ) ;
+  store("Zem_highestMass" , Zem_highestMassIndex ) ;
   store("Zeeg_highestMass", Zeeg_highestMassIndex) ;
   store("Zmmg_highestMass", Zmmg_highestMassIndex) ;
 }
@@ -265,6 +319,7 @@ void IIHEModuleZBoson::endJob(){
   std::cout << std::endl << "IIHEModuleZBoson report:" << std::endl ;
   std::cout << "  nAcceptZee  = " << nAcceptZee_  << std::endl ;
   std::cout << "  nAcceptZmm  = " << nAcceptZmm_  << std::endl ;
+  std::cout << "  nAcceptZem  = " << nAcceptZem_  << std::endl ;
   std::cout << "  nAcceptJmm  = " << nAcceptJmm_  << std::endl ;
   std::cout << "  nAcceptYmm  = " << nAcceptYmm_  << std::endl ;
   std::cout << "  nAcceptZeeg = " << nAcceptZeeg_ << std::endl ;
