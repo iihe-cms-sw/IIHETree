@@ -43,24 +43,53 @@ IIHEModuleHEEP::IIHEModuleHEEP(const edm::ParameterSet& iConfig): IIHEModule(iCo
   storeHEEP41_    = iConfig.getUntrackedParameter<bool>("storeHEEP41"    , true ) ;
   storeHEEP50_50_ = iConfig.getUntrackedParameter<bool>("storeHEEP50_50" , true ) ;
   storeHEEP50_25_ = iConfig.getUntrackedParameter<bool>("storeHEEP50_25" , true ) ;
-  storeHEEP50_    = iConfig.getUntrackedParameter<bool>("storeHEEP50_"   , true ) ;
-  storeHEEP51_    = iConfig.getUntrackedParameter<bool>("storeHEEP51_"   , true ) ;
+  storeHEEP50_    = iConfig.getUntrackedParameter<bool>("storeHEEP50"    , true ) ;
+  storeHEEP51_    = iConfig.getUntrackedParameter<bool>("storeHEEP51"    , true ) ;
 
   rho_ = iConfig.getUntrackedParameter<double>("kt6PFJets:rho", 0.0) ;
   
   // Acceptance
-  addHEEPParameter(kHC4, "EtThresholdBarrel", "HEEP_EtThresholdBarrel_4", 35.0  ) ;
-  addHEEPParameter(kHC4, "EtThresholdEndcap", "HEEP_EtThresholdBarrel_4", 35.0  ) ;
-  addHEEPParameter(kHC4, "EtThresholdBarrel", "HEEP_EtThresholdBarrel_5", 35.0  ) ;
-  addHEEPParameter(kHC4, "EtThresholdEndcap", "HEEP_EtThresholdBarrel_5", 35.0  ) ;
+  addHEEPParameter(kHC4      , "EtThresholdBarrel", "HEEP_EtThresholdBarrel_4", 35.0  ) ;
+  addHEEPParameter(kHC41     , "EtThresholdBarrel", "HEEP_EtThresholdBarrel_4", 35.0  ) ;
+  addHEEPParameter(kHC5      , "EtThresholdBarrel", "HEEP_EtThresholdBarrel_5", 35.0  ) ;
+  addHEEPParameter(kHC50_50ns, "EtThresholdBarrel", "HEEP_EtThresholdBarrel_5", 35.0  ) ;
+  addHEEPParameter(kHC50_25ns, "EtThresholdBarrel", "HEEP_EtThresholdBarrel_5", 35.0  ) ;
+  addHEEPParameter(kHC50     , "EtThresholdBarrel", "HEEP_EtThresholdBarrel_5", 35.0  ) ;
+  addHEEPParameter(kHC51     , "EtThresholdBarrel", "HEEP_EtThresholdBarrel_5", 35.0  ) ;
   
-  addHEEPParameter(kHC4, "barrelEtaUpper"   , "HEEP_barrelEtaUpper_4"   , 1.442 ) ;
-  addHEEPParameter(kHC4, "endcapEtaLower"   , "HEEP_endcapEtaLower_4"   , 1.56  ) ;
-  addHEEPParameter(kHC4, "endcapEtaUpper"   , "HEEP_endcapEtaUpper_4"   , 2.5   ) ;
-  addHEEPParameter(kHC5, "barrelEtaUpper"   , "HEEP_barrelEtaUpper_5"   , 1.4442) ;
-  addHEEPParameter(kHC5, "endcapEtaLower"   , "HEEP_endcapEtaLower_5"   , 1.556 ) ;
-  addHEEPParameter(kHC5, "endcapEtaUpper"   , "HEEP_endcapEtaUpper_5"   , 2.5   ) ;
+  addHEEPParameter(kHC4      , "EtThresholdEndcap", "HEEP_EtThresholdBarrel_4", 35.0  ) ;
+  addHEEPParameter(kHC41     , "EtThresholdEndcap", "HEEP_EtThresholdBarrel_4", 35.0  ) ;
+  addHEEPParameter(kHC5      , "EtThresholdEndcap", "HEEP_EtThresholdBarrel_5", 35.0  ) ;
+  addHEEPParameter(kHC50_50ns, "EtThresholdEndcap", "HEEP_EtThresholdBarrel_5", 35.0  ) ;
+  addHEEPParameter(kHC50_25ns, "EtThresholdEndcap", "HEEP_EtThresholdBarrel_5", 35.0  ) ;
+  addHEEPParameter(kHC50     , "EtThresholdEndcap", "HEEP_EtThresholdBarrel_5", 35.0  ) ;
+  addHEEPParameter(kHC51     , "EtThresholdEndcap", "HEEP_EtThresholdBarrel_5", 35.0  ) ;
   
+  addHEEPParameter(kHC4      , "barrelEtaUpper"   , "HEEP_barrelEtaUpper_4"   , 1.442 ) ;
+  addHEEPParameter(kHC41     , "barrelEtaUpper"   , "HEEP_barrelEtaUpper_4"   , 1.442 ) ;
+  addHEEPParameter(kHC5      , "barrelEtaUpper"   , "HEEP_barrelEtaUpper_5"   , 1.4442) ;
+  addHEEPParameter(kHC50_50ns, "barrelEtaUpper"   , "HEEP_barrelEtaUpper_5"   , 1.4442) ;
+  addHEEPParameter(kHC50_25ns, "barrelEtaUpper"   , "HEEP_barrelEtaUpper_5"   , 1.4442) ;
+  addHEEPParameter(kHC50     , "barrelEtaUpper"   , "HEEP_barrelEtaUpper_5"   , 1.4442) ;
+  addHEEPParameter(kHC51     , "barrelEtaUpper"   , "HEEP_barrelEtaUpper_5"   , 1.4442) ;
+  
+  addHEEPParameter(kHC4      , "endcapEtaLower"   , "HEEP_endcapEtaLower_4"   , 1.56  ) ;
+  addHEEPParameter(kHC41     , "endcapEtaLower"   , "HEEP_endcapEtaLower_4"   , 1.56  ) ;
+  addHEEPParameter(kHC5      , "endcapEtaLower"   , "HEEP_endcapEtaLower_5"   , 1.556 ) ;
+  addHEEPParameter(kHC50_50ns, "endcapEtaLower"   , "HEEP_endcapEtaLower_5"   , 1.556 ) ;
+  addHEEPParameter(kHC50_25ns, "endcapEtaLower"   , "HEEP_endcapEtaLower_5"   , 1.556 ) ;
+  addHEEPParameter(kHC50     , "endcapEtaLower"   , "HEEP_endcapEtaLower_5"   , 1.556 ) ;
+  addHEEPParameter(kHC51     , "endcapEtaLower"   , "HEEP_endcapEtaLower_5"   , 1.556 ) ;
+  
+  addHEEPParameter(kHC4      , "endcapEtaUpper"   , "HEEP_endcapEtaUpper_4"   , 2.5   ) ;
+  addHEEPParameter(kHC41     , "endcapEtaUpper"   , "HEEP_endcapEtaUpper_4"   , 2.5   ) ;
+  addHEEPParameter(kHC5      , "endcapEtaUpper"   , "HEEP_endcapEtaUpper_5"   , 2.5   ) ;
+  addHEEPParameter(kHC50_50ns, "endcapEtaUpper"   , "HEEP_endcapEtaUpper_5"   , 2.5   ) ;
+  addHEEPParameter(kHC50_25ns, "endcapEtaUpper"   , "HEEP_endcapEtaUpper_5"   , 2.5   ) ;
+  addHEEPParameter(kHC50     , "endcapEtaUpper"   , "HEEP_endcapEtaUpper_5"   , 2.5   ) ;
+  addHEEPParameter(kHC51     , "endcapEtaUpper"   , "HEEP_endcapEtaUpper_5"   , 2.5   ) ;
+  
+  // ID
   addHEEPParameter(kHC41     , "dEtaInThresholdBarrel"                  , "HEEP_dEtaInThresholdBarrel_41"                        , 0.005  ) ;
   addHEEPParameter(kHC41     , "dEtaInThresholdEndcap"                  , "HEEP_dEtaInThresholdEndcap_41"                        , 0.007  ) ;
   addHEEPParameter(kHC50_50ns, "dEtaInConstantTermBarrel"               , "HEEP_dEtaInConstantTermBarrel_50_50ns"                , 0.016  ) ;
@@ -129,79 +158,79 @@ IIHEModuleHEEP::IIHEModuleHEEP(const edm::ParameterSet& iConfig): IIHEModule(iCo
   addHEEPParameter(kHC51     , "E1x5threshold"                          , "HEEP_E1x5threshold_51"                                , 0.83) ;
   addHEEPParameter(kHC51     , "E2x5threshold"                          , "HEEP_E2x5threshold_51"                                , 0.94) ;
   
-  addHEEPParameter(kHC41     , "missingHitsThreshold"                   , "HEEP_missingHitsThreshold_41"                         , 1) ;
-  addHEEPParameter(kHC50_50ns, "missingHitsThreshold"                   , "HEEP_missingHitsThreshold_50_50ns"                    , 1) ;
-  addHEEPParameter(kHC50_25ns, "missingHitsThreshold"                   , "HEEP_missingHitsThreshold_50_25ns"                    , 1) ;
-  addHEEPParameter(kHC50     , "missingHitsThreshold"                   , "HEEP_missingHitsThreshold_50"                         , 1) ;
-  addHEEPParameter(kHC51     , "missingHitsThreshold"                   , "HEEP_missingHitsThreshold_51"                         , 1) ;
+  addHEEPParameter(kHC41     , "missingHitsThreshold"                   , "HEEP_missingHitsThreshold_41"                         , 1   ) ;
+  addHEEPParameter(kHC50_50ns, "missingHitsThreshold"                   , "HEEP_missingHitsThreshold_50_50ns"                    , 1   ) ;
+  addHEEPParameter(kHC50_25ns, "missingHitsThreshold"                   , "HEEP_missingHitsThreshold_50_25ns"                    , 1   ) ;
+  addHEEPParameter(kHC50     , "missingHitsThreshold"                   , "HEEP_missingHitsThreshold_50"                         , 1   ) ;
+  addHEEPParameter(kHC51     , "missingHitsThreshold"                   , "HEEP_missingHitsThreshold_51"                         , 1   ) ;
   
-  addHEEPParameter(kHC41     , "dxyFirstPvThresholdBarrel"              , "HEEP_dxyFirstPvThresholdBarrel_41"                   , 0.02) ;
-  addHEEPParameter(kHC41     , "dxyFirstPvThresholdEndcap"              , "HEEP_dxyFirstPvThresholdEndcap_41"                   , 0.05) ;
-  addHEEPParameter(kHC50_50ns, "dxyFirstPvThresholdBarrel"              , "HEEP_dxyFirstPvThresholdBarrel_50_50ns"              , 0.02) ;
-  addHEEPParameter(kHC50_50ns, "dxyFirstPvThresholdEndcap"              , "HEEP_dxyFirstPvThresholdEndcap_50_50ns"              , 0.05) ;
-  addHEEPParameter(kHC50_25ns, "dxyFirstPvThresholdBarrel"              , "HEEP_dxyFirstPvThresholdBarrel_50_25ns"              , 0.02) ;
-  addHEEPParameter(kHC50_25ns, "dxyFirstPvThresholdEndcap"              , "HEEP_dxyFirstPvThresholdEndcap_50_25ns"              , 0.05) ;
-  addHEEPParameter(kHC50     , "dxyFirstPvThresholdBarrel"              , "HEEP_dxyFirstPvThresholdBarrel_50"                   , 0.02) ;
-  addHEEPParameter(kHC50     , "dxyFirstPvThresholdEndcap"              , "HEEP_dxyFirstPvThresholdEndcap_50"                   , 0.05) ;
-  addHEEPParameter(kHC51     , "dxyFirstPvThresholdBarrel"              , "HEEP_dxyFirstPvThresholdBarrel_51"                   , 0.02) ;
-  addHEEPParameter(kHC51     , "dxyFirstPvThresholdEndcap"              , "HEEP_dxyFirstPvThresholdEndcap_51"                   , 0.05) ;
+  addHEEPParameter(kHC41     , "dxyFirstPvThresholdBarrel"              , "HEEP_dxyFirstPvThresholdBarrel_41"                    , 0.02) ;
+  addHEEPParameter(kHC41     , "dxyFirstPvThresholdEndcap"              , "HEEP_dxyFirstPvThresholdEndcap_41"                    , 0.05) ;
+  addHEEPParameter(kHC50_50ns, "dxyFirstPvThresholdBarrel"              , "HEEP_dxyFirstPvThresholdBarrel_50_50ns"               , 0.02) ;
+  addHEEPParameter(kHC50_50ns, "dxyFirstPvThresholdEndcap"              , "HEEP_dxyFirstPvThresholdEndcap_50_50ns"               , 0.05) ;
+  addHEEPParameter(kHC50_25ns, "dxyFirstPvThresholdBarrel"              , "HEEP_dxyFirstPvThresholdBarrel_50_25ns"               , 0.02) ;
+  addHEEPParameter(kHC50_25ns, "dxyFirstPvThresholdEndcap"              , "HEEP_dxyFirstPvThresholdEndcap_50_25ns"               , 0.05) ;
+  addHEEPParameter(kHC50     , "dxyFirstPvThresholdBarrel"              , "HEEP_dxyFirstPvThresholdBarrel_50"                    , 0.02) ;
+  addHEEPParameter(kHC50     , "dxyFirstPvThresholdEndcap"              , "HEEP_dxyFirstPvThresholdEndcap_50"                    , 0.05) ;
+  addHEEPParameter(kHC51     , "dxyFirstPvThresholdBarrel"              , "HEEP_dxyFirstPvThresholdBarrel_51"                    , 0.02) ;
+  addHEEPParameter(kHC51     , "dxyFirstPvThresholdEndcap"              , "HEEP_dxyFirstPvThresholdEndcap_51"                    , 0.05) ;
   
   // Isolation
-  addHEEPParameter(kHC41     , "isolEMHadDepth1ConstantTermBarrel"      , "HEEP_isolEMHadDepth1ConstantTermBarrel_41"           , 2.0 ) ;
-  addHEEPParameter(kHC41     , "isolEMHadDepth1ConstantTermEndcapLowEt" , "HEEP_isolEMHadDepth1ConstantTermEndcapLowEt_41"      , 2.5 ) ;
-  addHEEPParameter(kHC41     , "isolEMHadDepth1ConstantTermEndcapHighEt", "HEEP_isolEMHadDepth1ConstantTermEndcapHighEt_41"     , 2.5 ) ;
-  addHEEPParameter(kHC41     , "isolEMHadDepth1LinearTermBarrel"        , "HEEP_isolEMHadDepth1LinearTermBarrel_41"             , 0.03) ;
-  addHEEPParameter(kHC41     , "isolEMHadDepth1LinearTermEndcap"        , "HEEP_isolEMHadDepth1LinearTermEndcap_41"             , 0.03) ;
-  addHEEPParameter(kHC41     , "isolEMHadDepth1OffsetTermEndcap"        , "HEEP_isolEMHadDepth1OffsetTermEndcap_41"             , 50.0) ;
-  addHEEPParameter(kHC41     , "isolEMHadDepth1EcalHcal1EffAreaBarrel"  , "HEEP_isolEMHadDepth1EcalHcal1EffAreaBarrel_41"       , 0.28) ;
-  addHEEPParameter(kHC41     , "isolEMHadDepth1EcalHcal1EffAreaEndcap"  , "HEEP_isolEMHadDepth1EcalHcal1EffAreaEndcap_41"       , 0.28) ;
+  addHEEPParameter(kHC41     , "isolEMHadDepth1ConstantTermBarrel"      , "HEEP_isolEMHadDepth1ConstantTermBarrel_41"            , 2.0 ) ;
+  addHEEPParameter(kHC41     , "isolEMHadDepth1ConstantTermEndcapLowEt" , "HEEP_isolEMHadDepth1ConstantTermEndcapLowEt_41"       , 2.5 ) ;
+  addHEEPParameter(kHC41     , "isolEMHadDepth1ConstantTermEndcapHighEt", "HEEP_isolEMHadDepth1ConstantTermEndcapHighEt_41"      , 2.5 ) ;
+  addHEEPParameter(kHC41     , "isolEMHadDepth1LinearTermBarrel"        , "HEEP_isolEMHadDepth1LinearTermBarrel_41"              , 0.03) ;
+  addHEEPParameter(kHC41     , "isolEMHadDepth1LinearTermEndcap"        , "HEEP_isolEMHadDepth1LinearTermEndcap_41"              , 0.03) ;
+  addHEEPParameter(kHC41     , "isolEMHadDepth1OffsetTermEndcap"        , "HEEP_isolEMHadDepth1OffsetTermEndcap_41"              , 50.0) ;
+  addHEEPParameter(kHC41     , "isolEMHadDepth1EcalHcal1EffAreaBarrel"  , "HEEP_isolEMHadDepth1EcalHcal1EffAreaBarrel_41"        , 0.28) ;
+  addHEEPParameter(kHC41     , "isolEMHadDepth1EcalHcal1EffAreaEndcap"  , "HEEP_isolEMHadDepth1EcalHcal1EffAreaEndcap_41"        , 0.28) ;
   
-  addHEEPParameter(kHC50_50ns, "isolEMHadDepth1ConstantTermBarrel"      , "HEEP_isolEMHadDepth1ConstantTermBarrel_50_50ns"      , 2.0 ) ;
-  addHEEPParameter(kHC50_50ns, "isolEMHadDepth1ConstantTermEndcapLowEt" , "HEEP_isolEMHadDepth1ConstantTermEndcapLowEt_50_50ns" , 2.5 ) ;
-  addHEEPParameter(kHC50_50ns, "isolEMHadDepth1ConstantTermEndcapHighEt", "HEEP_isolEMHadDepth1ConstantTermEndcapHighEt_50_50ns", 2.5 ) ;
-  addHEEPParameter(kHC50_50ns, "isolEMHadDepth1LinearTermBarrel"        , "HEEP_isolEMHadDepth1LinearTermBarrel_50_50ns"        , 0.03) ;
-  addHEEPParameter(kHC50_50ns, "isolEMHadDepth1LinearTermEndcap"        , "HEEP_isolEMHadDepth1LinearTermEndcap_50_50ns"        , 0.03) ;
-  addHEEPParameter(kHC50_50ns, "isolEMHadDepth1OffsetTermEndcap"        , "HEEP_isolEMHadDepth1OffsetTermEndcap_50_50ns"        , 50.0) ;
-  addHEEPParameter(kHC50_50ns, "isolEMHadDepth1EcalHcal1EffAreaBarrel"  , "HEEP_isolEMHadDepth1EcalHcal1EffAreaBarrel_50_50ns"  , 0.28) ;
-  addHEEPParameter(kHC50_50ns, "isolEMHadDepth1EcalHcal1EffAreaEndcap"  , "HEEP_isolEMHadDepth1EcalHcal1EffAreaEndcap_50_50ns"  , 0.28) ;
+  addHEEPParameter(kHC50_50ns, "isolEMHadDepth1ConstantTermBarrel"      , "HEEP_isolEMHadDepth1ConstantTermBarrel_50_50ns"       , 2.0 ) ;
+  addHEEPParameter(kHC50_50ns, "isolEMHadDepth1ConstantTermEndcapLowEt" , "HEEP_isolEMHadDepth1ConstantTermEndcapLowEt_50_50ns"  , 2.5 ) ;
+  addHEEPParameter(kHC50_50ns, "isolEMHadDepth1ConstantTermEndcapHighEt", "HEEP_isolEMHadDepth1ConstantTermEndcapHighEt_50_50ns" , 2.5 ) ;
+  addHEEPParameter(kHC50_50ns, "isolEMHadDepth1LinearTermBarrel"        , "HEEP_isolEMHadDepth1LinearTermBarrel_50_50ns"         , 0.03) ;
+  addHEEPParameter(kHC50_50ns, "isolEMHadDepth1LinearTermEndcap"        , "HEEP_isolEMHadDepth1LinearTermEndcap_50_50ns"         , 0.03) ;
+  addHEEPParameter(kHC50_50ns, "isolEMHadDepth1OffsetTermEndcap"        , "HEEP_isolEMHadDepth1OffsetTermEndcap_50_50ns"         , 50.0) ;
+  addHEEPParameter(kHC50_50ns, "isolEMHadDepth1EcalHcal1EffAreaBarrel"  , "HEEP_isolEMHadDepth1EcalHcal1EffAreaBarrel_50_50ns"   , 0.28) ;
+  addHEEPParameter(kHC50_50ns, "isolEMHadDepth1EcalHcal1EffAreaEndcap"  , "HEEP_isolEMHadDepth1EcalHcal1EffAreaEndcap_50_50ns"   , 0.28) ;
   
-  addHEEPParameter(kHC50_25ns, "isolEMHadDepth1ConstantTermBarrel"      , "HEEP_isolEMHadDepth1ConstantTermBarrel_50_25ns"      , 2.0 ) ;
-  addHEEPParameter(kHC50_25ns, "isolEMHadDepth1ConstantTermEndcapLowEt" , "HEEP_isolEMHadDepth1ConstantTermEndcapLowEt_50_25ns" , 2.5 ) ;
-  addHEEPParameter(kHC50_25ns, "isolEMHadDepth1ConstantTermEndcapHighEt", "HEEP_isolEMHadDepth1ConstantTermEndcapHighEt_50_25ns", 2.5 ) ;
-  addHEEPParameter(kHC50_25ns, "isolEMHadDepth1LinearTermBarrel"        , "HEEP_isolEMHadDepth1LinearTermBarrel_50_25ns"        , 0.03) ;
-  addHEEPParameter(kHC50_25ns, "isolEMHadDepth1LinearTermEndcap"        , "HEEP_isolEMHadDepth1LinearTermEndcap_50_25ns"        , 0.03) ;
-  addHEEPParameter(kHC50_25ns, "isolEMHadDepth1OffsetTermEndcap"        , "HEEP_isolEMHadDepth1OffsetTermEndcap_50_25ns"        , 50.0) ;
-  addHEEPParameter(kHC50_25ns, "isolEMHadDepth1EcalHcal1EffAreaBarrel"  , "HEEP_isolEMHadDepth1EcalHcal1EffAreaBarrel_50_25ns"  , 0.28) ;
-  addHEEPParameter(kHC50_25ns, "isolEMHadDepth1EcalHcal1EffAreaEndcap"  , "HEEP_isolEMHadDepth1EcalHcal1EffAreaEndcap_50_25ns"  , 0.28) ;
+  addHEEPParameter(kHC50_25ns, "isolEMHadDepth1ConstantTermBarrel"      , "HEEP_isolEMHadDepth1ConstantTermBarrel_50_25ns"       , 2.0 ) ;
+  addHEEPParameter(kHC50_25ns, "isolEMHadDepth1ConstantTermEndcapLowEt" , "HEEP_isolEMHadDepth1ConstantTermEndcapLowEt_50_25ns"  , 2.5 ) ;
+  addHEEPParameter(kHC50_25ns, "isolEMHadDepth1ConstantTermEndcapHighEt", "HEEP_isolEMHadDepth1ConstantTermEndcapHighEt_50_25ns" , 2.5 ) ;
+  addHEEPParameter(kHC50_25ns, "isolEMHadDepth1LinearTermBarrel"        , "HEEP_isolEMHadDepth1LinearTermBarrel_50_25ns"         , 0.03) ;
+  addHEEPParameter(kHC50_25ns, "isolEMHadDepth1LinearTermEndcap"        , "HEEP_isolEMHadDepth1LinearTermEndcap_50_25ns"         , 0.03) ;
+  addHEEPParameter(kHC50_25ns, "isolEMHadDepth1OffsetTermEndcap"        , "HEEP_isolEMHadDepth1OffsetTermEndcap_50_25ns"         , 50.0) ;
+  addHEEPParameter(kHC50_25ns, "isolEMHadDepth1EcalHcal1EffAreaBarrel"  , "HEEP_isolEMHadDepth1EcalHcal1EffAreaBarrel_50_25ns"   , 0.28) ;
+  addHEEPParameter(kHC50_25ns, "isolEMHadDepth1EcalHcal1EffAreaEndcap"  , "HEEP_isolEMHadDepth1EcalHcal1EffAreaEndcap_50_25ns"   , 0.28) ;
   
-  addHEEPParameter(kHC50     , "isolEMHadDepth1ConstantTermBarrel"      , "HEEP_isolEMHadDepth1ConstantTermBarrel_50"           , 2.0 ) ;
-  addHEEPParameter(kHC50     , "isolEMHadDepth1ConstantTermEndcapLowEt" , "HEEP_isolEMHadDepth1ConstantTermEndcapLowEt_50"      , 2.5 ) ;
-  addHEEPParameter(kHC50     , "isolEMHadDepth1ConstantTermEndcapHighEt", "HEEP_isolEMHadDepth1ConstantTermEndcapHighEt_50"     , 2.5 ) ;
-  addHEEPParameter(kHC50     , "isolEMHadDepth1LinearTermBarrel"        , "HEEP_isolEMHadDepth1LinearTermBarrel_50"             , 0.03) ;
-  addHEEPParameter(kHC50     , "isolEMHadDepth1LinearTermEndcap"        , "HEEP_isolEMHadDepth1LinearTermEndcap_50"             , 0.03) ;
-  addHEEPParameter(kHC50     , "isolEMHadDepth1OffsetTermEndcap"        , "HEEP_isolEMHadDepth1OffsetTermEndcap_50"             , 50.0) ;
-  addHEEPParameter(kHC50     , "isolEMHadDepth1EcalHcal1EffAreaBarrel"  , "HEEP_isolEMHadDepth1EcalHcal1EffAreaBarrel_50"       , 0.28) ;
-  addHEEPParameter(kHC50     , "isolEMHadDepth1EcalHcal1EffAreaEndcap"  , "HEEP_isolEMHadDepth1EcalHcal1EffAreaEndcap_50"       , 0.28) ;
+  addHEEPParameter(kHC50     , "isolEMHadDepth1ConstantTermBarrel"      , "HEEP_isolEMHadDepth1ConstantTermBarrel_50"            , 2.0 ) ;
+  addHEEPParameter(kHC50     , "isolEMHadDepth1ConstantTermEndcapLowEt" , "HEEP_isolEMHadDepth1ConstantTermEndcapLowEt_50"       , 2.5 ) ;
+  addHEEPParameter(kHC50     , "isolEMHadDepth1ConstantTermEndcapHighEt", "HEEP_isolEMHadDepth1ConstantTermEndcapHighEt_50"      , 2.5 ) ;
+  addHEEPParameter(kHC50     , "isolEMHadDepth1LinearTermBarrel"        , "HEEP_isolEMHadDepth1LinearTermBarrel_50"              , 0.03) ;
+  addHEEPParameter(kHC50     , "isolEMHadDepth1LinearTermEndcap"        , "HEEP_isolEMHadDepth1LinearTermEndcap_50"              , 0.03) ;
+  addHEEPParameter(kHC50     , "isolEMHadDepth1OffsetTermEndcap"        , "HEEP_isolEMHadDepth1OffsetTermEndcap_50"              , 50.0) ;
+  addHEEPParameter(kHC50     , "isolEMHadDepth1EcalHcal1EffAreaBarrel"  , "HEEP_isolEMHadDepth1EcalHcal1EffAreaBarrel_50"        , 0.28) ;
+  addHEEPParameter(kHC50     , "isolEMHadDepth1EcalHcal1EffAreaEndcap"  , "HEEP_isolEMHadDepth1EcalHcal1EffAreaEndcap_50"        , 0.28) ;
   
-  addHEEPParameter(kHC51     , "isolEMHadDepth1ConstantTermBarrel"      , "HEEP_isolEMHadDepth1ConstantTermBarrel_51"           , 2.0 ) ;
-  addHEEPParameter(kHC51     , "isolEMHadDepth1ConstantTermEndcapLowEt" , "HEEP_isolEMHadDepth1ConstantTermEndcapLowEt_51"      , 2.5 ) ;
-  addHEEPParameter(kHC51     , "isolEMHadDepth1ConstantTermEndcapHighEt", "HEEP_isolEMHadDepth1ConstantTermEndcapHighEt_51"     , 2.5 ) ;
-  addHEEPParameter(kHC51     , "isolEMHadDepth1LinearTermBarrel"        , "HEEP_isolEMHadDepth1LinearTermBarrel_51"             , 0.03) ;
-  addHEEPParameter(kHC51     , "isolEMHadDepth1LinearTermEndcap"        , "HEEP_isolEMHadDepth1LinearTermEndcap_51"             , 0.03) ;
-  addHEEPParameter(kHC51     , "isolEMHadDepth1OffsetTermEndcap"        , "HEEP_isolEMHadDepth1OffsetTermEndcap_51"             , 50.0) ;
-  addHEEPParameter(kHC51     , "isolEMHadDepth1EcalHcal1EffAreaBarrel"  , "HEEP_isolEMHadDepth1EcalHcal1EffAreaBarrel_51"       , 0.28) ;
-  addHEEPParameter(kHC51     , "isolEMHadDepth1EcalHcal1EffAreaEndcap"  , "HEEP_isolEMHadDepth1EcalHcal1EffAreaEndcap_51"       , 0.28) ;
+  addHEEPParameter(kHC51     , "isolEMHadDepth1ConstantTermBarrel"      , "HEEP_isolEMHadDepth1ConstantTermBarrel_51"            , 2.0 ) ;
+  addHEEPParameter(kHC51     , "isolEMHadDepth1ConstantTermEndcapLowEt" , "HEEP_isolEMHadDepth1ConstantTermEndcapLowEt_51"       , 2.5 ) ;
+  addHEEPParameter(kHC51     , "isolEMHadDepth1ConstantTermEndcapHighEt", "HEEP_isolEMHadDepth1ConstantTermEndcapHighEt_51"      , 2.5 ) ;
+  addHEEPParameter(kHC51     , "isolEMHadDepth1LinearTermBarrel"        , "HEEP_isolEMHadDepth1LinearTermBarrel_51"              , 0.03) ;
+  addHEEPParameter(kHC51     , "isolEMHadDepth1LinearTermEndcap"        , "HEEP_isolEMHadDepth1LinearTermEndcap_51"              , 0.03) ;
+  addHEEPParameter(kHC51     , "isolEMHadDepth1OffsetTermEndcap"        , "HEEP_isolEMHadDepth1OffsetTermEndcap_51"              , 50.0) ;
+  addHEEPParameter(kHC51     , "isolEMHadDepth1EcalHcal1EffAreaBarrel"  , "HEEP_isolEMHadDepth1EcalHcal1EffAreaBarrel_51"        , 0.28) ;
+  addHEEPParameter(kHC51     , "isolEMHadDepth1EcalHcal1EffAreaEndcap"  , "HEEP_isolEMHadDepth1EcalHcal1EffAreaEndcap_51"        , 0.28) ;
   
-  addHEEPParameter(kHC41     , "IsolPtTrksThresholdBarrel"              , "HEEP_IsolPtTrksThresholdBarrel_41"                   , 5.0) ;
-  addHEEPParameter(kHC41     , "IsolPtTrksThresholdEndcap"              , "HEEP_IsolPtTrksThresholdEndcap_41"                   , 5.0) ;
-  addHEEPParameter(kHC50_50ns, "IsolPtTrksThresholdBarrel"              , "HEEP_IsolPtTrksThresholdBarrel_50_50ns"              , 5.0) ;
-  addHEEPParameter(kHC50_50ns, "IsolPtTrksThresholdEndcap"              , "HEEP_IsolPtTrksThresholdEndcap_50_50ns"              , 5.0) ;
-  addHEEPParameter(kHC50_25ns, "IsolPtTrksThresholdBarrel"              , "HEEP_IsolPtTrksThresholdBarrel_50_25ns"              , 5.0) ;
-  addHEEPParameter(kHC50_25ns, "IsolPtTrksThresholdEndcap"              , "HEEP_IsolPtTrksThresholdEndcap_50_25ns"              , 5.0) ;
-  addHEEPParameter(kHC50     , "IsolPtTrksThresholdBarrel"              , "HEEP_IsolPtTrksThresholdBarrel_50"                   , 5.0) ;
-  addHEEPParameter(kHC50     , "IsolPtTrksThresholdEndcap"              , "HEEP_IsolPtTrksThresholdEndcap_50"                   , 5.0) ;
-  addHEEPParameter(kHC51     , "IsolPtTrksThresholdBarrel"              , "HEEP_IsolPtTrksThresholdBarrel_51"                   , 5.0) ;
-  addHEEPParameter(kHC51     , "IsolPtTrksThresholdEndcap"              , "HEEP_IsolPtTrksThresholdEndcap_51"                   , 5.0) ;
+  addHEEPParameter(kHC41     , "IsolPtTrksThresholdBarrel"              , "HEEP_IsolPtTrksThresholdBarrel_41"                    , 5.0 ) ;
+  addHEEPParameter(kHC41     , "IsolPtTrksThresholdEndcap"              , "HEEP_IsolPtTrksThresholdEndcap_41"                    , 5.0 ) ;
+  addHEEPParameter(kHC50_50ns, "IsolPtTrksThresholdBarrel"              , "HEEP_IsolPtTrksThresholdBarrel_50_50ns"               , 5.0 ) ;
+  addHEEPParameter(kHC50_50ns, "IsolPtTrksThresholdEndcap"              , "HEEP_IsolPtTrksThresholdEndcap_50_50ns"               , 5.0 ) ;
+  addHEEPParameter(kHC50_25ns, "IsolPtTrksThresholdBarrel"              , "HEEP_IsolPtTrksThresholdBarrel_50_25ns"               , 5.0 ) ;
+  addHEEPParameter(kHC50_25ns, "IsolPtTrksThresholdEndcap"              , "HEEP_IsolPtTrksThresholdEndcap_50_25ns"               , 5.0 ) ;
+  addHEEPParameter(kHC50     , "IsolPtTrksThresholdBarrel"              , "HEEP_IsolPtTrksThresholdBarrel_50"                    , 5.0 ) ;
+  addHEEPParameter(kHC50     , "IsolPtTrksThresholdEndcap"              , "HEEP_IsolPtTrksThresholdEndcap_50"                    , 5.0 ) ;
+  addHEEPParameter(kHC51     , "IsolPtTrksThresholdBarrel"              , "HEEP_IsolPtTrksThresholdBarrel_51"                    , 5.0 ) ;
+  addHEEPParameter(kHC51     , "IsolPtTrksThresholdEndcap"              , "HEEP_IsolPtTrksThresholdEndcap_51"                    , 5.0 ) ;
   
   for(unsigned int i=0 ; i<parameters_.size() ; ++i){
     HEEPParameter* par = parameters_.at(i) ;
@@ -266,7 +295,6 @@ void IIHEModuleHEEP::beginJob(){
   // These cuts must be updated so declare them separately
   cut_41_isolEMHadDepth1_ = new HEEPCut_isolEMHadDepth1(kHC41, prefix_41 + "_isolEMHadDepth1", this) ;
   cut_41_dxyFirstPV_      = new HEEPCut_dxyFirstPV     (kHC41, prefix_41 + "_dxyFirstPV"     , this) ;
-  cut_41_isolEMHadDepth1_->setRho(rho_) ;
   
   HEEPCutflow_41_acceptance_->addCut( (HEEPCutBase*) new HEEPCut_Et (kHC41, prefix_41 + "_Et" , this)) ;
   HEEPCutflow_41_acceptance_->addCut( (HEEPCutBase*) new HEEPCut_eta(kHC41, prefix_41 + "_eta", this)) ;
@@ -302,7 +330,6 @@ void IIHEModuleHEEP::beginJob(){
   // These cuts must be updated so declare them separately
   cut_50_50ns_isolEMHadDepth1_ = new HEEPCut_isolEMHadDepth1(kHC50_50ns, prefix_50_50ns + "_isolEMHadDepth1", this) ;
   cut_50_50ns_dxyFirstPV_      = new HEEPCut_dxyFirstPV     (kHC50_50ns, prefix_50_50ns + "_dxyFirstPV"     , this) ;
-  cut_50_50ns_isolEMHadDepth1_->setRho(rho_) ;
   
   // Define the ID
   HEEPCutflow_50_50ns_acceptance_->addCut( (HEEPCutBase*) new HEEPCut_Et (kHC50_50ns, prefix_50_50ns + "_Et" , this)) ;
@@ -339,7 +366,6 @@ void IIHEModuleHEEP::beginJob(){
   // These cuts must be updated so declare them separately
   cut_50_25ns_isolEMHadDepth1_ = new HEEPCut_isolEMHadDepth1(kHC50_25ns, prefix_50_25ns + "_isolEMHadDepth1", this) ;
   cut_50_25ns_dxyFirstPV_      = new HEEPCut_dxyFirstPV     (kHC50_25ns, prefix_50_25ns + "_dxyFirstPV"     , this) ;
-  cut_50_25ns_isolEMHadDepth1_->setRho(rho_) ;
   
   // Define the ID
   HEEPCutflow_50_25ns_acceptance_->addCut( (HEEPCutBase*) new HEEPCut_Et (kHC50_25ns, prefix_50_25ns + "_Et" , this)) ;
@@ -376,7 +402,6 @@ void IIHEModuleHEEP::beginJob(){
   // These cuts must be updated so declare them separately
   cut_50_isolEMHadDepth1_ = new HEEPCut_isolEMHadDepth1(kHC50, prefix_50 + "_isolEMHadDepth1", this) ;
   cut_50_dxyFirstPV_      = new HEEPCut_dxyFirstPV     (kHC50, prefix_50 + "_dxyFirstPV"     , this) ;
-  cut_50_isolEMHadDepth1_->setRho(rho_) ;
   
   // Define the ID
   HEEPCutflow_50_acceptance_->addCut( (HEEPCutBase*) new HEEPCut_Et (kHC50, prefix_50 + "_Et" , this)) ;
@@ -413,7 +438,6 @@ void IIHEModuleHEEP::beginJob(){
   // These cuts must be updated so declare them separately
   cut_51_isolEMHadDepth1_ = new HEEPCut_isolEMHadDepth1(kHC51, prefix_51 + "_isolEMHadDepth1", this) ;
   cut_51_dxyFirstPV_      = new HEEPCut_dxyFirstPV     (kHC51, prefix_51 + "_dxyFirstPV"     , this) ;
-  cut_51_isolEMHadDepth1_->setRho(rho_) ;
   
   // Define the ID
   HEEPCutflow_51_acceptance_->addCut( (HEEPCutBase*) new HEEPCut_Et (kHC51, prefix_51 + "_Et" , this)) ;
@@ -617,6 +641,7 @@ void IIHEModuleHEEP::beginEvent(){
 void IIHEModuleHEEP::endEvent(){
   for(unsigned i=0 ; i<HEEPCutflows_.size() ; i++){
     HEEPCutflows_.at(i)->endEvent() ;
+    if(HEEPCutflows_.at(i)->nPass()>0) acceptEvent() ;
   }
 }
 

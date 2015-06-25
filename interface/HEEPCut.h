@@ -327,6 +327,7 @@ public:
   void makeCutflowHistogram() ;
   void config(std::vector<HEEPParameter*>) ;
   int cutflow(){ return cutflow_ ; }
+  int nPass(){ return nPass_ ; }
   bool isActive(){ return isActive_ ; }
 };
 

@@ -10,7 +10,7 @@ git_hash = f.read().rstrip('\n')
 print 'Using git hash: ' , git_hash
 os.chdir(pwd)
 IIHEAnalysis = cms.EDAnalyzer("IIHEAnalysis",
-    debug         = cms.bool(True),
+    debug         = cms.bool(False),
     beamSpot      = cms.InputTag("offlineBeamSpot"),
     primaryVertex = cms.InputTag('offlinePrimaryVertices'),
     git_hash = cms.string(git_hash),

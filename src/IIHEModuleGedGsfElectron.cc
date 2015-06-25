@@ -100,6 +100,13 @@ void IIHEModuleGedGsfElectron::beginJob(){
   addBranch("gsf_e2x5Max") ;
   addBranch("gsf_e5x5") ;
   addBranch("gsf_r9") ;
+  
+  addBranch("gsf_pixelMatch_dPhi1") ;
+  addBranch("gsf_pixelMatch_dPhi2") ;
+  addBranch("gsf_pixelMatch_dRz1") ;
+  addBranch("gsf_pixelMatch_dRz2") ;
+  addBranch("gsf_pixelMatch_subDetector1", kVectorInt) ;
+  addBranch("gsf_pixelMatch_subDetector2", kVectorInt) ;
   addBranch("gsf_hitsinfo", kVectorVectorInt) ;
 }
 
@@ -181,6 +188,13 @@ CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSS
     store("gsf_r9"                            , gsfiter->r9()                            ) ;
     store("gsf_e2x5Max"                       , gsfiter->e2x5Max()                       ) ;
     store("gsf_e5x5"                          , gsfiter->e5x5()                          ) ;
+    
+    store("gsf_pixelMatch_dPhi1"       , gsfiter->pixelMatchDPhi1()       ) ;
+    store("gsf_pixelMatch_dPhi2"       , gsfiter->pixelMatchDPhi2()       ) ;
+    store("gsf_pixelMatch_dRz1"        , gsfiter->pixelMatchDRz1()        ) ;
+    store("gsf_pixelMatch_dRz2"        , gsfiter->pixelMatchDRz2()        ) ;
+    store("gsf_pixelMatch_subDetector1", gsfiter->pixelMatchSubdetector1()) ;
+    store("gsf_pixelMatch_subDetector2", gsfiter->pixelMatchSubdetector2()) ;
     
     //http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/DataFormats/TrackReco/interface/HitPattern.h?revision=1.32&view=markup
     reco::HitPattern kfHitPattern = gsfiter->gsfTrack()->hitPattern();
