@@ -328,6 +328,7 @@ public:
   void config(std::vector<HEEPParameter*>) ;
   int cutflow(){ return cutflow_ ; }
   bool isActive(){ return isActive_ ; }
+  const int nPass(){ return nPass_ ; }
 };
 
 #endif
