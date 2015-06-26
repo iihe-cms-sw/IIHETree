@@ -32,10 +32,11 @@ void IIHEModuleZBoson::beginJob(){
   nAcceptZmmg_ = 0 ;
   nAcceptAll_  = 0 ;
   
-  addBranch("Zee_n"    , kInt        ) ;
-  addBranch("Zee_mass" , kVectorFloat) ;
-  addBranch("Zee_i1"   , kVectorInt  ) ;
-  addBranch("Zee_i2"   , kVectorInt  ) ;
+  addBranch("Zee_n"          , kInt        ) ;
+  addBranch("Zee_mass"       , kVectorFloat) ;
+  addBranch("Zee_mass_HEEP"  , kVectorFloat) ;
+  addBranch("Zee_i1"         , kVectorInt  ) ;
+  addBranch("Zee_i2"         , kVectorInt  ) ;
   addBranch("Zee_highestMass", kInt  ) ;
   
   addBranch("Zmm_n"    , kInt        ) ;
