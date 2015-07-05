@@ -18,6 +18,12 @@ IIHEModuleZBoson::IIHEModuleZBoson(const edm::ParameterSet& iConfig): IIHEModule
   
   mZLowerCutoff_    = iConfig.getUntrackedParameter<double>("ZBosonZMassLowerCuttoff", 0.0) ;
   mZUpperCutoff_    = iConfig.getUntrackedParameter<double>("ZBosonZMassUpperCuttoff", 1e6) ;
+  
+  saveZee_  = iConfig.getUntrackedParameter<bool>("ZBosonSaveZee" , true) ;
+  saveZmm_  = iConfig.getUntrackedParameter<bool>("ZBosonSaveZmm" , true) ;
+  saveZem_  = iConfig.getUntrackedParameter<bool>("ZBosonSaveZem" , true) ;
+  saveZeeg_ = iConfig.getUntrackedParameter<bool>("ZBosonSaveZeeg", true) ;
+  saveZmmg_ = iConfig.getUntrackedParameter<bool>("ZBosonSaveZmmg", true) ;
 }
 IIHEModuleZBoson::~IIHEModuleZBoson(){}
 
@@ -32,39 +38,49 @@ void IIHEModuleZBoson::beginJob(){
   nAcceptZmmg_ = 0 ;
   nAcceptAll_  = 0 ;
   
-  addBranch("Zee_n"          , kInt        ) ;
-  addBranch("Zee_mass"       , kVectorFloat) ;
-  addBranch("Zee_mass_HEEP"  , kVectorFloat) ;
-  addBranch("Zee_i1"         , kVectorInt  ) ;
-  addBranch("Zee_i2"         , kVectorInt  ) ;
-  addBranch("Zee_highestMass", kInt  ) ;
+  if(saveZee_){
+    addBranch("Zee_n"          , kInt        ) ;
+    addBranch("Zee_mass"       , kVectorFloat) ;
+    addBranch("Zee_mass_HEEP"  , kVectorFloat) ;
+    addBranch("Zee_i1"         , kVectorInt  ) ;
+    addBranch("Zee_i2"         , kVectorInt  ) ;
+    addBranch("Zee_highestMass", kInt  ) ;
+  }
   
-  addBranch("Zmm_n"    , kInt        ) ;
-  addBranch("Zmm_mass" , kVectorFloat) ;
-  addBranch("Zmm_i1"   , kVectorInt  ) ;
-  addBranch("Zmm_i2"   , kVectorInt  ) ;
-  addBranch("Zmm_highestMass", kInt  ) ;
+  if(saveZmm_){
+    addBranch("Zmm_n"    , kInt        ) ;
+    addBranch("Zmm_mass" , kVectorFloat) ;
+    addBranch("Zmm_i1"   , kVectorInt  ) ;
+    addBranch("Zmm_i2"   , kVectorInt  ) ;
+    addBranch("Zmm_highestMass", kInt  ) ;
+  }
   
-  addBranch("Zem_n"          , kInt        ) ;
-  addBranch("Zem_mass"       , kVectorFloat) ;
-  addBranch("Zem_mass_HEEP"  , kVectorFloat) ;
-  addBranch("Zem_i1"         , kVectorInt  ) ;
-  addBranch("Zem_i2"         , kVectorInt  ) ;
-  addBranch("Zem_highestMass", kInt  ) ;
+  if(saveZem_){
+    addBranch("Zem_n"          , kInt        ) ;
+    addBranch("Zem_mass"       , kVectorFloat) ;
+    addBranch("Zem_mass_HEEP"  , kVectorFloat) ;
+    addBranch("Zem_i1"         , kVectorInt  ) ;
+    addBranch("Zem_i2"         , kVectorInt  ) ;
+    addBranch("Zem_highestMass", kInt  ) ;
+  }
   
-  addBranch("Zeeg_n"          , kInt        ) ;
-  addBranch("Zeeg_mass"       , kVectorFloat) ;
-  addBranch("Zeeg_i1"         , kVectorInt  ) ;
-  addBranch("Zeeg_i2"         , kVectorInt  ) ;
-  addBranch("Zeeg_iph"        , kVectorInt  ) ;
-  addBranch("Zeeg_highestMass", kInt ) ;
+  if(saveZeeg_){
+    addBranch("Zeeg_n"          , kInt        ) ;
+    addBranch("Zeeg_mass"       , kVectorFloat) ;
+    addBranch("Zeeg_i1"         , kVectorInt  ) ;
+    addBranch("Zeeg_i2"         , kVectorInt  ) ;
+    addBranch("Zeeg_iph"        , kVectorInt  ) ;
+    addBranch("Zeeg_highestMass", kInt ) ;
+  }
   
-  addBranch("Zmmg_n"   , kInt        ) ;
-  addBranch("Zmmg_mass", kVectorFloat) ;
-  addBranch("Zmmg_i1"  , kVectorInt  ) ;
-  addBranch("Zmmg_i2"  , kVectorInt  ) ;
-  addBranch("Zmmg_iph" , kVectorInt  ) ;
-  addBranch("Zmmg_highestMass", kInt ) ;
+  if(saveZmmg_){
+    addBranch("Zmmg_n"   , kInt        ) ;
+    addBranch("Zmmg_mass", kVectorFloat) ;
+    addBranch("Zmmg_i1"  , kVectorInt  ) ;
+    addBranch("Zmmg_i2"  , kVectorInt  ) ;
+    addBranch("Zmmg_iph" , kVectorInt  ) ;
+    addBranch("Zmmg_highestMass", kInt ) ;
+  }
 }
 
 // ------------ method called to for each event  ------------
@@ -156,6 +172,7 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
       
       // Look for Z->eeg candidates
       for(unsigned iph=0 ; iph<php4s.size() ; ++iph){
+        if(false==saveZeeg_) break ;
         if(php4s.at(iph).DeltaR(elp4s.at(i1)) < DeltaRCut_) continue ;
         if(php4s.at(iph).DeltaR(elp4s.at(i2)) < DeltaRCut_) continue ;
         TLorentzVector Zeegp4 = Zeep4 + php4s.at(iph) ;
@@ -179,6 +196,7 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
         }
         Zeeg_n++ ;
       }
+      if(false==saveZee_) continue ;
       
       // Check to see if we're in the range we want
       if(mZee<mZLowerCutoff_ && mZee_HEEP<mZLowerCutoff_) continue ;
@@ -206,6 +224,7 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
       float mZmm = Zmmp4.M() ;
       
       for(unsigned iph=0 ; iph<php4s.size() ; ++iph){
+        if(false==saveZmmg_) break ;
         if(php4s.at(iph).DeltaR(mup4s.at(i1)) < DeltaRCut_) continue ;
         if(php4s.at(iph).DeltaR(mup4s.at(i2)) < DeltaRCut_) continue ;
         TLorentzVector Zmmgp4 = Zmmp4 + php4s.at(iph) ;
@@ -229,6 +248,7 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
         }
         Zmmg_n++ ;
       }
+      if(false==saveZmm_) continue ;
       
       // Check to see if we're in the range we want
       if(mZmm<mZLowerCutoff_) continue ;
@@ -257,6 +277,7 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     }
   }
   for(unsigned int i1=0 ; i1<elp4s.size() ; ++i1){
+    if(false==saveZem_) break ;
     for(unsigned int i2=i1+1 ; i2<mup4s.size() ; ++i2){
       if(elp4s.at(i1).DeltaR(mup4s.at(i2)) < DeltaRCut_) continue ;
       TLorentzVector Zemp4     = elp4s  .at(i1) + mup4s.at(i2) ;
@@ -297,17 +318,26 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   if(acceptZeeg) nAcceptZeeg_++ ;
   if(acceptZmmg) nAcceptZmmg_++ ;
   
-  store("Zee_n" , Zee_n ) ;
-  store("Zmm_n" , Zmm_n ) ;
-  store("Zem_n" , Zem_n ) ;
-  store("Zeeg_n", Zeeg_n) ;
-  store("Zmmg_n", Zmmg_n) ;
-  
-  store("Zee_highestMass" , Zee_highestMassIndex ) ;
-  store("Zmm_highestMass" , Zmm_highestMassIndex ) ;
-  store("Zem_highestMass" , Zem_highestMassIndex ) ;
-  store("Zeeg_highestMass", Zeeg_highestMassIndex) ;
-  store("Zmmg_highestMass", Zmmg_highestMassIndex) ;
+  if(saveZee_ ){
+    store("Zee_n" , Zee_n ) ;
+    store("Zee_highestMass" , Zee_highestMassIndex ) ;
+  }
+  if(saveZee_ ){
+    store("Zmm_n" , Zmm_n ) ;
+    store("Zmm_highestMass" , Zmm_highestMassIndex ) ;
+  }
+  if(saveZee_ ){
+    store("Zem_n" , Zem_n ) ;
+    store("Zem_highestMass" , Zem_highestMassIndex ) ;
+  }
+  if(saveZee_ ){
+    store("Zeeg_n", Zeeg_n) ;
+    store("Zeeg_highestMass", Zeeg_highestMassIndex) ;
+  }
+  if(saveZee_ ){
+    store("Zmmg_n", Zmmg_n) ;
+    store("Zmmg_highestMass", Zmmg_highestMassIndex) ;
+  }
 }
 
 void IIHEModuleZBoson::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){}

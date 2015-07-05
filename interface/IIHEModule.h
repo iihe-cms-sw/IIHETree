@@ -32,6 +32,7 @@
 
 #include "UserCode/IIHETree/interface/BranchWrapper.h"
 #include "UserCode/IIHETree/interface/IIHEAnalysis.h"
+#include "UserCode/IIHETree/interface/MCTruthObject.h"
 
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
@@ -80,6 +81,9 @@ public:
   void acceptEvent() ;
   
   void addToMCTruthWhitelist(std::vector<int>) ;
+  const MCTruthObject* MCTruth_matchEtaPhi(float, float) ;
+  const MCTruthObject* MCTruth_getRecordByIndex(int) ;
+  int MCTruth_matchEtaPhi_getIndex(float, float) ;  
   
   void   pubBeginJob(){   beginJob() ; } ;
   void pubBeginEvent(){ beginEvent() ; } ;

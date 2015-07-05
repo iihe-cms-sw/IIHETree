@@ -23,6 +23,7 @@
 #include "UserCode/IIHETree/interface/BranchWrapper.h"
 #include "UserCode/IIHETree/interface/IIHEModule.h"
 #include "UserCode/IIHETree/interface/TriggerObject.h"
+#include "UserCode/IIHETree/interface/MCTruthObject.h"
 
 #include "DataFormats/EgammaCandidates/interface/Photon.h"
 #include "DataFormats/EgammaCandidates/interface/PhotonFwd.h"
@@ -45,6 +46,7 @@ namespace edm {
 
 // Forward declarations
 class IIHEModule ;
+class IIHEModuleMCTruth ;
 
 // class decleration
 class IIHEAnalysis : public edm::EDAnalyzer {
@@ -139,6 +141,10 @@ CHOOSE_RELEASE_END CMSSW_5_3_11*/
   void   vetoEvent(){ acceptEvent_ = false ; }
   void acceptEvent(){ acceptEvent_ =  true ; }
   
+  const MCTruthObject* MCTruth_getRecordByIndex(int) ;
+  const MCTruthObject* MCTruth_matchEtaPhi(float, float) ;
+  int MCTruth_matchEtaPhi_getIndex(float, float) ;
+  
 private:
   virtual void beginJob() ;
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
@@ -182,6 +188,7 @@ private:
   bool includeMCTruthModule_         ;
   bool includeTriggerModule_         ;
   bool includeZBosonModule_          ;
+  bool includeLeptonsAcceptModule_   ;
   bool includeAutoAcceptEventModule_ ;
   
   // Collections of physics objects
@@ -222,6 +229,7 @@ CHOOSE_RELEASE_END CMSSW_5_3_11*/
   std::string globalTag_ ;
   
   // MC truth module
+  IIHEModuleMCTruth* MCTruthModule_ ;
   std::vector<int> MCTruthWhitelist_ ;
   
   std::vector<IIHEModule*> childModules_;

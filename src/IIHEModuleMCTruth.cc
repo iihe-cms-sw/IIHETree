@@ -9,8 +9,9 @@ using namespace reco;
 using namespace edm ;
 
 IIHEModuleMCTruth::IIHEModuleMCTruth(const edm::ParameterSet& iConfig): IIHEModule(iConfig){
-  pt_threshold_ = iConfig.getUntrackedParameter<double>("MCTruth_ptThreshold", 10.0) ;
-  m_threshold_  = iConfig.getUntrackedParameter<double>("MCTruth_mThreshold" , 20.0) ;
+  pt_threshold_            = iConfig.getUntrackedParameter<double>("MCTruth_ptThreshold"            , 10.0) ;
+  m_threshold_             = iConfig.getUntrackedParameter<double>("MCTruth_mThreshold"             , 20.0) ;
+  DeltaROverlapThreshold_  = iConfig.getUntrackedParameter<double>("MCTruth_DeltaROverlapThreshold" , 1e-3) ;
 }
 IIHEModuleMCTruth::~IIHEModuleMCTruth(){}
 
@@ -47,7 +48,9 @@ void IIHEModuleMCTruth::beginJob(){
   addBranch("mc_mother_energy") ;
   addBranch("mc_mother_mass"  ) ;
   
-  whitelist_ = parent_->getMCTruthWhitelist() ;
+  addValueToMetaTree("MCTruth_ptThreshold"           , pt_threshold_          ) ;
+  addValueToMetaTree("MCTruth_mThreshold"            , m_threshold_           ) ;
+  addValueToMetaTree("MCTruth_DeltaROverlapThreshold", DeltaROverlapThreshold_) ;
 }
 
 // ------------ method called to for each event  ------------
@@ -56,15 +59,15 @@ void IIHEModuleMCTruth::analyze(const edm::Event& iEvent, const edm::EventSetup&
   iEvent.getByLabel("genParticles", pGenParticles) ;
   GenParticleCollection genParticles(pGenParticles->begin(),pGenParticles->end());
   
-  // These variables are used to match up mothers to daughters at the end
+  // These variables are used to match up mothers to daughters at the end.
   int counter = 0 ;
   
-  std::vector<MCTruthObject*> MCTruthRecord ;
-  for(GenParticleCollection::const_iterator mc_iter=genParticles.begin() ; mc_iter!=genParticles.end() ; ++mc_iter){
+  MCTruthRecord_.clear() ;
+  for(GenParticleCollection::const_iterator mc_iter = genParticles.begin() ; mc_iter!=genParticles.end() ; ++mc_iter){
     int pdgId = mc_iter->pdgId() ;
-    float pt  = mc_iter->pt()  ;
+    float pt  = mc_iter->pt()    ;
     
-    // First check the whitelist
+    // First check the whitelist.
     bool whitelist_accept = false ;
     for(unsigned int i=0 ; i<whitelist_.size() ; ++i){
       if(abs(pdgId)==abs(whitelist_.at(i))){
@@ -76,15 +79,16 @@ void IIHEModuleMCTruth::analyze(const edm::Event& iEvent, const edm::EventSetup&
     // Ignore particles with exactly one daughter (X => X => X etc)
     bool daughters_accept = (mc_iter->numberOfDaughters()!=1) ;
     
-    // Remove objects with zero pT
+    // Remove objects with zero pT.
     bool nonZeroPt_accept = (pt>1e-3) ;
     
-    // Now check the thresholds
+    // Now check the thresholds.
     bool thresholds_accept = false ;
-    if(             pt>pt_threshold_) thresholds_accept = true  ;
+    float pt_threshold = (pdgId==21 || abs(pdgId)<5) ? 10 : pt_threshold_ ;
+    if(             pt>pt_threshold ) thresholds_accept = true  ;
     if(mc_iter->mass()> m_threshold_) thresholds_accept = true  ;
     
-    // Now combine them all
+    // Now combine them all.
     bool accept = (whitelist_accept && daughters_accept && thresholds_accept && nonZeroPt_accept) ;
     if(false==accept) continue ;
     
@@ -96,7 +100,7 @@ void IIHEModuleMCTruth::analyze(const edm::Event& iEvent, const edm::EventSetup&
       parent = parent->mother() ;
     }
     
-    // Create a truth record instance
+    // Create a truth record instance.
     MCTruthObject* MCTruth = new MCTruthObject((reco::Candidate*)&*mc_iter) ;
     
     // Add all the mothers
@@ -104,12 +108,24 @@ void IIHEModuleMCTruth::analyze(const edm::Event& iEvent, const edm::EventSetup&
       MCTruth->addMother(child->mother(mother_iter)) ;
     }
     
+    // Finally check to see if this overlaps with an existing truth particle.
+    bool overlap = false ;
+    for(unsigned int i=0 ; i<MCTruthRecord_.size() ; ++i){
+      const reco::Candidate* comp = MCTruthRecord_.at(i)->getCandidate() ;
+      float DR = deltaR(comp->eta(),comp->phi(),MCTruth->getCandidate()->eta(),MCTruth->getCandidate()->phi()) ;
+      if(DR<DeltaROverlapThreshold_){
+        overlap = true ;
+        break ;
+      }
+    }
+    if(true==overlap) continue ;
+    
     // Then push back the MC truth information
-    MCTruthRecord.push_back(MCTruth) ;
+    MCTruthRecord_.push_back(MCTruth) ;
     counter++ ;
   }
-  for(unsigned int i=0 ; i<MCTruthRecord.size() ; ++i){
-    MCTruthObject* ob = MCTruthRecord.at(i) ;
+  for(unsigned int i=0 ; i<MCTruthRecord_.size() ; ++i){
+    MCTruthObject* ob = MCTruthRecord_.at(i) ;
     std::vector<int  > mc_mother_index ;
     std::vector<int  > mc_mother_pdgId ;
     std::vector<float> mc_mother_px ;
@@ -123,7 +139,7 @@ void IIHEModuleMCTruth::analyze(const edm::Event& iEvent, const edm::EventSetup&
     for(unsigned int j=0 ; j<ob->nMothers() ; ++j){
       const reco::Candidate* mother = ob->getMother(j) ;
       if(mother){
-        int mother_index_tmp = ob->matchMother(MCTruthRecord, j) ;
+        int mother_index_tmp = ob->matchMother(MCTruthRecord_, j) ;
         mc_mother_index .push_back(mother_index_tmp) ;
         mc_mother_pdgId .push_back(mother->pdgId() ) ;
         mc_mother_px    .push_back(mother->px()    ) ;
@@ -165,7 +181,31 @@ void IIHEModuleMCTruth::analyze(const edm::Event& iEvent, const edm::EventSetup&
     store("mc_charge" , ob->getCandidate()->charge()) ;
     store("mc_status" , ob->getCandidate()->status()) ;
   }
-  store("mc_n", (unsigned int)(MCTruthRecord.size())) ;
+  store("mc_n", (unsigned int)(MCTruthRecord_.size())) ;
+}
+
+int IIHEModuleMCTruth::matchEtaPhi_getIndex(float eta, float phi){
+  float bestDR = 1e6 ;
+  int bestIndex = -1 ;
+  for(unsigned int i=0 ; i<MCTruthRecord_.size() ; ++i){
+    MCTruthObject* MCTruth = MCTruthRecord_.at(i) ;
+    float DR = deltaR(MCTruth->eta(),MCTruth->phi(),eta,phi) ;
+    if(DR<bestDR){
+      bestDR = DR ;
+      bestIndex = i ;
+    }
+  }
+  return bestIndex ;
+}
+
+const MCTruthObject* IIHEModuleMCTruth::matchEtaPhi(float eta, float phi){
+  int index = matchEtaPhi_getIndex(eta, phi) ;
+  return getRecordByIndex(index) ;
+}
+
+const MCTruthObject* IIHEModuleMCTruth::getRecordByIndex(int index){
+  if(index<0) return 0 ;
+  return MCTruthRecord_.at(index) ;
 }
 
 void IIHEModuleMCTruth::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){}

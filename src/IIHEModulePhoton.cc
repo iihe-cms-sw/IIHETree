@@ -125,6 +125,10 @@ CHOOSE_RELEASE_END CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11*/
   addBranch("ph_nClusterOutsideMustache", kVectorInt) ;
   addBranch("ph_etOutsideMustache") ;
   addBranch("ph_pfMVA") ;
+  
+  addBranch("ph_mc_bestDR", kVectorFloat) ;
+  addBranch("ph_mc_index" , kVectorInt  ) ;
+  addBranch("ph_mc_ERatio", kVectorFloat) ;
 }
 
 // ------------ method called to for each event  ------------
@@ -229,6 +233,20 @@ CHOOSE_RELEASE_END CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11*/
     store("ph_nClusterOutsideMustache"        , phiter->nClusterOutsideMustache()        ) ;
     store("ph_etOutsideMustache"              , phiter->etOutsideMustache()              ) ;
     store("ph_pfMVA"                          , phiter->pfMVA()                          ) ;
+    
+    // Now apply truth matching.
+    int index = MCTruth_matchEtaPhi_getIndex(phiter->eta(), phiter->phi()) ;
+    if(index>=0){
+      const MCTruthObject* MCTruth = MCTruth_getRecordByIndex(index) ;
+      store("ph_mc_bestDR", deltaR(phiter->eta(), phiter->phi(), MCTruth->eta(), MCTruth->phi())) ;
+      store("ph_mc_index" , index) ;
+      store("ph_mc_ERatio", phiter->energy()/MCTruth->energy()) ;
+    }
+    else{
+      store("ph_mc_bestDR", 999) ;
+      store("ph_mc_index" ,  -1) ;
+      store("ph_mc_ERatio", 999) ;
+    }
   }
 }
 

@@ -25,9 +25,17 @@ public:
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
   virtual void beginRun(edm::Run const&, edm::EventSetup const&);
+  
+  int matchEtaPhi_getIndex(float, float) ;
+  const MCTruthObject* matchEtaPhi(float, float) ;
+  const MCTruthObject* getRecordByIndex(int) ;
+  
+  void setWhitelist(){ whitelist_ = whitelist_ = parent_->getMCTruthWhitelist() ; }
 private:
   std::vector<int> whitelist_ ;
   double pt_threshold_ ;
   double  m_threshold_ ;
+  double DeltaROverlapThreshold_ ;
+  std::vector<MCTruthObject*> MCTruthRecord_ ;
 };
 #endif

@@ -3,6 +3,11 @@
 MCTruthObject::MCTruthObject(reco::Candidate* cand){
   candidate_ = cand ;
   DeltaRCut_ = 0.001 ;
+  pdgId_  = cand->pdgId() ;
+  pt_     = cand->pt() ;
+  eta_    = cand->eta() ;
+  phi_    = cand->phi() ;
+  energy_ = cand->energy() ;
 }
 MCTruthObject::~MCTruthObject(){}
 void MCTruthObject::addMother(const reco::Candidate* mother){

@@ -297,6 +297,10 @@ CHOOSE_RELEASE_END DEFAULT*/
   addBranch("mu_pfMeanDRIsoProfileR04_sumNeutralHadronEtHighThreshold") ;
   addBranch("mu_pfMeanDRIsoProfileR04_sumPhotonEtHighThreshold"       ) ;
   addBranch("mu_pfMeanDRIsoProfileR04_sumPUPt"                        ) ;
+  
+  addBranch("mu_mc_bestDR", kVectorFloat) ;
+  addBranch("mu_mc_index" , kVectorInt  ) ;
+  addBranch("mu_mc_ERatio", kVectorFloat) ;
 //CHOOSE_RELEASE_END DEFAULT CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
 /*CHOOSE_RELEASE_START  CMSSW_5_3_11
 CHOOSE_RELEASE_END CMSSW_5_3_11*/
@@ -460,9 +464,6 @@ CHOOSE_RELEASE_END CMSSW_6_2_0_SLHC23_patch1*/
     const MuonIsolation   iso50       = muIt->isolationR05() ;
     const MuonPFIsolation pfIso30     = muIt->pfIsolationR03() ;
     const MuonPFIsolation pfIso40     = muIt->pfIsolationR04() ;
-
-
-    
     
     store("mu_isolationR03_sumPt"        , iso30.sumPt        ) ;
     store("mu_isolationR03_trackerVetoPt", iso30.trackerVetoPt) ;
@@ -512,7 +513,20 @@ CHOOSE_RELEASE_END CMSSW_6_2_0_SLHC23_patch1*/
 //CHOOSE_RELEASE_END DEFAULT CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
 /*CHOOSE_RELEASE_START  CMSSW_5_3_11
 CHOOSE_RELEASE_END CMSSW_5_3_11*/
-
+    
+    // Now apply truth matching.
+    int index = MCTruth_matchEtaPhi_getIndex(muIt->eta(), muIt->phi()) ;
+    if(index>=0){
+      const MCTruthObject* MCTruth = MCTruth_getRecordByIndex(index) ;
+      store("mu_mc_bestDR", deltaR(muIt->eta(), muIt->phi(), MCTruth->eta(), MCTruth->phi())) ;
+      store("mu_mc_index" , index) ;
+      store("mu_mc_ERatio", muIt->energy()/MCTruth->energy()) ;
+    }
+    else{
+      store("mu_mc_bestDR", 999) ;
+      store("mu_mc_index" ,  -1) ;
+      store("mu_mc_ERatio", 999) ;
+    }
   }
   store("mu_gt_n", mu_gt_n) ;
   store("mu_ot_n", mu_ot_n) ;

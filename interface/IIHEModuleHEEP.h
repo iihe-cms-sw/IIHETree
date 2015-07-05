@@ -20,8 +20,9 @@ private:
   bool storeHEEP50_25_ ;
   bool storeHEEP50_    ;
   bool storeHEEP51_    ;
+  bool storeHEEP60_    ;
   
-  double rho_ ;
+  int nAccept_ ;
   
   HEEPCut_isolEMHadDepth1* cut_41_isolEMHadDepth1_ ;
   HEEPCut_dxyFirstPV*      cut_41_dxyFirstPV_      ;
@@ -57,6 +58,13 @@ private:
   HEEPCutCollection* HEEPCutflow_51_ID_         ;
   HEEPCutCollection* HEEPCutflow_51_isolation_  ;
   HEEPCutCollection* HEEPCutflow_51_total_      ;
+  
+  HEEPCut_isolEMHadDepth1* cut_60_isolEMHadDepth1_ ;
+  HEEPCut_dxyFirstPV*      cut_60_dxyFirstPV_      ;
+  HEEPCutCollection* HEEPCutflow_60_acceptance_ ;
+  HEEPCutCollection* HEEPCutflow_60_ID_         ;
+  HEEPCutCollection* HEEPCutflow_60_isolation_  ;
+  HEEPCutCollection* HEEPCutflow_60_total_      ;
   
   std::vector<std::string> triggersForMatching_ ;
 public:

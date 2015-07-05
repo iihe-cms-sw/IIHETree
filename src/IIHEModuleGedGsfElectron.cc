@@ -101,6 +101,23 @@ void IIHEModuleGedGsfElectron::beginJob(){
   addBranch("gsf_e5x5") ;
   addBranch("gsf_r9") ;
   addBranch("gsf_hitsinfo", kVectorVectorInt) ;
+  
+//CHOOSE_RELEASE_START CMSSW_7_3_0
+  setBranchType(kVectorFloat) ;
+  addBranch("gsf_pixelMatch_dPhi1") ;
+  addBranch("gsf_pixelMatch_dPhi2") ;
+  addBranch("gsf_pixelMatch_dRz1" ) ;
+  addBranch("gsf_pixelMatch_dRz2" ) ;
+  setBranchType(kVectorInt) ;
+  addBranch("gsf_pixelMatch_subDetector1") ;
+  addBranch("gsf_pixelMatch_subDetector2") ;
+//CHOOSE_RELEASE_END CMSSW_7_3_0
+/*CHOOSE_RELEASE_START CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11
+CHOOSE_RELEASE_END CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11*/
+  
+  addBranch("gsf_mc_bestDR", kVectorFloat) ;
+  addBranch("gsf_mc_index" , kVectorInt  ) ;
+  addBranch("gsf_mc_ERatio", kVectorFloat) ;
 }
 
 // ------------ method called to for each event  ------------
@@ -205,6 +222,31 @@ CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSS
       gsf_hitsinfo.push_back(myhitbin) ;
     }
     store("gsf_hitsinfo", gsf_hitsinfo) ;
+    
+//CHOOSE_RELEASE_START CMSSW_7_3_0
+    store("gsf_pixelMatch_dPhi1"       , gsfiter->pixelMatchDPhi1()       ) ;
+    store("gsf_pixelMatch_dPhi2"       , gsfiter->pixelMatchDPhi2()       ) ;
+    store("gsf_pixelMatch_dRz1"        , gsfiter->pixelMatchDRz1()        ) ;
+    store("gsf_pixelMatch_dRz2"        , gsfiter->pixelMatchDRz2()        ) ;
+    store("gsf_pixelMatch_subDetector1", gsfiter->pixelMatchSubdetector1()) ;
+    store("gsf_pixelMatch_subDetector2", gsfiter->pixelMatchSubdetector2()) ;
+//CHOOSE_RELEASE_END CMSSW_7_3_0
+/*CHOOSE_RELEASE_START CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11
+CHOOSE_RELEASE_END CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11*/
+    
+    // Now apply truth matching.
+    int index = MCTruth_matchEtaPhi_getIndex(gsfiter->eta(), gsfiter->phi()) ;
+    if(index>=0){
+      const MCTruthObject* MCTruth = MCTruth_getRecordByIndex(index) ;
+      store("gsf_mc_bestDR", deltaR(gsfiter->eta(), gsfiter->phi(), MCTruth->eta(), MCTruth->phi())) ;
+      store("gsf_mc_index" , index) ;
+      store("gsf_mc_ERatio", gsfiter->energy()/MCTruth->energy()) ;
+    }
+    else{
+      store("gsf_mc_bestDR", 999) ;
+      store("gsf_mc_index" ,  -1) ;
+      store("gsf_mc_ERatio", 999) ;
+    }
   }
 }
 

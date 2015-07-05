@@ -17,11 +17,12 @@
 #include "UserCode/IIHETree/interface/IIHEModulePhoton.h"
 #include "UserCode/IIHETree/interface/IIHEModuleGedGsfElectron.h"
 #include "UserCode/IIHETree/interface/IIHEModuleMuon.h"
+#include "UserCode/IIHETree/interface/IIHEModuleMCTruth.h"
 #include "UserCode/IIHETree/interface/IIHEModuleHEEP.h"
 #include "UserCode/IIHETree/interface/IIHEModuleMET.h"
-#include "UserCode/IIHETree/interface/IIHEModuleMCTruth.h"
 #include "UserCode/IIHETree/interface/IIHEModuleTrigger.h"
 #include "UserCode/IIHETree/interface/IIHEModuleZBoson.h"
+#include "UserCode/IIHETree/interface/IIHEModuleLeptonsAccept.h"
 #include "UserCode/IIHETree/interface/IIHEModuleAutoAcceptEvent.h"
 
 using namespace std ;
@@ -71,6 +72,7 @@ CHOOSE_RELEASE_END CMSSW_5_3_11  */
   
   firstPrimaryVertex_ = new math::XYZPoint(0.0,0.0,0.0) ;
   beamspot_           = new math::XYZPoint(0.0,0.0,0.0) ;
+  MCTruthModule_ = 0 ;
   
   includeTriggerModule_         = iConfig.getUntrackedParameter<bool>("includeTriggerModule"        , true ) ;
   includeEventModule_           = iConfig.getUntrackedParameter<bool>("includeEventModule"          , true ) ;
@@ -80,13 +82,18 @@ CHOOSE_RELEASE_END CMSSW_5_3_11  */
   includeElectronModule_        = iConfig.getUntrackedParameter<bool>("includeElectronModule"       , true ) ;
   includeMuonModule_            = iConfig.getUntrackedParameter<bool>("includeMuonModule"           , true ) ;
   includeMETModule_             = iConfig.getUntrackedParameter<bool>("includeMETModule"            , true ) ;
-  includeHEEPModule_            = iConfig.getUntrackedParameter<bool>("includeHEEPModule"           , true ) ;
   includeMCTruthModule_         = iConfig.getUntrackedParameter<bool>("includeMCTruthModule"        , true ) ;
+  includeHEEPModule_            = iConfig.getUntrackedParameter<bool>("includeHEEPModule"           , true ) ;
   includeZBosonModule_          = iConfig.getUntrackedParameter<bool>("includeZBosonModule"         , true ) ;
+  includeLeptonsAcceptModule_   = iConfig.getUntrackedParameter<bool>("includeLeptonsAcceptModule"  , true ) ;
   includeAutoAcceptEventModule_ = iConfig.getUntrackedParameter<bool>("includeAutoAcceptEventModule", true ) ;
     
   if(includeTriggerModule_        ) childModules_.push_back(new IIHEModuleTrigger(iConfig)        ) ;
   if(includeEventModule_          ) childModules_.push_back(new IIHEModuleEvent(iConfig)          ) ;
+  if(includeMCTruthModule_        ){
+    MCTruthModule_ = new IIHEModuleMCTruth(iConfig) ;
+    childModules_.push_back(MCTruthModule_) ;
+  }
   if(includeVertexModule_         ) childModules_.push_back(new IIHEModuleVertex(iConfig)         ) ;
   if(includeSuperClusterModule_   ) childModules_.push_back(new IIHEModuleSuperCluster(iConfig)   ) ;
   if(includePhotonModule_         ) childModules_.push_back(new IIHEModulePhoton(iConfig)         ) ;
@@ -94,12 +101,31 @@ CHOOSE_RELEASE_END CMSSW_5_3_11  */
   if(includeMuonModule_           ) childModules_.push_back(new IIHEModuleMuon(iConfig)           ) ;
   if(includeMETModule_            ) childModules_.push_back(new IIHEModuleMET(iConfig)            ) ;
   if(includeHEEPModule_           ) childModules_.push_back(new IIHEModuleHEEP(iConfig)           ) ;
-  if(includeMCTruthModule_        ) childModules_.push_back(new IIHEModuleMCTruth(iConfig)        ) ;  
   if(includeZBosonModule_         ) childModules_.push_back(new IIHEModuleZBoson(iConfig)         ) ;  
+  if(includeLeptonsAcceptModule_  ) childModules_.push_back(new IIHEModuleLeptonsAccept(iConfig)  ) ;  
   if(includeAutoAcceptEventModule_) childModules_.push_back(new IIHEModuleAutoAcceptEvent(iConfig)) ;  
 }
 
 IIHEAnalysis::~IIHEAnalysis(){}
+
+const MCTruthObject* IIHEAnalysis::MCTruth_getRecordByIndex(int index){
+  if(MCTruthModule_){
+    return MCTruthModule_->getRecordByIndex(index) ;
+  }
+  return 0 ;
+}
+const MCTruthObject* IIHEAnalysis::MCTruth_matchEtaPhi(float eta, float phi){
+  if(MCTruthModule_){
+    return MCTruthModule_->matchEtaPhi(eta, phi) ;
+  }
+  return 0 ;
+}
+int IIHEAnalysis::MCTruth_matchEtaPhi_getIndex(float eta, float phi){
+  if(MCTruthModule_){
+    return MCTruthModule_->matchEtaPhi_getIndex(eta, phi) ;
+  }
+  return -1 ;
+}
 
 bool IIHEAnalysis::addValueToMetaTree(std::string parName, float value){
   BranchWrapperF* bw = new BranchWrapperF(parName) ;
@@ -231,6 +257,12 @@ void IIHEAnalysis::beginJob(){
     childModules_.at(i)->config(this) ;
     childModules_.at(i)->pubBeginJob() ;
   }
+  
+  // We have to call this last because other modules can add particles to the whitelist.
+  // However the other modules must follow MCTruthModule to use the whitelist.  Here is
+  // where we break the chicken and egg problem.
+  if(MCTruthModule_) MCTruthModule_->setWhitelist() ;
+  
   configureBranches() ;
 }
 

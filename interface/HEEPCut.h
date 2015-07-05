@@ -290,6 +290,31 @@ private:
   float constantTermEndcap_ ;
 } ;
 
+class HEEPCut_60_dEtaIn: HEEPCutBase{
+public:
+  HEEPCut_60_dEtaIn(int, std::string, IIHEModuleHEEP*) ;
+  void config(std::vector<HEEPParameter*> parameters_) ;
+  bool applyCut(reco::GsfElectron*, bool) ;
+private:
+  float constantTermBarrel_ ;
+  float linearTermBarrel_   ;
+  float cutoffTermBarrel_   ;
+  float constantTermEndcap_ ;
+  float linearTermEndcap_   ;
+  float cutoffTermEndcap_   ;
+} ;
+class HEEPCut_60_HOverE: HEEPCutBase{
+public:
+  HEEPCut_60_HOverE(int, std::string, IIHEModuleHEEP*) ;
+  void config(std::vector<HEEPParameter*> parameters_) ;
+  bool applyCut(reco::GsfElectron*, bool) ;
+private:
+  float reciprocalTermBarrel_ ;
+  float reciprocalTermEndcap_ ;
+  float constantTermBarrel_ ;
+  float constantTermEndcap_ ;
+} ;
+
 
 class HEEPCutCollection{
 private:

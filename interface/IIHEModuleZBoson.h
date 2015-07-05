@@ -35,7 +35,13 @@ private:
   int nAcceptZeeg_ ;
   int nAcceptZmmg_ ;
   int nAcceptAll_  ;
-
+  
+  bool saveZee_  ;
+  bool saveZmm_  ;
+  bool saveZem_  ;
+  bool saveZeeg_ ;
+  bool saveZmmg_ ;
+  
 public:
   explicit IIHEModuleZBoson(const edm::ParameterSet& iConfig);
   ~IIHEModuleZBoson();

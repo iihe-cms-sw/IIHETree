@@ -36,6 +36,16 @@ bool IIHEModule::addValueToMetaTree(std::string name, float value){
   return parent_->addValueToMetaTree(name, value) ;
 }
 
+const MCTruthObject* IIHEModule::MCTruth_matchEtaPhi(float eta, float phi){
+  return parent_->MCTruth_matchEtaPhi(eta, phi) ;
+}
+const MCTruthObject* IIHEModule::MCTruth_getRecordByIndex(int index){
+  return parent_->MCTruth_getRecordByIndex(index) ;
+}
+int IIHEModule::MCTruth_matchEtaPhi_getIndex(float eta, float phi){
+  return parent_->MCTruth_matchEtaPhi_getIndex(eta, phi) ;
+}
+
 void IIHEModule::addToMCTruthWhitelist(std::vector<int> pdgIds){ parent_->addToMCTruthWhitelist(pdgIds) ; }
 
 // ------------ method called once each job just before starting event loop  ------------
