@@ -283,7 +283,7 @@ CHOOSE_RELEASE_END DEFAULT*/
   addBranch("mu_pfIsolationR04_sumPhotonEtHighThreshold"       ) ;
   addBranch("mu_pfIsolationR04_sumPUPt"                        ) ;
   
-//CHOOSE_RELEASE_START DEFAULT CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
+//CHOOSE_RELEASE_START DEFAULT CMSSW_7_4_4 CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
   addBranch("mu_pfMeanDRIsoProfileR03_sumChargedHadronPt"             ) ;
   addBranch("mu_pfMeanDRIsoProfileR03_sumChargedParticlePt"           ) ;
   addBranch("mu_pfMeanDRIsoProfileR03_sumPhotonEt"                    ) ;
@@ -301,7 +301,7 @@ CHOOSE_RELEASE_END DEFAULT*/
   addBranch("mu_mc_bestDR", kVectorFloat) ;
   addBranch("mu_mc_index" , kVectorInt  ) ;
   addBranch("mu_mc_ERatio", kVectorFloat) ;
-//CHOOSE_RELEASE_END DEFAULT CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
+//CHOOSE_RELEASE_END DEFAULT CMSSW_7_4_4 CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
 /*CHOOSE_RELEASE_START  CMSSW_5_3_11
 CHOOSE_RELEASE_END CMSSW_5_3_11*/
 }
@@ -493,7 +493,7 @@ CHOOSE_RELEASE_END CMSSW_6_2_0_SLHC23_patch1*/
     store("mu_pfIsolationR04_sumPhotonEtHighThreshold"       , pfIso40.sumPhotonEtHighThreshold       ) ;
     store("mu_pfIsolationR04_sumPUPt"                        , pfIso40.sumPUPt                        ) ;
 
-//CHOOSE_RELEASE_START DEFAULT CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
+//CHOOSE_RELEASE_START DEFAULT CMSSW_7_4_4 CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
     const MuonPFIsolation pfMeanIso30 = muIt->pfMeanDRIsoProfileR03() ;
     const MuonPFIsolation pfMeanIso40 = muIt->pfMeanDRIsoProfileR04() ;
 
@@ -510,7 +510,7 @@ CHOOSE_RELEASE_END CMSSW_6_2_0_SLHC23_patch1*/
     store("mu_pfMeanDRIsoProfileR04_sumNeutralHadronEtHighThreshold", pfMeanIso40.sumNeutralHadronEtHighThreshold) ;
     store("mu_pfMeanDRIsoProfileR04_sumPhotonEtHighThreshold"       , pfMeanIso40.sumPhotonEtHighThreshold       ) ;
     store("mu_pfMeanDRIsoProfileR04_sumPUPt"                        , pfMeanIso40.sumPUPt                        ) ;
-//CHOOSE_RELEASE_END DEFAULT CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
+//CHOOSE_RELEASE_END DEFAULT CMSSW_7_4_4 CMSSW_7_0_6_patch1 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
 /*CHOOSE_RELEASE_START  CMSSW_5_3_11
 CHOOSE_RELEASE_END CMSSW_5_3_11*/
     

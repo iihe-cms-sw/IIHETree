@@ -102,7 +102,7 @@ void IIHEModuleGedGsfElectron::beginJob(){
   addBranch("gsf_r9") ;
   addBranch("gsf_hitsinfo", kVectorVectorInt) ;
   
-//CHOOSE_RELEASE_START CMSSW_7_3_0
+//CHOOSE_RELEASE_START CMSSW_7_4_4
   setBranchType(kVectorFloat) ;
   addBranch("gsf_pixelMatch_dPhi1") ;
   addBranch("gsf_pixelMatch_dPhi2") ;
@@ -111,7 +111,7 @@ void IIHEModuleGedGsfElectron::beginJob(){
   setBranchType(kVectorInt) ;
   addBranch("gsf_pixelMatch_subDetector1") ;
   addBranch("gsf_pixelMatch_subDetector2") ;
-//CHOOSE_RELEASE_END CMSSW_7_3_0
+//CHOOSE_RELEASE_END CMSSW_7_4_4
 /*CHOOSE_RELEASE_START CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11
 CHOOSE_RELEASE_END CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11*/
   
@@ -133,10 +133,10 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
     
     //Fill the gsf related variables
 
-//CHOOSE_RELEASE_START DEFAULT CMSSW_7_3_0 CMSSW_7_2_0
+//CHOOSE_RELEASE_START DEFAULT CMSSW_7_4_4 CMSSW_7_3_0 CMSSW_7_2_0
     int gsf_nLostInnerHits = gsfiter->gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS) ;
     int gsf_nLostOuterHits = gsfiter->gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_OUTER_HITS) ;
-//CHOOSE_RELEASE_END DEFAULT CMSSW_7_3_0 CMSSW_7_2_0
+//CHOOSE_RELEASE_END DEFAULT CMSSW_7_4_4 CMSSW_7_3_0 CMSSW_7_2_0
 /*CHOOSE_RELEASE_START CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11
     int gsf_nLostInnerHits = gsfiter->gsfTrack()->trackerExpectedHitsInner().numberOfLostHits() ;
     int gsf_nLostOuterHits = gsfiter->gsfTrack()->trackerExpectedHitsOuter().numberOfLostHits() ;
@@ -202,9 +202,9 @@ CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSS
     //http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/DataFormats/TrackReco/interface/HitPattern.h?revision=1.32&view=markup
     reco::HitPattern kfHitPattern = gsfiter->gsfTrack()->hitPattern();
 
-//CHOOSE_RELEASE_START DEFAULT CMSSW_7_3_0 CMSSW_7_2_0
+//CHOOSE_RELEASE_START DEFAULT CMSSW_7_4_4 CMSSW_7_3_0 CMSSW_7_2_0
     int nbtrackhits = kfHitPattern.numberOfHits(reco::HitPattern::TRACK_HITS) ;
-//CHOOSE_RELEASE_END DEFAULT CMSSW_7_3_0 CMSSW_7_2_0
+//CHOOSE_RELEASE_END DEFAULT CMSSW_7_4_4 CMSSW_7_3_0 CMSSW_7_2_0
 /*CHOOSE_RELEASE_START CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11
     int nbtrackhits = kfHitPattern.numberOfHits() ;
 CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11*/
@@ -212,9 +212,9 @@ CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSS
     std::vector<int> gsf_hitsinfo ;
     for(int hititer=0 ; hititer<25 ; hititer++){
       
-//CHOOSE_RELEASE_START CMSSW_7_3_0 CMSSW_7_2_0
+//CHOOSE_RELEASE_START CMSSW_7_4_4 CMSSW_7_3_0 CMSSW_7_2_0
       int myhitbin = (hititer<nbtrackhits) ? kfHitPattern.getHitPattern(reco::HitPattern::TRACK_HITS, hititer) : 0 ;
-//CHOOSE_RELEASE_END CMSSW_7_3_0 CMSSW_7_2_0
+//CHOOSE_RELEASE_END CMSSW_7_4_4 CMSSW_7_3_0 CMSSW_7_2_0
 /*CHOOSE_RELEASE_START CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11
       int myhitbin = (hititer<nbtrackhits) ? kfHitPattern.getHitPattern(hititer) : 0 ;
 CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11*/
@@ -223,14 +223,14 @@ CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSS
     }
     store("gsf_hitsinfo", gsf_hitsinfo) ;
     
-//CHOOSE_RELEASE_START CMSSW_7_3_0
+//CHOOSE_RELEASE_START CMSSW_7_4_4
     store("gsf_pixelMatch_dPhi1"       , gsfiter->pixelMatchDPhi1()       ) ;
     store("gsf_pixelMatch_dPhi2"       , gsfiter->pixelMatchDPhi2()       ) ;
     store("gsf_pixelMatch_dRz1"        , gsfiter->pixelMatchDRz1()        ) ;
     store("gsf_pixelMatch_dRz2"        , gsfiter->pixelMatchDRz2()        ) ;
     store("gsf_pixelMatch_subDetector1", gsfiter->pixelMatchSubdetector1()) ;
     store("gsf_pixelMatch_subDetector2", gsfiter->pixelMatchSubdetector2()) ;
-//CHOOSE_RELEASE_END CMSSW_7_3_0
+//CHOOSE_RELEASE_END CMSSW_7_4_4
 /*CHOOSE_RELEASE_START CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11
 CHOOSE_RELEASE_END CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11*/
     
