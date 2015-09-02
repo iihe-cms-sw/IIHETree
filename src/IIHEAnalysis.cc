@@ -74,6 +74,7 @@ CHOOSE_RELEASE_END CMSSW_5_3_11  */
   beamspot_           = new math::XYZPoint(0.0,0.0,0.0) ;
   MCTruthModule_ = 0 ;
   
+  includeLeptonsAcceptModule_   = iConfig.getUntrackedParameter<bool>("includeLeptonsAcceptModule"  , true ) ;
   includeTriggerModule_         = iConfig.getUntrackedParameter<bool>("includeTriggerModule"        , true ) ;
   includeEventModule_           = iConfig.getUntrackedParameter<bool>("includeEventModule"          , true ) ;
   includeVertexModule_          = iConfig.getUntrackedParameter<bool>("includeVertexModule"         , true ) ;
@@ -85,9 +86,9 @@ CHOOSE_RELEASE_END CMSSW_5_3_11  */
   includeMCTruthModule_         = iConfig.getUntrackedParameter<bool>("includeMCTruthModule"        , true ) ;
   includeHEEPModule_            = iConfig.getUntrackedParameter<bool>("includeHEEPModule"           , true ) ;
   includeZBosonModule_          = iConfig.getUntrackedParameter<bool>("includeZBosonModule"         , true ) ;
-  includeLeptonsAcceptModule_   = iConfig.getUntrackedParameter<bool>("includeLeptonsAcceptModule"  , true ) ;
   includeAutoAcceptEventModule_ = iConfig.getUntrackedParameter<bool>("includeAutoAcceptEventModule", true ) ;
-    
+  
+  if(includeLeptonsAcceptModule_  ) childModules_.push_back(new IIHEModuleLeptonsAccept(iConfig)  ) ;   
   if(includeTriggerModule_        ) childModules_.push_back(new IIHEModuleTrigger(iConfig)        ) ;
   if(includeEventModule_          ) childModules_.push_back(new IIHEModuleEvent(iConfig)          ) ;
   if(includeMCTruthModule_        ){
@@ -102,7 +103,6 @@ CHOOSE_RELEASE_END CMSSW_5_3_11  */
   if(includeMETModule_            ) childModules_.push_back(new IIHEModuleMET(iConfig)            ) ;
   if(includeHEEPModule_           ) childModules_.push_back(new IIHEModuleHEEP(iConfig)           ) ;
   if(includeZBosonModule_         ) childModules_.push_back(new IIHEModuleZBoson(iConfig)         ) ;  
-  if(includeLeptonsAcceptModule_  ) childModules_.push_back(new IIHEModuleLeptonsAccept(iConfig)  ) ;  
   if(includeAutoAcceptEventModule_) childModules_.push_back(new IIHEModuleAutoAcceptEvent(iConfig)) ;  
 }
 
@@ -310,6 +310,8 @@ void IIHEAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   iEvent.getByLabel(        muonCollectionLabel_,         muonCollection_) ;
   iEvent.getByLabel(         primaryVertexLabel_,           pvCollection_) ;
   
+  //iEvent.getByLabel(    electronCollectionLabel_,     electronCollectionMiniAOD_) ;
+  
 //CHOOSE_RELEASE_START DEFAULT CMSSW_7_4_4 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
   iEvent.getByToken(beamSpotLabel_, beamspotHandle_) ;
 // CHOOSE_RELEASE_END DEFAULT CMSSW_7_4_4 CMSSW_7_3_0 CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1
@@ -329,6 +331,7 @@ CHOOSE_RELEASE_END CMSSW_5_3_11*/
   
   for(unsigned i=0 ; i<childModules_.size() ; ++i){
     childModules_.at(i)->pubAnalyze(iEvent, iSetup) ;
+    if(rejectEvent_) break ;
   }
   endEvent() ;
 }
@@ -340,13 +343,14 @@ void IIHEAnalysis::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup)
 }
 void IIHEAnalysis::beginEvent(){
   acceptEvent_ = false ;
+  rejectEvent_ = false ;
   for(unsigned int i=0 ; i<childModules_.size() ; ++i){ childModules_.at(i)->pubBeginEvent() ; }
   for(unsigned int i=0 ; i<allVars_.size()      ; ++i){ allVars_.at(i)->beginEvent()         ; }
 }
 void IIHEAnalysis::endEvent(){
   for(unsigned int i=0 ; i<childModules_.size() ; ++i){ childModules_.at(i)->pubEndEvent() ; }
   for(unsigned int i=0 ; i<allVars_.size()      ; ++i){      allVars_.at(i)->endEvent()    ; }
-  if(acceptEvent_){
+  if(true==acceptEvent_ && false==rejectEvent_){
     dataTree_->Fill() ;
     nEventsStored_++ ;
   }

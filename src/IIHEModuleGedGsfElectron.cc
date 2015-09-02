@@ -33,7 +33,9 @@ using namespace std ;
 using namespace reco;
 using namespace edm ;
 
-IIHEModuleGedGsfElectron::IIHEModuleGedGsfElectron(const edm::ParameterSet& iConfig): IIHEModule(iConfig){}
+IIHEModuleGedGsfElectron::IIHEModuleGedGsfElectron(const edm::ParameterSet& iConfig): IIHEModule(iConfig){
+  ETThreshold_ = iConfig.getUntrackedParameter<double>("electrons_ETThreshold", 0.0 ) ;
+}
 IIHEModuleGedGsfElectron::~IIHEModuleGedGsfElectron(){}
 
 // ------------ method called once each job just before starting event loop  ------------
@@ -128,8 +130,12 @@ void IIHEModuleGedGsfElectron::analyze(const edm::Event& iEvent, const edm::Even
   math::XYZPoint* beamspot     = parent_->getBeamspot() ;
   math::XYZPoint* firstpvertex = parent_->getFirstPrimaryVertex() ;
   
-  store("gsf_n", (unsigned int) electrons.size()) ;
+  unsigned int gsf_n = 0 ;
   for(reco::GsfElectronCollection::const_iterator gsfiter=electrons.begin() ; gsfiter!=electrons.end() ; ++gsfiter){
+    
+    float ET = gsfiter->caloEnergy()*sin(gsfiter->p4().theta()) ;
+    if(ET<ETThreshold_ && gsfiter->pt()<ETThreshold_) continue ;
+    gsf_n++ ;
     
     //Fill the gsf related variables
 
@@ -243,11 +249,12 @@ CHOOSE_RELEASE_END CMSSW_7_2_0 CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23
       store("gsf_mc_ERatio", gsfiter->energy()/MCTruth->energy()) ;
     }
     else{
-      store("gsf_mc_bestDR", 999) ;
-      store("gsf_mc_index" ,  -1) ;
-      store("gsf_mc_ERatio", 999) ;
+      store("gsf_mc_bestDR", 999.0) ;
+      store("gsf_mc_index" ,    -1) ;
+      store("gsf_mc_ERatio", 999.0) ;
     }
   }
+  store("gsf_n", gsf_n) ;
 }
 
 void IIHEModuleGedGsfElectron::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){}

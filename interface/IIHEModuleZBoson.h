@@ -16,6 +16,7 @@ enum ZTypes{
 // class decleration
 class IIHEModuleZBoson : public IIHEModule {
 private:
+  float ETThreshold_ ;
   float DeltaRCut_ ;
   
   float mZAccept_ ;

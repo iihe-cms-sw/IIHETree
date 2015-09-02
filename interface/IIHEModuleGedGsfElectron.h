@@ -7,7 +7,7 @@
 class IIHEModuleGedGsfElectron : public IIHEModule {
 public:
   explicit IIHEModuleGedGsfElectron(const edm::ParameterSet& iConfig);
-  ~IIHEModuleGedGsfElectron();
+  ~IIHEModuleGedGsfElectron() ;
   
   void   pubBeginJob(){   beginJob() ; } ;
   void pubBeginEvent(){ beginEvent() ; } ;
@@ -20,5 +20,7 @@ public:
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
   virtual void beginRun(edm::Run const&, edm::EventSetup const&);
+  
+  float ETThreshold_ ;
 };
 #endif

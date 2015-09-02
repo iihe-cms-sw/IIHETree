@@ -3,6 +3,7 @@
 
 class HEEPCut_isolEMHadDepth1 ;
 class HEEPCut_dxyFirstPV ;
+class HEEPCut_SigmaIetaIeta ;
 class HEEPCutCollection ;
 class HEEPParameter ;
 
@@ -23,9 +24,11 @@ private:
   bool storeHEEP60_    ;
   
   int nAccept_ ;
+  float ETThreshold_ ;
   
   HEEPCut_isolEMHadDepth1* cut_41_isolEMHadDepth1_ ;
   HEEPCut_dxyFirstPV*      cut_41_dxyFirstPV_      ;
+  HEEPCut_SigmaIetaIeta*   cut_41_SigmaIetaIeta_   ;
   HEEPCutCollection* HEEPCutflow_41_acceptance_ ;
   HEEPCutCollection* HEEPCutflow_41_ID_         ;
   HEEPCutCollection* HEEPCutflow_41_isolation_  ;
@@ -33,6 +36,7 @@ private:
   
   HEEPCut_isolEMHadDepth1* cut_50_50ns_isolEMHadDepth1_ ;
   HEEPCut_dxyFirstPV*      cut_50_50ns_dxyFirstPV_      ;
+  HEEPCut_SigmaIetaIeta*   cut_50_50ns_SigmaIetaIeta_   ;
   HEEPCutCollection* HEEPCutflow_50_50ns_acceptance_ ;
   HEEPCutCollection* HEEPCutflow_50_50ns_ID_         ;
   HEEPCutCollection* HEEPCutflow_50_50ns_isolation_  ;
@@ -40,6 +44,7 @@ private:
   
   HEEPCut_isolEMHadDepth1* cut_50_25ns_isolEMHadDepth1_ ;
   HEEPCut_dxyFirstPV*      cut_50_25ns_dxyFirstPV_      ;
+  HEEPCut_SigmaIetaIeta*   cut_50_25ns_SigmaIetaIeta_   ;
   HEEPCutCollection* HEEPCutflow_50_25ns_acceptance_ ;
   HEEPCutCollection* HEEPCutflow_50_25ns_ID_         ;
   HEEPCutCollection* HEEPCutflow_50_25ns_isolation_  ;
@@ -47,6 +52,7 @@ private:
   
   HEEPCut_isolEMHadDepth1* cut_50_isolEMHadDepth1_ ;
   HEEPCut_dxyFirstPV*      cut_50_dxyFirstPV_      ;
+  HEEPCut_SigmaIetaIeta*   cut_50_SigmaIetaIeta_   ;
   HEEPCutCollection* HEEPCutflow_50_acceptance_ ;
   HEEPCutCollection* HEEPCutflow_50_ID_         ;
   HEEPCutCollection* HEEPCutflow_50_isolation_  ;
@@ -54,6 +60,7 @@ private:
   
   HEEPCut_isolEMHadDepth1* cut_51_isolEMHadDepth1_ ;
   HEEPCut_dxyFirstPV*      cut_51_dxyFirstPV_      ;
+  HEEPCut_SigmaIetaIeta*   cut_51_SigmaIetaIeta_   ;
   HEEPCutCollection* HEEPCutflow_51_acceptance_ ;
   HEEPCutCollection* HEEPCutflow_51_ID_         ;
   HEEPCutCollection* HEEPCutflow_51_isolation_  ;
@@ -61,6 +68,7 @@ private:
   
   HEEPCut_isolEMHadDepth1* cut_60_isolEMHadDepth1_ ;
   HEEPCut_dxyFirstPV*      cut_60_dxyFirstPV_      ;
+  HEEPCut_SigmaIetaIeta*   cut_60_SigmaIetaIeta_   ;
   HEEPCutCollection* HEEPCutflow_60_acceptance_ ;
   HEEPCutCollection* HEEPCutflow_60_ID_         ;
   HEEPCutCollection* HEEPCutflow_60_isolation_  ;

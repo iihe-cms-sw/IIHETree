@@ -10,6 +10,7 @@ using namespace edm ;
 
 IIHEModuleZBoson::IIHEModuleZBoson(const edm::ParameterSet& iConfig): IIHEModule(iConfig){
   DeltaRCut_        = iConfig.getUntrackedParameter<double>("ZBosonDeltaRCut"          ,  0.3) ;
+  ETThreshold_      = iConfig.getUntrackedParameter<double>("ZBosonEtThreshold"        , 10.0) ;
   mZAccept_         = iConfig.getUntrackedParameter<double>("ZBosonZMassAcceptLower"   , 60.0) ;
   mJpsiAcceptLower_ = iConfig.getUntrackedParameter<double>("ZBosonJPsiAcceptMassLower",  2.5) ;
   mJpsiAcceptUpper_ = iConfig.getUntrackedParameter<double>("ZBosonJPsiAcceptMassUpper",  3.5) ;
@@ -90,8 +91,8 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   
   // Get leptons and photons
   reco::GsfElectronCollection electrons = parent_->getElectronCollection() ;
-  reco::PhotonCollection photons = parent_->getPhotonCollection() ;
-  reco::MuonCollection muons = parent_->getMuonCollection() ;
+  reco::PhotonCollection photons        = parent_->getPhotonCollection() ;
+  reco::MuonCollection muons            = parent_->getMuonCollection() ;
   
   // Declare and fill four vectors
   std::vector<TLorentzVector> php4s ;
@@ -104,6 +105,8 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     float py = phiter->py() ;
     float pz = phiter->pz() ;
     float E = sqrt(px*px+py*py+pz*pz) ;
+    float ET =  sqrt(px*px+py*py) ;
+    if(ET<ETThreshold_) continue ;
     php4s.push_back(TLorentzVector(px, py, pz, E)) ;
   }
   
@@ -112,7 +115,6 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     float py = gsfiter->py() ;
     float pz = gsfiter->pz() ;
     float E = sqrt(mEl*mEl+px*px+py*py+pz*pz) ;
-    elp4s.push_back(TLorentzVector(px, py, pz, E)) ;
     
     float HEEP_ET  = gsfiter->caloEnergy()*sin(gsfiter->p4().theta()) ;
     float HEEP_eta = gsfiter->superCluster()->eta() ;
@@ -120,6 +122,11 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     float HEEP_E   = gsfiter->caloEnergy() ;
     TLorentzVector HEEPp4 ;
     HEEPp4.SetPtEtaPhiE(HEEP_ET, HEEP_eta, HEEP_phi, HEEP_E) ;
+    
+    float ET =  sqrt(px*px+py*py) ;
+    if(ET<ETThreshold_ && HEEP_ET<ETThreshold_) continue ;
+    
+    elp4s.push_back(TLorentzVector(px, py, pz, E)) ;
     HEEPp4s.push_back(HEEPp4) ;
   }
   
@@ -128,6 +135,8 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     float py = muiter->py() ;
     float pz = muiter->pz() ;
     float E = sqrt(mMu*mMu+px*px+py*py+pz*pz) ;
+    float ET =  sqrt(px*px+py*py) ;
+    if(ET<ETThreshold_) continue ;
     mup4s.push_back(TLorentzVector(px, py, pz, E)) ;
   }
   
@@ -322,19 +331,19 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     store("Zee_n" , Zee_n ) ;
     store("Zee_highestMass" , Zee_highestMassIndex ) ;
   }
-  if(saveZee_ ){
+  if(saveZmm_ ){
     store("Zmm_n" , Zmm_n ) ;
     store("Zmm_highestMass" , Zmm_highestMassIndex ) ;
   }
-  if(saveZee_ ){
+  if(saveZem_ ){
     store("Zem_n" , Zem_n ) ;
     store("Zem_highestMass" , Zem_highestMassIndex ) ;
   }
-  if(saveZee_ ){
+  if(saveZeeg_){
     store("Zeeg_n", Zeeg_n) ;
     store("Zeeg_highestMass", Zeeg_highestMassIndex) ;
   }
-  if(saveZee_ ){
+  if(saveZmmg_){
     store("Zmmg_n", Zmmg_n) ;
     store("Zmmg_highestMass", Zmmg_highestMassIndex) ;
   }

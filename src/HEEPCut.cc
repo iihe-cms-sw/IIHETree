@@ -47,6 +47,7 @@ HEEPCutBase::HEEPCutBase(int cutflow, std::string name, IIHEModuleHEEP* mod){
   branchName_value_       = name_ + "_value" ;
 }
 HEEPCutBase::~HEEPCutBase(){}
+void HEEPCutBase::setParentCollection(HEEPCutCollection* parent){ parent_collection_ = parent ; }
 void HEEPCutBase::setStatus(bool value, bool cumulativeSuccess){
   status_ = value ;
   if(status_) nPass_++ ;
@@ -66,7 +67,17 @@ void HEEPCutBase::store(){
   parent_mod_->store(name_, status_) ;
   parent_mod_->store(branchName_value_, value_) ;
 }
-bool HEEPCutBase::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){ return status_ ; }
+bool HEEPCutBase::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyTools lazytool, bool cumulativeSuccess){ return status_ ; }
+void HEEPCutBase::print(){
+  std::cout << std::setw(50) ;
+  std::cout << name_ ;
+  std::cout << std::setw(3) ;
+  std::cout << " : " ;
+  std::cout << std::setw(20) ;
+  std::cout << value_ ;
+  std::cout << std::endl ;
+}
+
 void HEEPCutBase::beginEvent(){
   nPass_           = 0 ;
   nPassCumulative_ = 0 ;
@@ -105,7 +116,7 @@ void HEEPCut_Et::config(std::vector<HEEPParameter*> parameters){
   }
   return ;
 }
-bool HEEPCut_Et::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
+bool HEEPCut_Et::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyTools lazytool, bool cumulativeSuccess){
   setValue(gsfiter->caloEnergy()*sin(gsfiter->p4().theta())) ;
   int region = detectorRegion(gsfiter) ;
   bool result = true ;
@@ -120,7 +131,7 @@ bool HEEPCut_Et::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
 
 //                                          eta                                         //
 HEEPCut_eta::HEEPCut_eta(int cutflow, std::string name, IIHEModuleHEEP* mod): HEEPCutBase(cutflow, name, mod){}
-bool HEEPCut_eta::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
+bool HEEPCut_eta::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyTools lazytool, bool cumulativeSuccess){
   setValue(gsfiter->superCluster()->eta()) ;
   int region = detectorRegion(gsfiter) ;
   bool result = (region==kBarrel || region==kEndcap) ;
@@ -130,7 +141,7 @@ bool HEEPCut_eta::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
 
 HEEPCut_EcalDriven::HEEPCut_EcalDriven(int cutflow, std::string name, IIHEModuleHEEP* mod): HEEPCutBase(cutflow, name, mod){}
 void HEEPCut_EcalDriven::config(std::vector<HEEPParameter*> parameters){ return ; }
-bool HEEPCut_EcalDriven::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
+bool HEEPCut_EcalDriven::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyTools lazytool, bool cumulativeSuccess){
   bool result = gsfiter->ecalDrivenSeed() ;
   setStatus(result, cumulativeSuccess) ;
   setValue((float) result) ;
@@ -144,11 +155,11 @@ void HEEPCut_dPhiIn::config(std::vector<HEEPParameter*> parameters){
     HEEPParameter* par = parameters.at(i) ;
     if(par->cutflow()!=cutflow()) continue ;
     if(par->name()=="dPhiInThresholdBarrel"){ thresholdBarrel_ = par->value() ; }
-    if(par->name()=="dPhiInThresholdBarrel"){ thresholdEndcap_ = par->value() ; }
+    if(par->name()=="dPhiInThresholdEndcap"){ thresholdEndcap_ = par->value() ; }
   }
   return ;
 }
-bool HEEPCut_dPhiIn::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
+bool HEEPCut_dPhiIn::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyTools lazytool, bool cumulativeSuccess){
   setValue(gsfiter->deltaPhiSuperClusterTrackAtVtx()) ;
   int region = detectorRegion(gsfiter) ;
   bool result = true ;
@@ -171,8 +182,21 @@ void HEEPCut_SigmaIetaIeta::config(std::vector<HEEPParameter*> parameters){
   }
   return ;
 }
-bool HEEPCut_SigmaIetaIeta::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  setValue(gsfiter->sigmaIetaIeta()) ;
+
+bool HEEPCut_SigmaIetaIeta::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyTools lazytool, bool cumulativeSuccess){
+  float sigmaIetaIeta = -1 ;
+  switch(cutflow()){
+    case kHC60:{
+      reco::CaloCluster seed = *(gsfiter->superCluster()->seed()) ;
+      std::vector<float> vCov = lazytool.localCovariances(seed) ;
+      sigmaIetaIeta = (isnan(vCov[0]) ? 0. : sqrt(vCov[0])) ;
+      break ;
+    }
+    default:
+      sigmaIetaIeta = gsfiter->sigmaIetaIeta() ;
+      break ;
+  }
+  setValue(sigmaIetaIeta) ;
   int region = detectorRegion(gsfiter) ;
   bool result = true ;
   switch(region){
@@ -189,8 +213,23 @@ bool HEEPCut_SigmaIetaIeta::applyCut(reco::GsfElectron* gsfiter, bool cumulative
 HEEPCut_E1x5OverE5x5::HEEPCut_E1x5OverE5x5(int cutflow, std::string name, IIHEModuleHEEP* mod): HEEPCutBase(cutflow, name, mod){}
 HEEPCut_E2x5OverE5x5::HEEPCut_E2x5OverE5x5(int cutflow, std::string name, IIHEModuleHEEP* mod): HEEPCutBase(cutflow, name, mod){}
 void HEEPCut_E1x5OverE5x5::config(std::vector<HEEPParameter*> parameters){ return ; }
-bool HEEPCut_E1x5OverE5x5::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  setValue(gsfiter->scE1x5()/gsfiter->scE5x5()) ;
+bool HEEPCut_E1x5OverE5x5::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyTools lazytool, bool cumulativeSuccess){
+  float e1x5 = -1 ;
+  float e5x5 =  1 ;
+  switch(cutflow()){
+    case kHC60:{
+      reco::CaloCluster seed = *(gsfiter->superCluster()->seed()) ;
+      e1x5 = lazytool.e1x5(seed) ;
+      e5x5 = lazytool.e5x5(seed) ;
+      break ;
+    }
+    default:
+      e1x5 = gsfiter->scE1x5() ;
+      e5x5 = gsfiter->scE5x5() ;
+      break ;
+  }
+  setValue(e1x5/e5x5) ;
+  
   bool result = true ;
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
@@ -204,12 +243,31 @@ void HEEPCut_E2x5OverE5x5::config(std::vector<HEEPParameter*> parameters){
   }
   return ;
 }
-bool HEEPCut_E2x5OverE5x5::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  setValue(gsfiter->scE2x5Max()/gsfiter->scE5x5()) ;
+bool HEEPCut_E2x5OverE5x5::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyTools lazytool, bool cumulativeSuccess){
+  float e1x5 = -1 ;
+  float e2x5 = -1 ;
+  float e5x5 =  1 ;
+  switch(cutflow()){
+    case kHC60:{
+      reco::CaloCluster seed = *(gsfiter->superCluster()->seed()) ;
+      e1x5 = lazytool.e1x5   (seed) ;
+      e2x5 = lazytool.e2x5Max(seed) ;
+      e5x5 = lazytool.e5x5   (seed) ;
+      break ;
+    }
+    default:{
+      e1x5 = gsfiter->scE1x5() ;
+      e2x5 = gsfiter->scE2x5Max() ;
+      e5x5 = gsfiter->scE5x5() ;
+      break ;
+    }
+  }
+  setValue(e2x5/e5x5) ;
+  
   int region = detectorRegion(gsfiter) ;
   bool result = true ;
   switch(region){
-    case kBarrel: result = (gsfiter->scE2x5Max()/gsfiter->scE5x5() > thresholdE2x5_) || (gsfiter->scE1x5()/gsfiter->scE5x5() > thresholdE1x5_) ; break ;
+    case kBarrel: result = (e2x5/e5x5 > thresholdE2x5_) || (e1x5/e2x5 > thresholdE1x5_) ; break ;
     case kEndcap: result = true ; break ;
     default : break ;
   }
@@ -228,15 +286,16 @@ void HEEPCut_isolEMHadDepth1::config(std::vector<HEEPParameter*> parameters){
     if(par->name()=="isolEMHadDepth1ConstantTermEndcapHighEt"){ constantTermEndcapHighEt_ = par->value() ; }
     if(par->name()=="isolEMHadDepth1LinearTermBarrel"        ){ linearTermBarrel_         = par->value() ; }
     if(par->name()=="isolEMHadDepth1LinearTermEndcap"        ){ linearTermEndcap_         = par->value() ; }
+    if(par->name()=="isolEMHadDepth1OffsetTermEndcap"        ){ offsetTermEndcap_         = par->value() ; }
     if(par->name()=="isolEMHadDepth1EcalHcal1EffAreaBarrel"  ){ EcalHcal1EffAreaBarrel_   = par->value() ; }
     if(par->name()=="isolEMHadDepth1EcalHcal1EffAreaEndcap"  ){ EcalHcal1EffAreaEndcap_   = par->value() ; }
   }
   return ;
 }
-bool HEEPCut_isolEMHadDepth1::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
+bool HEEPCut_isolEMHadDepth1::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyTools lazytool, bool cumulativeSuccess){
   float gsf_ecaliso  = gsfiter->dr03EcalRecHitSumEt() ;
   float gsf_hcaliso1 = gsfiter->dr03HcalDepth1TowerSumEt() ;
-  float gsf_gsfet   = gsfiter->caloEnergy()*sin(gsfiter->p4().theta()) ;
+  float gsf_gsfet    = gsfiter->caloEnergy()*sin(gsfiter->p4().theta()) ;
   setValue(gsf_ecaliso+gsf_hcaliso1) ;
   int region = detectorRegion(gsfiter) ;
   bool result = true ;
@@ -266,7 +325,7 @@ void HEEPCut_IsolPtTrks::config(std::vector<HEEPParameter*> parameters){
   }
   return ;
 }
-bool HEEPCut_IsolPtTrks::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
+bool HEEPCut_IsolPtTrks::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyTools lazytool, bool cumulativeSuccess){
   setValue(gsfiter->dr03TkSumPt()) ;
   int region = detectorRegion(gsfiter) ;
   bool result = true ;
@@ -289,7 +348,7 @@ void HEEPCut_missingHits::config(std::vector<HEEPParameter*> parameters){
   }
   return ;
 }
-bool HEEPCut_missingHits::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
+bool HEEPCut_missingHits::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyTools lazytool, bool cumulativeSuccess){
   setValue((float) (gsfiter->gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS))) ;
   bool result = (value() <= threshold_+0.5) ;
   setStatus(result, cumulativeSuccess) ;
@@ -303,11 +362,11 @@ void HEEPCut_dxyFirstPV::config(std::vector<HEEPParameter*> parameters){
     HEEPParameter* par = parameters.at(i) ;
     if(par->cutflow()!=cutflow()) continue ;
     if(par->name()=="dPhiInThresholdBarrel"){ thresholdBarrel_ = par->value() ; }
-    if(par->name()=="dPhiInThresholdBarrel"){ thresholdEndcap_ = par->value() ; }
+    if(par->name()=="dPhiInThresholdEndcap"){ thresholdEndcap_ = par->value() ; }
   }
   return ;
 }
-bool HEEPCut_dxyFirstPV::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
+bool HEEPCut_dxyFirstPV::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyTools lazytool, bool cumulativeSuccess){
   setValue(gsfiter->gsfTrack()->dxy(firstPV_)) ;
   int region = detectorRegion(gsfiter) ;
   bool result = true ;
@@ -336,7 +395,7 @@ void HEEPCut_41_dEtaIn::config(std::vector<HEEPParameter*> parameters){
   }
   return ;
 }
-bool HEEPCut_41_dEtaIn::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
+bool HEEPCut_41_dEtaIn::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyTools lazytool, bool cumulativeSuccess){
   setValue(gsfiter->deltaEtaSuperClusterTrackAtVtx()) ;
   int region = detectorRegion(gsfiter) ;
   bool result = true ;
@@ -360,7 +419,7 @@ void HEEPCut_41_HOverE::config(std::vector<HEEPParameter*> parameters){
   }
   return ;
 }
-bool HEEPCut_41_HOverE::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
+bool HEEPCut_41_HOverE::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyTools lazytool, bool cumulativeSuccess){
   setValue(gsfiter->hadronicOverEm()) ;
   int region = detectorRegion(gsfiter) ;
   bool result = true ;
@@ -389,7 +448,7 @@ void HEEPCut_50_50ns_dEtaIn::config(std::vector<HEEPParameter*> parameters){
   }
   return ;
 }
-bool HEEPCut_50_50ns_dEtaIn::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_50ns_dEtaIn::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyTools lazytool, bool cumulativeSuccess){
   setValue(gsfiter->deltaEtaSuperClusterTrackAtVtx()) ;
   int region = detectorRegion(gsfiter) ;
   bool result = true ;
@@ -423,7 +482,7 @@ void HEEPCut_50_50ns_HOverE::config(std::vector<HEEPParameter*> parameters){
   }
   return ;
 }
-bool HEEPCut_50_50ns_HOverE::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_50ns_HOverE::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyTools lazytool, bool cumulativeSuccess){
   setValue(gsfiter->hadronicOverEm()) ;
   float E = gsfiter->caloEnergy() ;
   int region = detectorRegion(gsfiter) ;
@@ -446,16 +505,16 @@ void HEEPCut_50_25ns_dEtaIn::config(std::vector<HEEPParameter*> parameters){
   for(unsigned int i=0 ; i<parameters.size() ; ++i){
     HEEPParameter* par = parameters.at(i) ;
     if(par->cutflow()!=cutflow()) continue ;
-    if(par->name()=="dEtaInConstantTermBarrel"){ constantTermEndcap_ = par->value() ; }
-    if(par->name()=="dEtaInLinearTermBarrel"  ){ linearTermEndcap_   = par->value() ; }
-    if(par->name()=="dEtaInCutoffTermBarrel"  ){ cutoffTermEndcap_   = par->value() ; }
+    if(par->name()=="dEtaInConstantTermBarrel"){ constantTermBarrel_ = par->value() ; }
+    if(par->name()=="dEtaInLinearTermBarrel"  ){ linearTermBarrel_   = par->value() ; }
+    if(par->name()=="dEtaInCutoffTermBarrel"  ){ cutoffTermBarrel_   = par->value() ; }
     if(par->name()=="dEtaInConstantTermEndcap"){ constantTermEndcap_ = par->value() ; }
     if(par->name()=="dEtaInLinearTermEndcap"  ){ linearTermEndcap_   = par->value() ; }
     if(par->name()=="dEtaInCutoffTermEndcap"  ){ cutoffTermEndcap_   = par->value() ; }
   }
   return ;
 }
-bool HEEPCut_50_25ns_dEtaIn::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_25ns_dEtaIn::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyTools lazytool, bool cumulativeSuccess){
   setValue(gsfiter->deltaEtaSuperClusterTrackAtVtx()) ;
   int region = detectorRegion(gsfiter) ;
   bool result = true ;
@@ -490,7 +549,7 @@ void HEEPCut_50_25ns_HOverE::config(std::vector<HEEPParameter*> parameters){
   }
   return ;
 }
-bool HEEPCut_50_25ns_HOverE::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_25ns_HOverE::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyTools lazytool, bool cumulativeSuccess){
   setValue(gsfiter->hadronicOverEm()) ;
   float E = gsfiter->caloEnergy() ;
   int region = detectorRegion(gsfiter) ;
@@ -522,7 +581,7 @@ void HEEPCut_50_dEtaIn::config(std::vector<HEEPParameter*> parameters){
   }
   return ;
 }
-bool HEEPCut_50_dEtaIn::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_dEtaIn::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyTools lazytool, bool cumulativeSuccess){
   setValue(gsfiter->deltaEtaSuperClusterTrackAtVtx()) ;
   int region = detectorRegion(gsfiter) ;
   bool result = true ;
@@ -557,7 +616,7 @@ void HEEPCut_50_HOverE::config(std::vector<HEEPParameter*> parameters){
   }
   return ;
 }
-bool HEEPCut_50_HOverE::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
+bool HEEPCut_50_HOverE::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyTools lazytool, bool cumulativeSuccess){
   setValue(gsfiter->hadronicOverEm()) ;
   float E = gsfiter->caloEnergy() ;
   int region = detectorRegion(gsfiter) ;
@@ -585,7 +644,7 @@ void HEEPCut_51_dEtaIn::config(std::vector<HEEPParameter*> parameters){
   }
   return ;
 }
-bool HEEPCut_51_dEtaIn::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
+bool HEEPCut_51_dEtaIn::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyTools lazytool, bool cumulativeSuccess){
   setValue(gsfiter->deltaEtaSuperClusterTrackAtVtx()) ;
   int region = detectorRegion(gsfiter) ;
   bool result = true ;
@@ -610,7 +669,7 @@ void HEEPCut_51_HOverE::config(std::vector<HEEPParameter*> parameters){
   }
   return ;
 }
-bool HEEPCut_51_HOverE::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
+bool HEEPCut_51_HOverE::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyTools lazytool, bool cumulativeSuccess){
   setValue(gsfiter->hadronicOverEm()) ;
   float E = gsfiter->caloEnergy() ;
   int region = detectorRegion(gsfiter) ;
@@ -633,38 +692,29 @@ void HEEPCut_60_dEtaIn::config(std::vector<HEEPParameter*> parameters){
   for(unsigned int i=0 ; i<parameters.size() ; ++i){
     HEEPParameter* par = parameters.at(i) ;
     if(par->cutflow()!=cutflow()) continue ;
-    if(par->name()=="dEtaInConstantTermBarrel"){ constantTermBarrel_ = par->value() ; }
-    if(par->name()=="dEtaInLinearTermBarrel"  ){ linearTermBarrel_   = par->value() ; }
-    if(par->name()=="dEtaInCutoffTermBarrel"  ){ cutoffTermBarrel_   = par->value() ; }
-    if(par->name()=="dEtaInConstantTermEndcap"){ constantTermEndcap_ = par->value() ; }
-    if(par->name()=="dEtaInLinearTermEndcap"  ){ linearTermEndcap_   = par->value() ; }
-    if(par->name()=="dEtaInCutoffTermEndcap"  ){ cutoffTermEndcap_   = par->value() ; }
+    if(par->name()=="dEtaInThresholdBarrel"){ thresholdBarrel_ = par->value() ; }
+    if(par->name()=="dEtaInThresholdEndcap"){ thresholdEndcap_ = par->value() ; }
   }
   return ;
 }
-bool HEEPCut_60_dEtaIn::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
-  setValue(gsfiter->deltaEtaSuperClusterTrackAtVtx()) ;
+bool HEEPCut_60_dEtaIn::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyTools lazytool, bool cumulativeSuccess){
+  float deltaEtaInSeed = std::numeric_limits<float>::max() ;
+  if(gsfiter->superCluster().isNonnull() && gsfiter->superCluster()->seed().isNonnull()){
+    deltaEtaInSeed = gsfiter->deltaEtaSuperClusterTrackAtVtx() - gsfiter->superCluster()->eta() + gsfiter->superCluster()->seed()->eta() ;
+  }
+  setValue(deltaEtaInSeed) ;
   int region = detectorRegion(gsfiter) ;
   bool result = true ;
-  float Et = gsfiter->caloEnergy()*sin(gsfiter->p4().theta()) ;
   switch(region){
-    case kBarrel:{
-      float threshold = std::max(constantTermBarrel_ - constantTermBarrel_*Et, cutoffTermBarrel_) ;
-      result = (fabs(value()) < threshold) ;
-      break ;
-    }
-    case kEndcap:{
-      float threshold = std::max(constantTermBarrel_ - constantTermBarrel_*Et, cutoffTermBarrel_) ;
-      result = (fabs(value()) < threshold) ;
-      break ;
-    }
+    case kBarrel: result = (fabs(value()) < thresholdBarrel_) ; break ;
+    case kEndcap: result = (fabs(value()) < thresholdEndcap_) ; break ;
     default : break ;
   }
   setStatus(result, cumulativeSuccess) ;
   return getStatus() ;
 }
 
-//                                     HOverE (5.0)                                     //
+//                                     HOverE (6.0)                                     //
 HEEPCut_60_HOverE::HEEPCut_60_HOverE(int cutflow, std::string name, IIHEModuleHEEP* mod): HEEPCutBase(cutflow, name, mod){}
 void HEEPCut_60_HOverE::config(std::vector<HEEPParameter*> parameters){
   for(unsigned int i=0 ; i<parameters.size() ; ++i){
@@ -677,7 +727,7 @@ void HEEPCut_60_HOverE::config(std::vector<HEEPParameter*> parameters){
   }
   return ;
 }
-bool HEEPCut_60_HOverE::applyCut(reco::GsfElectron* gsfiter, bool cumulativeSuccess){
+bool HEEPCut_60_HOverE::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyTools lazytool, bool cumulativeSuccess){
   setValue(gsfiter->hadronicOverEm()) ;
   float E = gsfiter->caloEnergy() ;
   int region = detectorRegion(gsfiter) ;
@@ -701,6 +751,7 @@ HEEPCutCollection::HEEPCutCollection(int cutflow, std::string name, IIHEModuleHE
   parent_mod_   = mod ;
   nPass_        = -1 ;
   isActive_     = isActive ;
+  lazyTool_     = 0 ;
 }
 HEEPCutCollection::~HEEPCutCollection(){}
 void HEEPCutCollection::config(std::vector<HEEPParameter*> parameters){
@@ -780,15 +831,16 @@ void HEEPCutCollection::endEvent()  {
 void HEEPCutCollection::addCut(HEEPCutBase* cut){
   listOfCuts_.push_back(cut) ;
   cutTypes_.push_back(kCut) ;
+  cut->setParentCollection(this) ;
 }
 void HEEPCutCollection::addCutCollection(HEEPCutCollection* collection){
   listOfCutCollections_.push_back(collection) ;
   cutTypes_.push_back(kCollection) ;
 }
-bool HEEPCutCollection::applyCuts(reco::GsfElectron* gsfiter){
-  return applyCuts(gsfiter, true) ;
+bool HEEPCutCollection::applyCuts(reco::GsfElectron* gsfiter, EcalClusterLazyTools lazytool){
+  return applyCuts(gsfiter, lazytool, true) ;
 }
-bool HEEPCutCollection::applyCuts(reco::GsfElectron* gsfiter, bool status_in){
+bool HEEPCutCollection::applyCuts(reco::GsfElectron* gsfiter, EcalClusterLazyTools lazytool, bool status_in){
   cutIndex_        = 0 ;
   collectionIndex_ = 0 ;
   status_ = status_in ;
@@ -796,7 +848,7 @@ bool HEEPCutCollection::applyCuts(reco::GsfElectron* gsfiter, bool status_in){
     switch(cutTypes_.at(i)){
       case kCut:{
         HEEPCutBase* cut = (HEEPCutBase*) listOfCuts_.at(cutIndex_) ;
-        cut->applyCut(gsfiter, status_) ;
+        cut->applyCut(gsfiter, lazytool, status_) ;
         cut->store() ;
         ++cutIndex_ ;
         status_ = (status_ && cut->getStatus()) ;
@@ -804,7 +856,7 @@ bool HEEPCutCollection::applyCuts(reco::GsfElectron* gsfiter, bool status_in){
       }
       case kCollection:{
         HEEPCutCollection* collection = listOfCutCollections_.at(collectionIndex_) ;
-        collection->applyCuts(gsfiter, status_) ;
+        collection->applyCuts(gsfiter, lazytool, status_) ;
         ++collectionIndex_ ;
         status_ = (status_ && collection->getStatus()) ;
         break ;

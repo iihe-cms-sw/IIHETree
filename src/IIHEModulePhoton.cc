@@ -243,9 +243,9 @@ CHOOSE_RELEASE_END CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSSW_5_3_11*/
       store("ph_mc_ERatio", phiter->energy()/MCTruth->energy()) ;
     }
     else{
-      store("ph_mc_bestDR", 999) ;
-      store("ph_mc_index" ,  -1) ;
-      store("ph_mc_ERatio", 999) ;
+      store("ph_mc_bestDR", 999.0) ;
+      store("ph_mc_index" ,    -1) ;
+      store("ph_mc_ERatio", 999.0) ;
     }
   }
 }

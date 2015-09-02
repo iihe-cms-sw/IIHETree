@@ -18,6 +18,8 @@ IIHEModuleMCTruth::~IIHEModuleMCTruth(){}
 // ------------ method called once each job just before starting event loop  ------------
 void IIHEModuleMCTruth::beginJob(){
   addBranch("mc_n", kUInt) ;
+  addBranch("mc_pdfvariables_weight", kFloat) ;
+  addBranch("mc_w", kFloat) ;
   setBranchType(kVectorInt) ;
   addBranch("mc_index") ;
   addBranch("mc_pdgId") ;
@@ -55,9 +57,15 @@ void IIHEModuleMCTruth::beginJob(){
 
 // ------------ method called to for each event  ------------
 void IIHEModuleMCTruth::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
+  edm::Handle<GenEventInfoProduct> pdfvariables ;
+  iEvent.getByLabel("generator", pdfvariables) ;
+  float weight = pdfvariables->weight() ;
+  store("mc_pdfvariables_weight", weight) ;
+  store("mc_w"                  , weight) ;
+
   Handle<GenParticleCollection> pGenParticles ;
   iEvent.getByLabel("genParticles", pGenParticles) ;
-  GenParticleCollection genParticles(pGenParticles->begin(),pGenParticles->end());
+  GenParticleCollection genParticles(pGenParticles->begin(),pGenParticles->end()) ;
   
   // These variables are used to match up mothers to daughters at the end.
   int counter = 0 ;

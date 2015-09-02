@@ -103,7 +103,7 @@ private:
 class IIHEModuleMuon : public IIHEModule {
 public:
   explicit IIHEModuleMuon(const edm::ParameterSet& iConfig);
-  ~IIHEModuleMuon();
+  ~IIHEModuleMuon() ;
   
   void   pubBeginJob(){   beginJob() ; } ;
   void pubBeginEvent(){ beginEvent() ; } ;
@@ -126,5 +126,6 @@ private:
   bool storeGlobalTrackMuons_ ;
   bool storeStandAloneMuons_  ;
   bool storeInnerTrackMuons_  ;
+  float ptThreshold_ ;
 };
 #endif

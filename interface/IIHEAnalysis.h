@@ -31,6 +31,8 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 
+#include "DataFormats/PatCandidates/interface/Electron.h"
+
 // ROOT includes
 #include "TFile.h"
 #include "TTree.h"
@@ -140,6 +142,7 @@ CHOOSE_RELEASE_END CMSSW_5_3_11*/
   bool getAcceptStatus(){ return acceptEvent_ ; }
   void   vetoEvent(){ acceptEvent_ = false ; }
   void acceptEvent(){ acceptEvent_ =  true ; }
+  void rejectEvent(){ rejectEvent_ =  true ; }
   
   const MCTruthObject* MCTruth_getRecordByIndex(int) ;
   const MCTruthObject* MCTruth_matchEtaPhi(float, float) ;
@@ -198,6 +201,8 @@ private:
   edm::Handle<reco::MuonCollection        >         muonCollection_ ;
   edm::Handle<reco::VertexCollection      >           pvCollection_ ;
   
+  edm::Handle<pat::ElectronCollection >     electronCollectionMiniAOD_ ;
+  
   edm::InputTag  superClusterCollectionLabel_ ;
   edm::InputTag        photonCollectionLabel_ ;
   edm::InputTag      electronCollectionLabel_ ;
@@ -205,7 +210,12 @@ private:
   edm::InputTag           primaryVertexLabel_ ;
   edm::Handle<reco::BeamSpot> beamspotHandle_ ;
   
+  // The event only gets saved if acceptEvent_ == true
   bool acceptEvent_ ;
+  // This variable is used to reject an event early on.  This prevents the analyser
+  // running over the rest of the modules if it's not going to save the event anyway.
+  bool rejectEvent_ ;
+  
   int nEvents_ ;
   int nEventsStored_ ;
   

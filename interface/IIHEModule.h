@@ -79,6 +79,7 @@ public:
   
   void   vetoEvent() ;
   void acceptEvent() ;
+  void rejectEvent() ;
   
   void addToMCTruthWhitelist(std::vector<int>) ;
   const MCTruthObject* MCTruth_matchEtaPhi(float, float) ;

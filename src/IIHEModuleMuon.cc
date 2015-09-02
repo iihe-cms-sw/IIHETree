@@ -190,6 +190,7 @@ IIHEModuleMuon::IIHEModuleMuon(const edm::ParameterSet& iConfig):
   storeGlobalTrackMuons_ = iConfig.getUntrackedParameter<bool>("storeGlobalTrackMuons", true ) ;
   storeStandAloneMuons_  = iConfig.getUntrackedParameter<bool>("storeStandAloneMuons" , true ) ;
   storeInnerTrackMuons_  = iConfig.getUntrackedParameter<bool>("storeInnerTrackMuons" , true ) ;
+  ptThreshold_           = iConfig.getUntrackedParameter<double>("muons_pTThreshold"  ,  0.0 ) ;
 }
 IIHEModuleMuon::~IIHEModuleMuon(){}
 
@@ -220,9 +221,9 @@ void IIHEModuleMuon::beginJob(){
   addBranch("mu_numberOfValidPixelHits"  ) ;
   addBranch("mu_numberOfValidTrackerHits") ;
   addBranch("mu_numberOfValidMuonHits"   ) ;
-//CHOOSE_RELEASE_START CMSSW_6_2_0_SLHC23_patch1
+/*CHOOSE_RELEASE_START CMSSW_6_2_0_SLHC23_patch1
   addBranch("mu_numberOfValidGEMHits"    ) ;
-//CHOOSE_RELEASE_END CMSSW_6_2_0_SLHC23_patch1
+CHOOSE_RELEASE_END CMSSW_6_2_0_SLHC23_patch1*/
 /*CHOOSE_RELEASE_START DEFAULT
 CHOOSE_RELEASE_END DEFAULT*/
   
@@ -372,8 +373,8 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     }
     store("mu_numberOfValidGEMHits"    , numberOfValidGEMHits    ) ;
 CHOOSE_RELEASE_END CMSSW_6_2_0_SLHC23_patch1*/
-//CHOOSE_RELEASE_START DEFAULT
-//CHOOSE_RELEASE_END DEFAULT
+/*CHOOSE_RELEASE_START DEFAULT
+CHOOSE_RELEASE_END DEFAULT*/
     
     globalTrackWrapper_->reset() ;
     outerTrackWrapper_ ->reset() ;
@@ -383,26 +384,47 @@ CHOOSE_RELEASE_END CMSSW_6_2_0_SLHC23_patch1*/
     TrackRef  outerTrack = muIt->outerTrack()  ;
     TrackRef  innerTrack = muIt->innerTrack()  ;
     
+    bool saveMuon = false ;
+    float ptThreshold_ = 30 ;
+    
     if(storeInnerTrackMuons_){
       if( innerTrack.isNonnull() && muIt->   isTrackerMuon()){
-        innerTrackWrapper_->fill( innerTrack, beamspot, firstPrimaryVertex) ;
+        if(innerTrack->pt() > ptThreshold_) saveMuon = true ;
       }
-      innerTrackWrapper_ ->store(analysis) ;
-      mu_it_n++ ;
     }
     if(storeStandAloneMuons_){
       if( outerTrack.isNonnull() && muIt->isStandAloneMuon()){
-        outerTrackWrapper_->fill( outerTrack, beamspot, firstPrimaryVertex) ;
+        if(outerTrack->pt() > ptThreshold_) saveMuon = true ;
       }
-      outerTrackWrapper_ ->store(analysis) ;
-      mu_ot_n++ ;
     }
     if(storeGlobalTrackMuons_){
       if(globalTrack.isNonnull() && muIt->    isGlobalMuon()){
-        globalTrackWrapper_->fill(globalTrack, beamspot, firstPrimaryVertex) ;
+        if(globalTrack->pt() > ptThreshold_) saveMuon = true ;
       }
-      globalTrackWrapper_->store(analysis) ;
-      mu_gt_n++ ;
+    }
+    
+    if(saveMuon){
+      if(storeInnerTrackMuons_){
+        if( innerTrack.isNonnull() && muIt->   isTrackerMuon()){
+          innerTrackWrapper_->fill( innerTrack, beamspot, firstPrimaryVertex) ;
+        }
+        innerTrackWrapper_ ->store(analysis) ;
+        mu_it_n++ ;
+      }
+      if(storeStandAloneMuons_){
+        if( outerTrack.isNonnull() && muIt->isStandAloneMuon()){
+          outerTrackWrapper_->fill( outerTrack, beamspot, firstPrimaryVertex) ;
+        }
+        outerTrackWrapper_ ->store(analysis) ;
+        mu_ot_n++ ;
+      }
+      if(storeGlobalTrackMuons_){
+        if(globalTrack.isNonnull() && muIt->    isGlobalMuon()){
+          globalTrackWrapper_->fill(globalTrack, beamspot, firstPrimaryVertex) ;
+        }
+        globalTrackWrapper_->store(analysis) ;
+        mu_gt_n++ ;
+      }
     }
     
     // get TeV optimized track
@@ -523,9 +545,9 @@ CHOOSE_RELEASE_END CMSSW_5_3_11*/
       store("mu_mc_ERatio", muIt->energy()/MCTruth->energy()) ;
     }
     else{
-      store("mu_mc_bestDR", 999) ;
-      store("mu_mc_index" ,  -1) ;
-      store("mu_mc_ERatio", 999) ;
+      store("mu_mc_bestDR", 999.0) ;
+      store("mu_mc_index" ,    -1) ;
+      store("mu_mc_ERatio", 999.0) ;
     }
   }
   store("mu_gt_n", mu_gt_n) ;

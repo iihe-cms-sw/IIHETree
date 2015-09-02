@@ -6,9 +6,11 @@
 // class decleration
 class IIHEModuleLeptonsAccept : public IIHEModule {
 private:
-  int nAcceptElEl_ = 0 ;
-  int nAcceptElMu_ = 0 ;
   int nAcceptAll_  = 0 ;
+  
+  float ptThreshold_ ;
+  int   nElectronsThreshold_ ;
+  int   nLeptonsThreshold_   ;
 public:
   explicit IIHEModuleLeptonsAccept(const edm::ParameterSet& iConfig);
   ~IIHEModuleLeptonsAccept();
