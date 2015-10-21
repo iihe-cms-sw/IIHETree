@@ -117,11 +117,9 @@ void IIHEModuleZBoson::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     float E = sqrt(mEl*mEl+px*px+py*py+pz*pz) ;
     
     float HEEP_ET  = gsfiter->caloEnergy()*sin(gsfiter->p4().theta()) ;
-    float HEEP_eta = gsfiter->superCluster()->eta() ;
-    float HEEP_phi = gsfiter->superCluster()->phi() ;
-    float HEEP_E   = gsfiter->caloEnergy() ;
+    // float HEEP_E   = gsfiter->caloEnergy() ;
     TLorentzVector HEEPp4 ;
-    HEEPp4.SetPtEtaPhiE(HEEP_ET, HEEP_eta, HEEP_phi, HEEP_E) ;
+    HEEPp4.SetPtEtaPhiM(HEEP_ET, gsfiter->eta(), gsfiter->phi(), mEl) ;
     
     float ET =  sqrt(px*px+py*py) ;
     if(ET<ETThreshold_ && HEEP_ET<ETThreshold_) continue ;

@@ -394,6 +394,18 @@ bool IIHEAnalysis::store(std::string name, bool value){
       return true ;
     }
   }
+  for(unsigned int i=0 ; i<vars_I_.size() ; ++i){
+    if(vars_I_.at(i)->name()==name){
+      vars_I_ .at(i)->set(value) ;
+      return true ;
+    }
+  }
+  for(unsigned int i=0 ; i<vars_IV_.size() ; ++i){
+    if(vars_IV_.at(i)->name()==name){
+      vars_IV_ .at(i)->push(value) ;
+      return true ;
+    }
+  }
   if(debug_) std::cout << "Could not find a (bool) branch named " << name << std::endl ;
   return false ;
 }
@@ -523,6 +535,24 @@ bool IIHEAnalysis::store(std::string name, std::vector<bool> values){
     if(vars_BV_.at(i)->name()==name){
       for(unsigned j=0 ; j<values.size() ; ++j){
         vars_BV_ .at(i)->push(values.at(j)) ;
+      }
+      return true ;
+    }
+  }
+  for(unsigned int i=0 ; i<vars_IVV_.size() ; ++i){
+    if(vars_IVV_.at(i)->name()==name){
+      std::vector<int> valuesI ;
+      for(unsigned int j=0 ; j<values.size() ; ++j){
+        valuesI.push_back(values.at(j)) ;
+      }
+      vars_IVV_ .at(i)->push(valuesI) ;
+      return true ;
+    }
+  }
+  for(unsigned int i=0 ; i<vars_IV_.size() ; ++i){
+    if(vars_BV_.at(i)->name()==name){
+      for(unsigned j=0 ; j<values.size() ; ++j){
+        vars_IV_ .at(i)->push(values.at(j)) ;
       }
       return true ;
     }

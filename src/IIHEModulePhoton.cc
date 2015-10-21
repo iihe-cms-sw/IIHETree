@@ -28,7 +28,7 @@ void IIHEModulePhoton::beginJob(){
   addBranch("ph_energy") ;
   addBranch("ph_mass") ;
   
-  setBranchType(kVectorBool) ;
+  setBranchType(kVectorInt) ;
   addBranch("ph_isPFlowPhoton") ;
   addBranch("ph_isStandardPhoton") ;
   addBranch("ph_hasConversionTracks") ;
@@ -74,7 +74,7 @@ void IIHEModulePhoton::beginJob(){
   addBranch("ph_mipIntercept") ;
   
   addBranch("ph_mipNhitCone", kVectorInt) ;
-  addBranch("ph_mipIsHalo", kVectorBool) ;
+  addBranch("ph_mipIsHalo", kVectorInt) ;
   
   setBranchType(kVectorFloat) ;
   addBranch("ph_ecalRecHitSumEtConeDR04") ;

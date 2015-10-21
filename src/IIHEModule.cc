@@ -60,18 +60,12 @@ void IIHEModule::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){}
 void IIHEModule::beginEvent(){}
 void IIHEModule::endEvent(){}
 
-
 // ------------ method called once each job just after ending the event loop  ------------
 void IIHEModule::endJob(){}
-
 
 // Function to split strings.  Required for passing comma separated arguments via the pset
 std::vector<std::string> IIHEModule::splitString(const string &text, const char* sep){
   return parent_->splitString(text, sep) ;
 }
-
-
-
-
 
 DEFINE_FWK_MODULE(IIHEModule);

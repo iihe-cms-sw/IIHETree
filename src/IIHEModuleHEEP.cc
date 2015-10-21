@@ -40,6 +40,7 @@ void IIHEModuleHEEP::addHEEPParameter(int type, std::string name, std::string ps
 
 IIHEModuleHEEP::IIHEModuleHEEP(const edm::ParameterSet& iConfig): IIHEModule(iConfig){
   ETThreshold_ = iConfig.getUntrackedParameter<double>("electrons_ETThreshold", 0.0 ) ;
+  rhoLabel_ = iConfig.getParameter<edm::InputTag>("eventRho") ;
 
   // Decide whether to store the cutflow variables for each cutflow
   storeHEEP41_    = iConfig.getUntrackedParameter<bool>("storeHEEP41"    , true ) ;
@@ -308,7 +309,47 @@ void IIHEModuleHEEP::beginJob(){
   addBranch("HEEP_eseffsirir") ;
   addBranch("HEEP_preshowerEnergy") ;
   
-  addBranch("HEEP_e1x3") ;
+  addBranch("HEEP_e1x3"      ) ;
+  addBranch("HEEP_eMax"      ) ;
+  addBranch("HEEP_e5x5"      ) ;
+  addBranch("HEEP_e2x5Right" ) ;
+  addBranch("HEEP_e2x5Left"  ) ;
+  addBranch("HEEP_e2x5Top"   ) ;
+  addBranch("HEEP_e2x5Bottom") ;
+  addBranch("HEEP_eRight"    ) ;
+  addBranch("HEEP_eLeft"     ) ;
+  addBranch("HEEP_eTop"      ) ;
+  addBranch("HEEP_eBottom"   ) ;
+  addBranch("HEEP_basicClusterSeedTime") ;
+  
+  setBranchType(kVectorInt) ;
+  addBranch("EBHits_rawId"   ) ;
+  addBranch("EBHits_iRechit" ) ;
+  addBranch("EBHits_energy", kVectorFloat) ;
+  addBranch("EBHits_ieta"    ) ;
+  addBranch("EBHits_iphi"    ) ;
+  addBranch("EBHits_RecoFlag") ;
+  
+  setBranchType(kVectorInt) ;
+  addBranch("EBHits_kSaturated"           ) ;
+  addBranch("EBHits_kLeadingEdgeRecovered") ;
+  addBranch("EBHits_kNeighboursRecovered" ) ;
+  addBranch("EBHits_kWeird"               ) ;
+  
+  setBranchType(kVectorInt) ;
+  addBranch("EEHits_rawId"   ) ;
+  addBranch("EEHits_iRechit" ) ;
+  addBranch("EEHits_energy", kVectorFloat) ;
+  addBranch("EEHits_ieta"    ) ;
+  addBranch("EEHits_iphi"    ) ;
+  addBranch("EEHits_RecoFlag") ;
+  
+  setBranchType(kVectorInt) ;
+  addBranch("EEHits_kSaturated"           ) ;
+  addBranch("EEHits_kLeadingEdgeRecovered") ;
+  addBranch("EEHits_kNeighboursRecovered" ) ;
+  addBranch("EEHits_kWeird"               ) ;
+  
   
   // Crystal information
   setBranchType(kVectorVectorFloat) ;
@@ -589,7 +630,7 @@ void IIHEModuleHEEP::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   math::XYZPoint* firstPrimaryVertex = parent_->getFirstPrimaryVertex() ;
   
   edm::Handle<double> rhoHandle ;
-  iEvent.getByLabel(InputTag("fixedGridRhoAll"), rhoHandle) ;
+  iEvent.getByLabel(rhoLabel_, rhoHandle) ;
   double rho = *rhoHandle ;
   
   // Get the hit information
@@ -628,12 +669,8 @@ void IIHEModuleHEEP::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   iSetup.get<CaloGeometryRecord>().get(pGeometry) ;
   CaloGeometry* geometry = (CaloGeometry*) pGeometry.product() ;
   const CaloSubdetectorGeometry* geometryES = geometry->getSubdetectorGeometry(DetId::Ecal, EcalPreshower) ;
-  CaloSubdetectorTopology* topology_p = 0 ;
-  if(geometryES) topology_p = new EcalPreshowerTopology(geometry) ;
-  
-  edm::ESHandle<CaloTopology> pTopology;
-  iSetup.get<CaloTopologyRecord>().get(pTopology);
-  
+  CaloSubdetectorTopology* topology_ES = (geometryES) ? new EcalPreshowerTopology(geometry) : 0 ;
+    
 /*CHOOSE_RELEASE_START DEFAULT
     EcalClusterLazyTools lazytool(iEvent, iSetup, parent_->getReducedBarrelRecHitCollectionToken(), parent_->getReducedEndcapRecHitCollectionToken(), parent_->getReducedESRecHitCollectionToken()) ;
 CHOOSE_RELEASE_END DEFAULT*/
@@ -667,15 +704,71 @@ CHOOSE_RELEASE_END CMSSW_7_0_6_patch1 CMSSW_6_2_5 CMSSW_6_2_0_SLHC23_patch1 CMSS
     double x = gsf->superCluster()->x() ;
     double y = gsf->superCluster()->y() ;
     double z = gsf->superCluster()->z() ;
-    store("HEEP_eshitsixix", lazytool.getESHits(x, y, z, lazytool.rechits_map_, geometry, topology_p, 0, 1)) ;
-    store("HEEP_eshitsiyiy", lazytool.getESHits(x, y, z, lazytool.rechits_map_, geometry, topology_p, 0, 2)) ;
+    store("HEEP_eshitsixix", lazytool.getESHits(x, y, z, lazytool.rechits_map_, geometry, topology_ES, 0, 1)) ;
+    store("HEEP_eshitsiyiy", lazytool.getESHits(x, y, z, lazytool.rechits_map_, geometry, topology_ES, 0, 2)) ;
     store("HEEP_preshowerEnergy", gsf->superCluster()->preshowerEnergy()) ;
     
     store("HEEP_eseffsixix", lazytool.eseffsixix(*cl_ref)) ;
     store("HEEP_eseffsiyiy", lazytool.eseffsiyiy(*cl_ref)) ;
     store("HEEP_eseffsirir", lazytool.eseffsirir(*cl_ref)) ;
     store("HEEP_e1x3"      , lazytool.e1x3(*seed)        ) ;
+    
+    store("HEEP_eMax"      , lazytool.eMax      (*seed)) ;
+    store("HEEP_e5x5"      , lazytool.e5x5      (*seed)) ;
+    store("HEEP_e2x5Right" , lazytool.e2x5Right (*seed)) ;
+    store("HEEP_e2x5Left"  , lazytool.e2x5Left  (*seed)) ;
+    store("HEEP_e2x5Top"   , lazytool.e2x5Top   (*seed)) ;
+    store("HEEP_e2x5Bottom", lazytool.e2x5Bottom(*seed)) ;
+    store("HEEP_eRight"    , lazytool.eRight    (*seed)) ;
+    store("HEEP_eLeft"     , lazytool.eLeft     (*seed)) ;
+    store("HEEP_eTop"      , lazytool.eTop      (*seed)) ;
+    store("HEEP_eBottom"   , lazytool.eBottom   (*seed)) ;
+    
+    store("HEEP_basicClusterSeedTime"   , lazytool.BasicClusterSeedTime(*seed)) ;
+    
+    Handle<EcalRecHitCollection> ecal_EB ;
+    Handle<EcalRecHitCollection> ecal_EE ;
+    iEvent.getByToken(parent_->getReducedBarrelRecHitCollectionToken(), ecal_EB) ;
+    iEvent.getByToken(parent_->getReducedEndcapRecHitCollectionToken(), ecal_EE) ;
+    
+    const EcalRecHitCollection *EB_hits = ecal_EB.product() ;
+    int nEBRecHits = 0 ;
+    for(EcalRecHitCollection::const_iterator EBIt = EB_hits->begin() ; EBIt!=EB_hits->end() ; ++EBIt){
+      if( (*EBIt).energy() < 10.0 ) continue ;
+      nEBRecHits++ ;
+      EBDetId elementId = EBIt->id() ; 
+      store("EBHits_rawId"   , elementId.rawId()) ;
+      store("EBHits_iRechit" , nEBRecHits) ;
+      store("EBHits_energy"  , (*EBIt).energy() ) ;
+      store("EBHits_ieta"    , elementId.ieta() ) ;
+      store("EBHits_iphi"    , elementId.iphi() ) ;
+      store("EBHits_RecoFlag", (*EBIt).recoFlag() ) ;
       
+      store("EBHits_kSaturated"           , (*EBIt).checkFlag(EcalRecHit::kSaturated           )) ;
+      store("EBHits_kLeadingEdgeRecovered", (*EBIt).checkFlag(EcalRecHit::kLeadingEdgeRecovered)) ;
+      store("EBHits_kNeighboursRecovered" , (*EBIt).checkFlag(EcalRecHit::kNeighboursRecovered )) ;
+      store("EBHits_kWeird"               , (*EBIt).checkFlag(EcalRecHit::kWeird               )) ;
+    }
+    
+    const EcalRecHitCollection *EE_hits = ecal_EE.product() ;
+    int nEERecHits = 0 ;
+    for(EcalRecHitCollection::const_iterator EEIt = EE_hits->begin() ; EEIt!=EE_hits->end() ; ++EEIt){
+      if( (*EEIt).energy() < 10.0 ) continue ;
+      nEERecHits++ ;
+      EBDetId elementId = EEIt->id() ; 
+      store("EEHits_rawId"   , elementId.rawId()) ;
+      store("EEHits_iRechit" , nEBRecHits) ;
+      store("EEHits_energy"  , (*EEIt).energy() ) ;
+      store("EEHits_ieta"    , elementId.ieta() ) ;
+      store("EEHits_iphi"    , elementId.iphi() ) ;
+      store("EEHits_RecoFlag", (*EEIt).recoFlag() ) ;
+      
+      store("EEHits_kSaturated"           , (*EEIt).checkFlag(EcalRecHit::kSaturated           )) ;
+      store("EEHits_kLeadingEdgeRecovered", (*EEIt).checkFlag(EcalRecHit::kLeadingEdgeRecovered)) ;
+      store("EEHits_kNeighboursRecovered" , (*EEIt).checkFlag(EcalRecHit::kNeighboursRecovered )) ;
+      store("EEHits_kWeird"               , (*EEIt).checkFlag(EcalRecHit::kWeird               )) ;
+    }
+    
     // Try to add info about rechit in the SC 
     // Strongly inspired from : http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/DaveC/src/printPhoton.cc
     //Crystal variables

@@ -198,6 +198,7 @@ IIHEModuleMuon::~IIHEModuleMuon(){}
 void IIHEModuleMuon::beginJob(){
   setBranchType(kUInt) ;
   addBranch("mu_n"   ) ;
+  addBranch("mu_n_saved") ;
   addBranch("mu_gt_n") ;
   addBranch("mu_ot_n") ;
   addBranch("mu_it_n") ;
@@ -208,7 +209,7 @@ void IIHEModuleMuon::beginJob(){
   if(storeInnerTrackMuons_ )  innerTrackWrapper_->addBranches(analysis) ;
   
   // Muon type block
-  setBranchType(kVectorBool) ;
+  setBranchType(kVectorInt) ;
   addBranch("mu_isGlobalMuon"      ) ;
   addBranch("mu_isStandAloneMuon"  ) ;
   addBranch("mu_isTrackerMuon"     ) ;
@@ -327,6 +328,7 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   unsigned int mu_gt_n = 0 ;
   unsigned int mu_ot_n = 0 ;
   unsigned int mu_it_n = 0 ;
+  int mu_n_saved = 0 ;
   
   for(reco::MuonCollection::const_iterator muIt = muons.begin(); muIt != muons.end(); ++muIt){
     bool isGlobalMuon     = muIt->isGlobalMuon()     ;
@@ -353,7 +355,7 @@ void IIHEModuleMuon::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     
     numberOfMatchStations = muIt->numberOfMatchedStations() ;
     if(isTrackerMuon){
-      numberOfValidPixelHits = muIt->innerTrack()->hitPattern().numberOfValidPixelHits() ;
+      numberOfValidPixelHits   = muIt->innerTrack()->hitPattern().numberOfValidPixelHits() ;
       numberOfValidTrackerHits = muIt->innerTrack()->hitPattern().trackerLayersWithMeasurement() ;
     }
     
@@ -385,7 +387,6 @@ CHOOSE_RELEASE_END DEFAULT*/
     TrackRef  innerTrack = muIt->innerTrack()  ;
     
     bool saveMuon = false ;
-    float ptThreshold_ = 30 ;
     
     if(storeInnerTrackMuons_){
       if( innerTrack.isNonnull() && muIt->   isTrackerMuon()){
@@ -425,6 +426,7 @@ CHOOSE_RELEASE_END DEFAULT*/
         globalTrackWrapper_->store(analysis) ;
         mu_gt_n++ ;
       }
+      mu_n_saved++ ;
     }
     
     // get TeV optimized track
@@ -550,6 +552,7 @@ CHOOSE_RELEASE_END CMSSW_5_3_11*/
       store("mu_mc_ERatio", 999.0) ;
     }
   }
+  store("mu_n_saved", mu_n_saved) ;
   store("mu_gt_n", mu_gt_n) ;
   store("mu_ot_n", mu_ot_n) ;
   store("mu_it_n", mu_it_n) ;

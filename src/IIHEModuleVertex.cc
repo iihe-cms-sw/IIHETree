@@ -21,7 +21,7 @@ void IIHEModuleVertex::beginJob(){
   addBranch("pv_x") ;
   addBranch("pv_y") ;
   addBranch("pv_z") ;
-  addBranch("pv_isValid", kVectorBool) ;
+  addBranch("pv_isValid", kVectorInt) ;
   addBranch("pv_normalizedChi2", kVectorFloat) ;
   setBranchType(kVectorInt) ;
   addBranch("pv_ndof") ;

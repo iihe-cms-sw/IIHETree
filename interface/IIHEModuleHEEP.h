@@ -16,6 +16,8 @@ private:
   std::vector<HEEPParameter*> parameters_ ;
   void addHEEPParameter(int, std::string, std::string, float) ;
   
+  edm::InputTag rhoLabel_ ;
+  
   bool storeHEEP41_    ;
   bool storeHEEP50_50_ ;
   bool storeHEEP50_25_ ;

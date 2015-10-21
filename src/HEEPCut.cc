@@ -57,7 +57,7 @@ bool HEEPCutBase::getStatus(){ return status_ ; }
 void HEEPCutBase::reset(){ status_ = true ; }
 bool HEEPCutBase::addBranches(){
   bool success = true ;
-  success = (success && parent_mod_->addBranch(name_                  , kVectorBool )) ;
+  success = (success && parent_mod_->addBranch(name_                  , kVectorInt )) ;
   success = (success && parent_mod_->addBranch(branchName_n_          , kInt        )) ;
   success = (success && parent_mod_->addBranch(branchName_nCumulative_, kInt        )) ;
   success = (success && parent_mod_->addBranch(branchName_value_      , kVectorFloat)) ;
@@ -187,9 +187,7 @@ bool HEEPCut_SigmaIetaIeta::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazy
   float sigmaIetaIeta = -1 ;
   switch(cutflow()){
     case kHC60:{
-      reco::CaloCluster seed = *(gsfiter->superCluster()->seed()) ;
-      std::vector<float> vCov = lazytool.localCovariances(seed) ;
-      sigmaIetaIeta = (isnan(vCov[0]) ? 0. : sqrt(vCov[0])) ;
+      sigmaIetaIeta = gsfiter->full5x5_sigmaIetaIeta() ;
       break ;
     }
     default:
@@ -219,8 +217,8 @@ bool HEEPCut_E1x5OverE5x5::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyT
   switch(cutflow()){
     case kHC60:{
       reco::CaloCluster seed = *(gsfiter->superCluster()->seed()) ;
-      e1x5 = lazytool.e1x5(seed) ;
-      e5x5 = lazytool.e5x5(seed) ;
+      e1x5 = gsfiter->full5x5_e1x5() ;
+      e5x5 = gsfiter->full5x5_e1x5() ;
       break ;
     }
     default:
@@ -250,9 +248,9 @@ bool HEEPCut_E2x5OverE5x5::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyT
   switch(cutflow()){
     case kHC60:{
       reco::CaloCluster seed = *(gsfiter->superCluster()->seed()) ;
-      e1x5 = lazytool.e1x5   (seed) ;
-      e2x5 = lazytool.e2x5Max(seed) ;
-      e5x5 = lazytool.e5x5   (seed) ;
+      e1x5 = gsfiter->full5x5_e1x5()    ;
+      e2x5 = gsfiter->full5x5_e2x5Max() ;
+      e5x5 = gsfiter->full5x5_e5x5()    ;
       break ;
     }
     default:{
@@ -785,7 +783,7 @@ void HEEPCutCollection::config(std::vector<HEEPParameter*> parameters){
       }
     }
   }
-  parent_mod_->addBranch(name_, kVectorBool) ;
+  parent_mod_->addBranch(name_, kVectorInt) ;
   parent_mod_->addBranch(branchName_n_, kInt) ;
 }
 

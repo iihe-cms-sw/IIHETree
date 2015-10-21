@@ -2,9 +2,13 @@
 #define UserCode_IIHETree_IIHEModuleEvent_h
 
 #include "UserCode/IIHETree/interface/IIHEModule.h"
+#include "DataFormats/JetReco/interface/Jet.h"
 
 // class decleration
 class IIHEModuleEvent : public IIHEModule {
+private:
+  edm::InputTag rhoLabel_ ;
+
 public:
   explicit IIHEModuleEvent(const edm::ParameterSet& iConfig);
   ~IIHEModuleEvent();

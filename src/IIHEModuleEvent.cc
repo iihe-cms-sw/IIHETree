@@ -8,7 +8,9 @@ using namespace std ;
 using namespace reco;
 using namespace edm ;
 
-IIHEModuleEvent::IIHEModuleEvent(const edm::ParameterSet& iConfig): IIHEModule(iConfig){}
+IIHEModuleEvent::IIHEModuleEvent(const edm::ParameterSet& iConfig): IIHEModule(iConfig){
+  rhoLabel_ = iConfig.getParameter<edm::InputTag>("eventRho") ;
+}
 IIHEModuleEvent::~IIHEModuleEvent(){}
 
 // ------------ method called once each job just before starting event loop  ------------
@@ -22,6 +24,7 @@ void IIHEModuleEvent::beginJob(){
   addBranch("ev_time_microsecondOffset") ;
   
   addBranch("ev_fixedGridRhoAll", kFloat) ;
+  addBranch("ev_rho_kt6PFJetsForIsolation", kFloat) ;
 }
 
 // ------------ method called to for each event  ------------
@@ -40,6 +43,11 @@ void IIHEModuleEvent::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   iEvent.getByLabel(InputTag("fixedGridRhoAll"), rhoHandle) ;
   float rho = *rhoHandle ;
   store("ev_fixedGridRhoAll", rho) ;
+  
+  edm::Handle<double> rhoHandle_2 ;
+  iEvent.getByLabel(rhoLabel_, rhoHandle_2) ;
+  float rho_2 = *rhoHandle_2 ;
+  store("ev_rho_kt6PFJetsForIsolation", rho_2) ;
 }
 
 void IIHEModuleEvent::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup){}
