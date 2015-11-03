@@ -218,7 +218,7 @@ bool HEEPCut_E1x5OverE5x5::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyT
     case kHC60:{
       reco::CaloCluster seed = *(gsfiter->superCluster()->seed()) ;
       e1x5 = gsfiter->full5x5_e1x5() ;
-      e5x5 = gsfiter->full5x5_e1x5() ;
+      e5x5 = gsfiter->full5x5_e5x5() ;
       break ;
     }
     default:
