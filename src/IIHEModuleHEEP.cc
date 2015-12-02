@@ -613,6 +613,7 @@ void IIHEModuleHEEP::beginJob(){
   HEEPCutflows_.push_back(HEEPCutflow_51_ID_             ) ;
   HEEPCutflows_.push_back(HEEPCutflow_51_isolation_      ) ;
   HEEPCutflows_.push_back(HEEPCutflow_51_total_          ) ;
+  HEEPCutflows_.push_back(HEEPCutflow_60_acceptance_     ) ;
   HEEPCutflows_.push_back(HEEPCutflow_60_ID_             ) ;
   HEEPCutflows_.push_back(HEEPCutflow_60_isolation_      ) ;
   HEEPCutflows_.push_back(HEEPCutflow_60_total_          ) ;

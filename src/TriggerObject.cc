@@ -149,7 +149,6 @@ HLTrigger::HLTrigger(std::string name, HLTConfigProvider hltConfig){
   for(unsigned int i=0 ; i<moduleNamesWithTags.size() ; ++i){
     filters_.push_back(new TriggerFilter(moduleNamesWithTags.at(i), name_)) ;
   }
-  
 }
 HLTrigger::~HLTrigger(){}
 void HLTrigger::reset(){
@@ -227,13 +226,15 @@ int HLTrigger::nSubstringInString(const std::string& str, const std::string& sub
   return count;
 }
 
-int HLTrigger::status(const edm::Event& iEvent, edm::EventSetup const& iSetup, HLTConfigProvider const& hltConfig, Handle<TriggerResults> const& triggerResults, edm::Handle<trigger::TriggerEvent> trigEvent, IIHEAnalysis* analysis){
+int HLTrigger::status(const edm::Event& iEvent, edm::EventSetup const& iSetup, HLTConfigProvider const& hltConfig, Handle<TriggerResults> const& triggerResults, edm::Handle<trigger::TriggerEvent> trigEvent, edm::InputTag trigEventTag, IIHEAnalysis* analysis){
   if(searchStatus_==searchedForAndFound && index_>=0){
     touched_  = true ;
     accept_   = triggerResults->accept(index_) ;
     prescale_ = hltConfig.prescaleValue(iEvent, iSetup, name_) ;
     for(unsigned i=0 ; i<filters_.size() ; ++i){
-      filters_.at(i)->setValues(trigEvent, analysis) ;
+      TriggerFilter* filter = filters_.at(i) ;
+      filter->setIndex(trigEvent, trigEventTag) ;
+      filter->setValues(trigEvent, analysis) ;
     }
     return 0 ;
   }
@@ -252,7 +253,6 @@ int HLTrigger::createBranches(IIHEAnalysis* analysis){
   for(unsigned i=0 ; i<filters_.size() ; ++i){
     result += filters_.at(i)->createBranches(analysis) ;
   }
-  
   return result ;
 }
 
@@ -274,8 +274,4 @@ int HLTrigger::findIndex(HLTConfigProvider const& hltConfig){
   searchStatus_ = searchedForAndNotFound ;
   return 1 ;
 }
-bool HLTrigger::addFilter(std::string fileName){
-  return true ;
-}
-
 

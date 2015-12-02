@@ -12,6 +12,7 @@ IIHEModuleMCTruth::IIHEModuleMCTruth(const edm::ParameterSet& iConfig): IIHEModu
   pt_threshold_            = iConfig.getUntrackedParameter<double>("MCTruth_ptThreshold"            , 10.0) ;
   m_threshold_             = iConfig.getUntrackedParameter<double>("MCTruth_mThreshold"             , 20.0) ;
   DeltaROverlapThreshold_  = iConfig.getUntrackedParameter<double>("MCTruth_DeltaROverlapThreshold" , 1e-3) ;
+  puInfoSrc_               = iConfig.getUntrackedParameter<edm::InputTag>("PileUpSummaryInfo") ;
 }
 IIHEModuleMCTruth::~IIHEModuleMCTruth(){}
 
@@ -50,6 +51,10 @@ void IIHEModuleMCTruth::beginJob(){
   addBranch("mc_mother_energy") ;
   addBranch("mc_mother_mass"  ) ;
   
+  setBranchType(kInt) ;
+  addBranch("mc_trueNumInteractions") ;
+  addBranch("mc_PU_NumInteractions" ) ;
+  
   addValueToMetaTree("MCTruth_ptThreshold"           , pt_threshold_          ) ;
   addValueToMetaTree("MCTruth_mThreshold"            , m_threshold_           ) ;
   addValueToMetaTree("MCTruth_DeltaROverlapThreshold", DeltaROverlapThreshold_) ;
@@ -62,7 +67,24 @@ void IIHEModuleMCTruth::analyze(const edm::Event& iEvent, const edm::EventSetup&
   float weight = pdfvariables->weight() ;
   store("mc_pdfvariables_weight", weight) ;
   store("mc_w"                  , weight) ;
-
+  
+  // Fill pile-up related informations
+  // --------------------------------
+  edm::Handle<std::vector< PileupSummaryInfo > >  puInfo ;
+  iEvent.getByLabel(puInfoSrc_, puInfo) ;
+  int trueNumInteractions = -1 ;
+  int PU_NumInteractions  = -1 ;
+  if(puInfo.isValid()){
+    std::vector<PileupSummaryInfo>::const_iterator PVI;
+    for(PVI = puInfo->begin() ; PVI != puInfo->end() ; ++PVI){
+      int BX = PVI->getBunchCrossing() ;
+      if(BX==0){ // "0" is the in-time crossing, negative values are the early crossings, positive are late
+        trueNumInteractions = PVI->getTrueNumInteractions() ;
+        PU_NumInteractions  = PVI->getPU_NumInteractions() ;
+      }
+    }
+  }
+  
   Handle<GenParticleCollection> pGenParticles ;
   iEvent.getByLabel("genParticles", pGenParticles) ;
   GenParticleCollection genParticles(pGenParticles->begin(),pGenParticles->end()) ;
@@ -189,6 +211,10 @@ void IIHEModuleMCTruth::analyze(const edm::Event& iEvent, const edm::EventSetup&
     store("mc_charge" , ob->getCandidate()->charge()) ;
     store("mc_status" , ob->getCandidate()->status()) ;
   }
+  
+  store("mc_trueNumInteractions", trueNumInteractions) ;
+  store("mc_PU_NumInteractions" , PU_NumInteractions ) ;
+  
   store("mc_n", (unsigned int)(MCTruthRecord_.size())) ;
 }
 

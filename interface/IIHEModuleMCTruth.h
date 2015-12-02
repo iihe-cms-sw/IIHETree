@@ -12,6 +12,8 @@
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenRunInfoProduct.h"
 
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+
 // class decleration
 class IIHEModuleMCTruth : public IIHEModule {
 public:
@@ -41,5 +43,7 @@ private:
   double  m_threshold_ ;
   double DeltaROverlapThreshold_ ;
   std::vector<MCTruthObject*> MCTruthRecord_ ;
+  
+  edm::InputTag puInfoSrc_ ;
 };
 #endif

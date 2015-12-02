@@ -265,7 +265,7 @@ bool HEEPCut_E2x5OverE5x5::applyCut(reco::GsfElectron* gsfiter, EcalClusterLazyT
   int region = detectorRegion(gsfiter) ;
   bool result = true ;
   switch(region){
-    case kBarrel: result = (e2x5/e5x5 > thresholdE2x5_) || (e1x5/e2x5 > thresholdE1x5_) ; break ;
+    case kBarrel: result = (e2x5/e5x5 > thresholdE2x5_) || (e1x5/e5x5 > thresholdE1x5_) ; break ;
     case kEndcap: result = true ; break ;
     default : break ;
   }

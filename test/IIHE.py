@@ -1,25 +1,32 @@
+# This is the standard pset for the IIHETree ntuple maker.  You need to change this pset
+# to tell CMSSW which samples you are using.  You can do this in a semi-automated way
+# by using sed to replace the field "###JOBTYPE###".  You can also change the
+# pt_threshold of leptons, but be careful not to go above 20 if you want to perform the
+# scale factor study.
+
+#job_type = 'MC_50ns'
+job_type = 'MC_25ns'
+#job_type = 'data_Run2015BC'
+#job_type = 'data_Run2015D'
+###JOBTYPE###
+
+# Only keep leptons with at least 25 GeV of pT or ET
+pt_threshold = 15
+
+# Not actually used yet, but there are plans for this in the future.
+miniAOD = False
+
 ##########################################################################################
 #                                      Global tags                                       #
 ##########################################################################################
-# Global tags:
-# PHYS14 25ns: PHYS14_25_V1
-
-#globalTag = 'MCRUN2_74_V9::All'  # 25ns asymptotic
-#globalTag = 'MCRUN2_74_V9A::All' # 50ns asymptotic
-#globalTag = '74X_mcRun2_asymptotic_realisticBS_v1' # 25ns realistic beamspot
-#globalTag = '741_p1_mcRun2_Realistic_50ns_v0'      # 50ns realistic beamspot
-
-#globalTag = 'PHYS14_25_V1::All'
-#globalTag = 'GR_R_70_V1::All'
-
-# Data
-#globalTag = 'GR_H_V58C::All' # 2015, AB
-#globalTag = '74X_dataRun2_HLT_v0' # 2015, C
-#
-#globalTag='MCRUN2_74_V9A::All'
-#globalTag = '74X_dataRun2_Prompt_v1' # Run2015B, Run2015C
-globalTag = '74X_dataRun2_Prompt_v2' # Run2015D
-
+if job_type == 'MC_50ns':
+    globalTag = 'MCRUN2_74_V9A::All' # 50ns asymptotic
+elif job_type == 'MC_25ns':
+    globalTag = 'MCRUN2_74_V9::All'  # 25ns asymptotic
+elif job_type == 'data_Run2015BC':
+    globalTag = '74X_dataRun2_Prompt_v1'
+elif job_type == 'data_Run2015D':
+    globalTag = '74X_dataRun2_Prompt_v4'
 
 ##########################################################################################
 #                                  Start the sequences                                   #
@@ -31,8 +38,11 @@ process = cms.Process("IIHEAnalysis")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.Geometry.GeometryIdeal_cff")
 process.load("Configuration.EventContent.EventContent_cff")
-#process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
+
+if job_type=='data_Run2015BC' or job_type=='data_Run2015D':
+    process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
+else:
+    process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
@@ -44,7 +54,7 @@ readFiles = cms.untracked.vstring()
 secFiles  = cms.untracked.vstring()
 process.source = cms.Source("PoolSource",fileNames = readFiles, secondaryFileNames = secFiles)
 readFiles.extend([
-'/store/data/Run2015D/DoubleEG/AOD/PromptReco-v3/000/256/630/00000/C4A65920-395F-E511-B511-02163E01264C.root'
+'root://xrootd.unl.edu//store/mc/RunIISpring15DR74/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/AODSIM/Asympt25ns_MCRUN2_74_V9-v3/10000/002F7FDD-BA13-E511-AA63-0026189437F5.root'
 ])
 
 filename_out = 'outfile.root'
@@ -73,7 +83,7 @@ process.load("UserCode.IIHETree.IIHETree_cfi")
 
 # Only save some triggers.
 process.IIHEAnalysis.TriggerResults = cms.InputTag('TriggerResults', '', 'HLT')
-triggers = 'singleElectron;doubleElectron;singleMuon;singleElectronSingleMuon;singleElectronDoubleMuon;doubleElectronSingleMuon'
+triggers = 'singleElectron;doubleElectron'
 process.IIHEAnalysis.triggers = cms.untracked.string(triggers)
 
 #process.IIHEAnalysis.triggers = cms.untracked.string('doubleElectron')
@@ -90,7 +100,6 @@ process.IIHEAnalysis.superClusterCollection = cms.InputTag('correctedHybridSuper
 process.IIHEAnalysis.reducedBarrelRecHitCollection = cms.InputTag('reducedEcalRecHitsEB')
 process.IIHEAnalysis.reducedEndcapRecHitCollection = cms.InputTag('reducedEcalRecHitsEE')
 
-miniAOD = False
 if miniAOD:
     process.IIHEAnalysis.primaryVertex = cms.InputTag('offlineSlimmedPrimaryVertices')
     process.IIHEAnalysis.photonCollection    = cms.InputTag('slimmedPhotons'  )
@@ -111,11 +120,9 @@ process.IIHEAnalysis.ZBosonUpsAcceptMassUpper  = cms.untracked.double(1e6)
 
 # But make sure we save Z bosons from 50 GeV and up.
 process.IIHEAnalysis.ZBosonZMassLowerCuttoff   = cms.untracked.double( 50)
-
 process.IIHEAnalysis.ZBosonDeltaRCut           = cms.untracked.double(1e-3)
 
 # Only save Z->ee, Z->em.
-pt_threshold = 5
 process.IIHEAnalysis.ZBosonEtThreshold = cms.untracked.double(pt_threshold)
 process.IIHEAnalysis.ZBosonSaveZee  = cms.untracked.bool(True )
 process.IIHEAnalysis.ZBosonSaveZmm  = cms.untracked.bool(True )
@@ -126,16 +133,16 @@ process.IIHEAnalysis.ZBosonSaveZmmg = cms.untracked.bool(False)
 process.IIHEAnalysis.electrons_ETThreshold = cms.untracked.double(pt_threshold)
 process.IIHEAnalysis.muon_pTThreshold      = cms.untracked.double(pt_threshold)
 
-process.IIHEAnalysis.LeptonsAccept_pTThreshold = cms.untracked.double(10)
+process.IIHEAnalysis.LeptonsAccept_pTThreshold = cms.untracked.double(pt_threshold)
 # Require at least two leptons...
 process.IIHEAnalysis.LeptonsAccept_nLeptons    = cms.untracked.double(2)
 # ...at least one of which is an electron.
 process.IIHEAnalysis.LeptonsAccept_nElectrons  = cms.untracked.double(1)
 
 process.IIHEAnalysis.includeTriggerModule         = cms.untracked.bool(True )
-# Turn off these guys, since we're working with data.
-process.IIHEAnalysis.includeMCTruthModule         = cms.untracked.bool(False)
+process.IIHEAnalysis.includeMCTruthModule         = cms.untracked.bool(('MC' in job_type))
 process.IIHEAnalysis.includeAutoAcceptEventModule = cms.untracked.bool(False)
+process.IIHEAnalysis.PileUpSummaryInfo = cms.untracked.InputTag('addPileupInfo')
 
 process.IIHEAnalysis.debug = cms.bool(False)
 

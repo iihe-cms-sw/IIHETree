@@ -117,10 +117,9 @@ public:
   bool  beginRun(HLTConfigProvider const&) ;
   
   int findIndex(HLTConfigProvider const&) ;
-  int status(const edm::Event&, edm::EventSetup const&, HLTConfigProvider const&, Handle<TriggerResults> const&, edm::Handle<trigger::TriggerEvent>, IIHEAnalysis*) ;
+  int status(const edm::Event&, edm::EventSetup const&, HLTConfigProvider const&, Handle<TriggerResults> const&, edm::Handle<trigger::TriggerEvent>, edm::InputTag, IIHEAnalysis*) ;
   void store(IIHEAnalysis*) ;
   
-  bool addFilter(std::string) ;
   std::string name(){ return name_ ; }
   void setIndex(int index){ index_ = index ; }
   int index(){ return index_ ; }

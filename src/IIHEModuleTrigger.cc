@@ -76,7 +76,7 @@ int IIHEModuleTrigger::addBranches(){
 void IIHEModuleTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
   // Trigger information
   edm::InputTag trigEventTag("hltTriggerSummaryAOD","","HLT") ;
-  edm::Handle<trigger::TriggerEvent> trigEvent ; 
+  edm::Handle<trigger::TriggerEvent> trigEvent ;
   iEvent.getByLabel(trigEventTag,trigEvent) ;
   
   // get hold of TriggerResults
@@ -87,7 +87,7 @@ void IIHEModuleTrigger::analyze(const edm::Event& iEvent, const edm::EventSetup&
   IIHEAnalysis* analysis = parent_ ;
   for(unsigned int i=0 ; i<HLTriggers_.size() ; i++){
     HLTrigger* hlt = HLTriggers_.at(i) ;
-    hlt->status(iEvent, iSetup, hltConfig_, HLTR, trigEvent, analysis) ;
+    hlt->status(iEvent, iSetup, hltConfig_, HLTR, trigEvent, trigEventTag, analysis) ;
     hlt->store(analysis) ;
   }
   nEvents_++ ;
