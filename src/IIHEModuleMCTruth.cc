@@ -20,7 +20,8 @@ IIHEModuleMCTruth::~IIHEModuleMCTruth(){}
 void IIHEModuleMCTruth::beginJob(){
   addBranch("mc_n", kUInt) ;
   addBranch("mc_pdfvariables_weight", kFloat) ;
-  addBranch("mc_w", kFloat) ;
+  addBranch("mc_w"     , kFloat) ;
+  addBranch("mc_w_sign", kFloat) ;
   setBranchType(kVectorInt) ;
   addBranch("mc_index") ;
   addBranch("mc_pdgId") ;
@@ -58,6 +59,8 @@ void IIHEModuleMCTruth::beginJob(){
   addValueToMetaTree("MCTruth_ptThreshold"           , pt_threshold_          ) ;
   addValueToMetaTree("MCTruth_mThreshold"            , m_threshold_           ) ;
   addValueToMetaTree("MCTruth_DeltaROverlapThreshold", DeltaROverlapThreshold_) ;
+  
+  nEventsWeighted_ = 0.0 ;
 }
 
 // ------------ method called to for each event  ------------
@@ -65,8 +68,11 @@ void IIHEModuleMCTruth::analyze(const edm::Event& iEvent, const edm::EventSetup&
   edm::Handle<GenEventInfoProduct> pdfvariables ;
   iEvent.getByLabel("generator", pdfvariables) ;
   float weight = pdfvariables->weight() ;
+  float w_sign = (weight>=0) ? 1 : -1 ;
   store("mc_pdfvariables_weight", weight) ;
   store("mc_w"                  , weight) ;
+  store("mc_w_sign"             , w_sign) ;
+  nEventsWeighted_ += weight ;
   
   // Fill pile-up related informations
   // --------------------------------
@@ -248,6 +254,8 @@ void IIHEModuleMCTruth::endEvent(){}
 
 
 // ------------ method called once each job just after ending the event loop  ------------
-void IIHEModuleMCTruth::endJob(){}
+void IIHEModuleMCTruth::endJob(){
+  addValueToMetaTree("mc_nEventsWeighted", nEventsWeighted_) ;
+}
 
 DEFINE_FWK_MODULE(IIHEModuleMCTruth);

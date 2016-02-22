@@ -854,7 +854,7 @@ bool HEEPCutCollection::applyCuts(reco::GsfElectron* gsfiter, EcalClusterLazyToo
       }
       case kCollection:{
         HEEPCutCollection* collection = listOfCutCollections_.at(collectionIndex_) ;
-        collection->applyCuts(gsfiter, lazytool, status_) ;
+        collection->applyCuts(gsfiter, lazytool, status_in) ;
         ++collectionIndex_ ;
         status_ = (status_ && collection->getStatus()) ;
         break ;
