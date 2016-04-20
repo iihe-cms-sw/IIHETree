@@ -45,5 +45,6 @@ private:
   std::vector<MCTruthObject*> MCTruthRecord_ ;
   
   edm::InputTag puInfoSrc_ ;
+  float nEventsWeighted_ ;
 };
 #endif

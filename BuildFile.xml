@@ -10,6 +10,8 @@
 <use   name="L1Trigger/RegionalCaloTrigger"/>
 <use   name="FWCore/Utilities"/>
 <use   name="clhep"/>
+<use   name="RecoJets/JetProducers"/>
+<use   name="RecoJets/JetAlgorithms"/>
 <use   name="MagneticField/Engine"/>
 <use   name="DataFormats/DetId"/>
 <use   name="DataFormats/TrackCandidate"/>
